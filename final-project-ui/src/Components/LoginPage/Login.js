@@ -17,6 +17,8 @@ import Divider from '../Additionals/Divider/Divider';
 const Login = (props) => {
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
+   const [isValid, setIsValid] = useState(false);
+   const [isDirty, setIsDirty] = useState(false); 
 
    const handleSubmit = (e) => {
       e.preventDefault();
@@ -42,6 +44,8 @@ const Login = (props) => {
                      value={email}
                      onChange={(e) => setEmail(e.target.value)}
                      margin='normal'
+                     error={!isValid && isDirty}
+                     onBlur={() => setIsDirty(true)}
                      variant='outlined'
                      required
                   />
@@ -52,6 +56,8 @@ const Login = (props) => {
                      value={password}
                      onChange={(e) => setPassword(e.target.value)}
                      margin='normal'
+                     error={!isValid && isDirty}
+                     onBlur={() => setIsDirty(true)}
                      variant='outlined'
                      required
                   />
