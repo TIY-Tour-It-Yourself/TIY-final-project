@@ -77,7 +77,7 @@ const Login = (props) => {
             <Typography style={{ fontSize: 'small' }} sx={{ mt: 2, mb: 4 }}>
                <b>Don't Have An Account?</b>{' '}
                <Link
-                  href='/'
+                  href='/register'
                   sx={{
                      textDecoration: 'none',
                      '&:hover': {
@@ -88,7 +88,7 @@ const Login = (props) => {
                   Sign Up
                </Link>
             </Typography>
-            <Divider title='Sign In With' />
+            <Divider title='Sign In With'/>
             <div className={styles.flexbox}>
                <a href='#'>
                   <div className={styles.facebook_icon}></div>

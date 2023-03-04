@@ -8,6 +8,14 @@ header{
     font-size: 1rem;
 }
 
+h1{
+    display: inline-block;
+}
+
+h2{
+    margin-top: -2%;
+}
+
 @media (max-width: 768px) {
     
     .title{

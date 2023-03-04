@@ -1,13 +1,21 @@
 import React from 'react';
-import Login from './Components/LoginPage/Login';
-import Register from './Components/RegisterPage/Register';
+import LoginPage from './Pages/LoginPage';
+// import Login from './Components/LoginPage/Login';
+import { Routes, Route } from 'react-router-dom';
+import RegisterPage from './Pages/RegisterPage';
 
 const App = () => {
   return (
-    <div className="App">
-      {/* <Register/> */}
-      <Login/>
-    </div>
+    // <div className="App">
+    //   {/* <Register/> */}
+    //   <Login/>
+    // </div>
+    <>
+      <Routes>
+        <Route path='/' element={<LoginPage/>} />
+        <Route path='/register' element={<RegisterPage/>} />
+      </Routes>
+    </>
   );
 }
 
