@@ -1,4 +1,4 @@
-TIY - Tour-It-Yourself - UI Part
+<h1><b>TIY - Tour-It-Yourself - UI Part</b></h1>
 
 A Touring Application to get acquainted with Ramat Gan city, IL
 
