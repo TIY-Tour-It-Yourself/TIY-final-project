@@ -1,14 +1,13 @@
 .logo{
-    /* background-image: url('../Assets/map_background_signup_signin_page.jpg');
+    background-image: url('../Assets/logo.png');
     background-repeat: no-repeat;
-    background-size: cover;
-    width: 1000px;
-    height: 1000px;
+    width: 100px;
+    height: 100px;
     margin: 0 auto;
-    opacity: 0.5;*/
+    /* background: transparent; */
     /* border: 2px solid black;  */
     font-size: 2rem;
     font-weight: bold;
+    z-index: 1;
     color: rgb(26, 26, 217);
-
 }

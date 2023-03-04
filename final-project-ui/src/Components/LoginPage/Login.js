@@ -18,8 +18,7 @@ const Login = (props) => {
   return (
     <>
     <PageContainer> 
-      {/* לוגו לא קיים עדיין */}
-    <Logo title="TIY- Tour-It-Yourself"/>
+    <Logo/>
     <Header title="Welcome Back!"/>
     <form onSubmit={handleSubmit}>
       <FormControl sx={{ width: '40%'}}>
