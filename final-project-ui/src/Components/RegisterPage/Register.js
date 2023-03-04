@@ -85,7 +85,7 @@ const Register = (props) => {
                      },
                   }}
                >
-                  Sign In!!
+                  Sign In
                </Link>
             </Typography>
             <Typography sx={{ mt: 0, mb: 1 }}>
