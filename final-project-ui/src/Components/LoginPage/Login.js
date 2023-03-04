@@ -74,7 +74,21 @@ const Login = (props) => {
                   </Button>
                </FormControl>
             </form>
-            <Typography style={{ fontSize: 'small' }} sx={{ mt: 2, mb: 4 }}>
+            <Typography sx={{ mt: 0, mb: 1 }}>
+               <Link style={{ fontSize: '0.75rem', color: 'black'}}
+                  // Need to define navigation to retreive password
+                  href='/'
+                  sx={{
+                     textDecoration: 'none',
+                     '&:hover': {
+                        textDecoration: 'underline',
+                     }, 
+                  }}
+               >
+                  <b>Forgot Password?</b>
+               </Link> 
+               </Typography>
+            <Typography style={{ fontSize: 'small' }} sx={isSmallScreen ? { mb:1 } : { mt: 2, mb: 4 }}>
                <b>Don't Have An Account?</b>{' '}
                <Link
                   href='/register'
