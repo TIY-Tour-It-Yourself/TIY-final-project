@@ -6,9 +6,9 @@
     right: 0;
     bottom: 0;
     z-index: -1;
-  }
+  } 
 
-.container{
+  .container{
     text-align: center;
     position: relative;
     background: url('../Assets/map_background_signup_signin_page.jpg') no-repeat center center fixed;
@@ -16,3 +16,9 @@
     height: 100vh;
 }
 
+@media (max-width: 768px) {
+
+  .container{
+    background: url('../Assets/map_background_signup_signin_page_sm.jpg') no-repeat center center fixed;
+  } 
+}

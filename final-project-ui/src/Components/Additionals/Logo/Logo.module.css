@@ -1,13 +1,7 @@
 .logo{
-    background-image: url('../Assets/logo.png');
+    background-image: url('../Assets/logo_sm.png');
     background-repeat: no-repeat;
-    width: 100px;
-    height: 100px;
+    width: 172px;
+    height: 166px;
     margin: 0 auto;
-    /* background: transparent; */
-    /* border: 2px solid black;  */
-    font-size: 2rem;
-    font-weight: bold;
-    z-index: 1;
-    color: rgb(26, 26, 217);
 }

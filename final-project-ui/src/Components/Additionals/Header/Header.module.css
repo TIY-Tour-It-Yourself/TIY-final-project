@@ -3,3 +3,14 @@ header{
     max-width: 60%;
     text-align: center;
 }
+
+.title{
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    
+    .title{
+        font-size: 0.8rem;
+    }
+}

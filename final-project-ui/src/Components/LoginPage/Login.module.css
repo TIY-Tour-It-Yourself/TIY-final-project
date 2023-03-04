@@ -20,3 +20,13 @@
     height: 45px; 
     margin-right: 2rem;
 }
+
+@media (max-width: 768px) {
+    .flexbox{
+        margin: 1rem 0 0 2rem;
+    }
+
+    .MuiButton-root{
+        margin-left: 0;
+    }
+}
