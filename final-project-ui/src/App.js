@@ -1,6 +1,5 @@
 import React from 'react';
 import LoginPage from './Pages/LoginPage';
-// import Login from './Components/LoginPage/Login';
 import { Routes, Route } from 'react-router-dom';
 import RegisterPage from './Pages/RegisterPage';
 import Dashboard from './Components/DashboardPage/Dashboard';

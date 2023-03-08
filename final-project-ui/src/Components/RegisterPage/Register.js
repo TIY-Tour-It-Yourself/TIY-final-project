@@ -4,7 +4,7 @@ import {
    Button,
    FormControl,
    Typography,
-   Link,
+   Link
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -13,6 +13,7 @@ import Header from '../Additionals/Header/Header';
 import styles from './Register.module.css';
 import PageContainer from '../Additionals/Container/PageContainer';
 import Divider from '../Additionals/Divider/Divider';
+import { fontSize } from '@mui/system';
 
 const Register = (props) => {
    const [email, setEmail] = useState('');
