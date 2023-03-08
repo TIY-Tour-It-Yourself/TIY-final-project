@@ -13,10 +13,12 @@
     margin-left: 15px;
 }
 
+
 @media (max-width: 768px) {
     .bar{
-        position: fixed; 
-        border-bottom: 1px solid rgb(168, 168, 168); 
+        /* position: fixed;  */
+        bottom: 0;
+        /* border-top: 1px solid rgb(168, 168, 168);  */
     }
 
     /* .logo{

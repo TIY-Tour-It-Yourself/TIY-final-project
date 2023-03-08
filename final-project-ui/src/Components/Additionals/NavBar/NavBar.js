@@ -40,8 +40,7 @@ const NavBar = () => {
    };
 
    return (
-      // {isSmallScreen && (
-      <AppBar position='fixed' color='transparent' className={styles.bar}>
+      <AppBar position='fixed' color='transparent' sx={isSmallScreen ? {top: 'auto', bottom: 0} : {}}>
          <Container maxWidth='xl'>
             <Toolbar disableGutters>
           
@@ -51,8 +50,7 @@ const NavBar = () => {
                      <div className={styles.logo} />
                   </Box>
                )}
-
-               <Box sx={{ flexGrow: 13, display: { xs: 'none', md: 'flex' },  mr: 15 }}>
+               <Box sx={{ flexGrow: 13, display: { xs: 'flex', md: 'flex' },  mr: 15 }}>
                   {pages.map((page) => (
                      <Button
                         key={page}
@@ -69,13 +67,15 @@ const NavBar = () => {
                      </Button>
                   ))}
                </Box>
-            {!isSmallScreen && (
+               
             <Box sx={{ flexGrow: 0 }}>
+            {!isSmallScreen && (
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="user" src={user} />
               </IconButton>
             </Tooltip>
+             )}
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"
@@ -98,7 +98,8 @@ const NavBar = () => {
                 </MenuItem>
               ))} */}
             </Menu>
-          </Box>)}
+          </Box>
+         
 
             </Toolbar>
          </Container>
