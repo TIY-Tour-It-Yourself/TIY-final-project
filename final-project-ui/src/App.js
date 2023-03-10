@@ -5,15 +5,16 @@ import RegisterPage from './Pages/RegisterPage';
 import Dashboard from './Components/DashboardPage/Dashboard';
 
 const App = () => {
-  return (
-    <>
-      <Routes>
-        <Route path='/' element={<LoginPage/>} />
-        <Route path='/register' element={<RegisterPage/>} />
-        <Route path='/dashboard' element={<Dashboard/>} />
-      </Routes>
-    </>
-  );
-}
+   return (
+      <>
+         <Routes>
+            <Route path='/' element={<LoginPage />} />
+            <Route path='/login' element={<LoginPage />} />
+            <Route path='/register' element={<RegisterPage />} />
+            <Route path='/dashboard' element={<Dashboard />} />
+         </Routes>
+      </>
+   );
+};
 
 export default App;

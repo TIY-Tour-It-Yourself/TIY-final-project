@@ -1,6 +1,5 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
-import { display } from '@mui/system';
 
 const Divider = (props) => {
     return(

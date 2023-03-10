@@ -12,6 +12,7 @@
     width: 45px;
     height: 45px;
     margin-left: 0;
+    cursor: pointer;
 }
 
 .facebook_icon{
@@ -19,6 +20,7 @@
     width: 45px;
     height: 45px; 
     margin-right: 2rem;
+    cursor: pointer;
 }
 
 @media (max-width: 768px) {

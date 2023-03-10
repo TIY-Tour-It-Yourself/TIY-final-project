@@ -14,6 +14,7 @@ import styles from './Register.module.css';
 import PageContainer from '../Additionals/Container/PageContainer';
 import Divider from '../Additionals/Divider/Divider';
 import { fontSize } from '@mui/system';
+import { useNavigate } from 'react-router-dom';
 
 const Register = (props) => {
    const [email, setEmail] = useState('');
@@ -84,7 +85,7 @@ const Register = (props) => {
             <Typography style={{ fontSize: 'small' }} sx={{ mt: 2, mb: 1 }}>
                <b>Already Have An Account?</b>{' '}
                <Link
-                  href='/'
+                  href='/login'
                   sx={{
                      textDecoration: 'none',
                      '&:hover': {

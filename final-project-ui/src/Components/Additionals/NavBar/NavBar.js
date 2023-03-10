@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import styles from './NavBar.module.css';
+import home from './nav_imgs/home.png';
+import user_settings from './nav_imgs/user-48.png';
+import wallet from './nav_imgs/wallet-48.png';
+import calendar from './nav_imgs/calendar-32.png';
 import AppBar from '@mui/material/AppBar';
 import Typography from '@mui/material/Typography';
 import MoreIcon from '@mui/icons-material/MoreVert';
@@ -16,10 +20,10 @@ import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import user from './user.png';
 import { useTheme } from '@mui/material/styles';
-import { grey } from '@mui/material/colors';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 const pages = ['Settings', 'Wallet', 'Events'];
+const images = [{id: 1, title: "home", src:`${home}`, url: '#'},{id: 2, title: "settings", src:`${user_settings}`, url: '#'},{id: 3, title: "wallet", src:`${wallet}`, url: '#'},{id: 4, title: "events", src:`${calendar}`, url: '#'}];
 
 const NavBar = () => {
    const [anchorElNav, setAnchorElNav] = useState('');
@@ -50,7 +54,7 @@ const NavBar = () => {
                      <div className={styles.logo} />
                   </Box>
                )}
-               <Box sx={{ flexGrow: 13, display: { xs: 'flex', md: 'flex' },  mr: 15 }}>
+               <Box sx={!isSmallScreen ? { flexGrow: 13, display: { xs: 'flex', md: 'flex' },  mr: 15 } : {display: 'none'}}>
                   {pages.map((page) => (
                      <Button
                         key={page}
@@ -67,6 +71,13 @@ const NavBar = () => {
                      </Button>
                   ))}
                </Box>
+
+               {isSmallScreen && 
+               (<Box className={styles.images}>
+                 { images.map((img) =>
+                  <div key={img.id}><a href={img.url}><img src={img.src} title={img.title} height='33' width='33'/></a></div>
+                  )}
+               </Box>)}       
                
             <Box sx={{ flexGrow: 0 }}>
             {!isSmallScreen && (
