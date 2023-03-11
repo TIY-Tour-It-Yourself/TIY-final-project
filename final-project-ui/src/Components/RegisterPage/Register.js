@@ -4,9 +4,14 @@ import {
    Button,
    FormControl,
    Typography,
-   Link
+   Link,
+   Box,
+   InputLabel,
+   MenuItem,
+   Select
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import axios from 'axios';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Logo from '../Additionals/Logo/Logo';
 import Header from '../Additionals/Header/Header';
@@ -17,34 +22,92 @@ import { fontSize } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 
 const Register = (props) => {
+   const [fullname, setFullname] = useState('');
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
+   const [age, setAge] = useState('');
+   const [isAccessible, setIsAccessible] = useState('');
    const [isValid, setIsValid] = useState(false);
-   const [isDirty, setIsDirty] = useState(false); 
+   const [isDirty, setIsDirty] = useState(false);
+   const [isFormValid, setIsFormValid] = useState(false);
+
+   const navigate = useNavigate();
 
    const handleSubmit = (e) => {
       e.preventDefault();
-      console.log(`Email: ${email}, Password: ${password}`);
+
+      //If all fields not filled
+      if(fullname.trim().length !== 0 && email.trim().length !== 0 && password.trim().length !== 0 && age.trim().length !== 0 && isAccessible){
+         console.log(fullname);
+         setIsFormValid(true);
+         navigate('/dashboard');
+      }
+      else
+         alert("All fields are required.");
+         setIsFormValid(false);
+   };
+
+   const handleInputChange = (e) => {
+         const {id , value} = e.target;
+
+         if(id === 'fullname'){
+            setFullname(value);
+         }
+
+         if(id === "email"){
+            setEmail(value);
+         }
+
+         if(id === "password"){
+            setPassword(value);
+         }
+
+         if(id === "age"){
+            setAge(value);
+         }
    };
 
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
+/*
+   //Send data to server
+   axios.post('/api/register', userData)
+      .then(response => {
+      // Handle the response from the server
+      })
+      .catch(error => {
+      // Handle errors
+      });
+   }
+*/
    return (
       <>
          <PageContainer>
-            <Logo />
-            <Header title='Welcome!' secondaryTitle='Create A New Account'/>
+            <Logo/>
+            <Header title='Welcome!' secondaryTitle='Create A New Account' />
             <form onSubmit={handleSubmit}>
                <FormControl
                   sx={isSmallScreen ? { width: '50%' } : { width: '40%' }}
                >
                   <TextField
+                     label='fullname'
+                     id='fullname'
+                     type='text'
+                     value={fullname}
+                     onChange={(e) => handleInputChange(e)}
+                     margin='normal'
+                     error={!isValid && isDirty}
+                     onBlur={() => setIsDirty(true)}
+                     variant='outlined'
+                     required
+                  />
+                  <TextField
                      className={styles.input}
                      label='Email'
+                     id='email'
                      type='email'
                      value={email}
-                     onChange={(e) => setEmail(e.target.value)}
+                     onChange={(e) => handleInputChange(e)}
                      margin='normal'
                      error={!isValid && isDirty}
                      onBlur={() => setIsDirty(true)}
@@ -54,16 +117,48 @@ const Register = (props) => {
                   <TextField
                      className={styles.input}
                      label='Password'
+                     id='password'
                      type='password'
                      value={password}
-                     onChange={(e) => setPassword(e.target.value)}
+                     onChange={(e) => handleInputChange(e)}
                      margin='normal'
                      error={!isValid && isDirty}
                      onBlur={() => setIsDirty(true)}
                      variant='outlined'
                      required
                   />
-                  <Button
+                  <TextField
+                     label='age'
+                     id='age'
+                     type='text'
+                     value={age}
+                     onChange={(e) => handleInputChange(e)}
+                     margin='normal'
+                     error={!isValid && isDirty}
+                     onBlur={() => setIsDirty(true)}
+                     variant='outlined'
+                     required
+                  />
+                  <Box sx={{ maxWidth: 250 }}>
+                     <FormControl fullWidth>
+                        <InputLabel id='select-label'>
+                           Accessibility Required?
+                        </InputLabel>
+                        <Select
+                           labelId='demo-simple-select-label'
+                           id='isAccessible'
+                           value={isAccessible}
+                           label='isAccessible'
+                           required
+                           onChange={(e) => setIsAccessible(e.target.value)}
+                           onBlur={() => setIsDirty(true)}
+                        >
+                           <MenuItem value={'yes'}>Yes</MenuItem>
+                           <MenuItem value={'no'}>No</MenuItem>
+                        </Select>
+                     </FormControl>
+                  </Box>
+                  <Button onClick={handleSubmit}
                      className={styles.button}
                      type='submit'
                      variant='contained'

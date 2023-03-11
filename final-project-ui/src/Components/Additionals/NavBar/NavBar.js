@@ -5,13 +5,13 @@ import user_settings from './nav_imgs/user-48.png';
 import wallet from './nav_imgs/wallet-48.png';
 import calendar from './nav_imgs/calendar-32.png';
 import AppBar from '@mui/material/AppBar';
-import Typography from '@mui/material/Typography';
-import MoreIcon from '@mui/icons-material/MoreVert';
-import MenuIcon from '@mui/icons-material/Menu';
+// import Typography from '@mui/material/Typography';
+// import MoreIcon from '@mui/icons-material/MoreVert';
+// import MenuIcon from '@mui/icons-material/Menu';
 import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
+// import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import AddIcon from '@mui/icons-material/Add';
+// import AddIcon from '@mui/icons-material/Add';
 import Toolbar from '@mui/material/Toolbar';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
@@ -36,9 +36,10 @@ const NavBar = () => {
       setAnchorElUser(event.currentTarget);
    };
 
-   const handleOpenNavMenu = (event) => {
-      setAnchorElNav(event.currentTarget);
-   };
+   // const handleOpenNavMenu = (event) => {
+   //    setAnchorElNav(event.currentTarget);
+   // };
+
    const handleCloseNavMenu = () => {
       setAnchorElNav(null);
    };
