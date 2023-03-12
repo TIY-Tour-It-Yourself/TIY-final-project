@@ -1,7 +1,8 @@
 .logo{
     background-image: url('../Assets/logo_sm.png');
     background-repeat: no-repeat;
-    width: 172px;
-    height: 166px;
+    width: 150px;
+    height: 145px;
+    /* border: 2px solid black; */
     margin: 0 auto;
 }

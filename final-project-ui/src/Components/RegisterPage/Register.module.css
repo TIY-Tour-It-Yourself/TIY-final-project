@@ -7,6 +7,11 @@
     margin: 1rem 0 0 7rem;
 }
 
+form{
+    max-width: 80%;
+    margin: -11px auto;
+}
+
 .google_icon{
     background: url('../../images/icon_google.png') no-repeat;
     width: 45px;
@@ -24,5 +29,9 @@
 @media (max-width: 768px) {
     .flexbox{
         margin: 1rem 0 0 2rem;
+    }
+
+    form{
+        margin: -13px auto;
     }
 }

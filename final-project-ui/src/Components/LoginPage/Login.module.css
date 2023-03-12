@@ -23,6 +23,11 @@
     cursor: pointer;
 }
 
+form{
+    max-width: 80%;
+    margin: 0 auto;
+}
+
 @media (max-width: 768px) {
     .flexbox{
         margin: 1rem 0 0 2rem;

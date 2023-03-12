@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
    TextField,
    Button,
@@ -36,6 +36,16 @@ const Register = (props) => {
    const handleSubmit = (e) => {
       e.preventDefault();
 
+      //Post request
+      // try {
+      //    const res = axios.post(url, {fullname: fullname, email: email, 
+      //       password: password, age: age, isAccessible: isAccessible});
+      //       console.log(res.data);
+      // } catch (error) {
+      //    console.log(error.response);
+      // }
+      console.log(fullname, email, password, age, isAccessible);
+
       //If all fields not filled
       if(fullname.trim().length !== 0 && email.trim().length !== 0 && password.trim().length !== 0 && age.trim().length !== 0 && isAccessible){
          console.log(fullname);
@@ -69,17 +79,17 @@ const Register = (props) => {
 
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-/*
-   //Send data to server
-   axios.post('/api/register', userData)
-      .then(response => {
-      // Handle the response from the server
-      })
-      .catch(error => {
-      // Handle errors
-      });
-   }
-*/
+
+   // //Send data to server
+   // axios.post('/api/register', userData)
+   //    .then(response => {
+   //    // Handle the response from the server
+   //    })
+   //    .catch(error => {
+   //    // Handle errors
+   //    });
+   
+
    return (
       <>
          <PageContainer>
@@ -87,28 +97,28 @@ const Register = (props) => {
             <Header title='Welcome!' secondaryTitle='Create A New Account' />
             <form onSubmit={handleSubmit}>
                <FormControl
-                  sx={isSmallScreen ? { width: '50%' } : { width: '40%' }}
+                  sx={isSmallScreen ? { width: '100%' } : { width: '45%' }}
                >
-                  <TextField
-                     label='fullname'
+                  <TextField 
+                     label='Fullname'
                      id='fullname'
                      type='text'
                      value={fullname}
                      onChange={(e) => handleInputChange(e)}
-                     margin='normal'
+                     margin='dense'
                      error={!isValid && isDirty}
                      onBlur={() => setIsDirty(true)}
                      variant='outlined'
                      required
                   />
-                  <TextField
+                  <TextField 
                      className={styles.input}
                      label='Email'
                      id='email'
                      type='email'
                      value={email}
                      onChange={(e) => handleInputChange(e)}
-                     margin='normal'
+                     margin='dense'
                      error={!isValid && isDirty}
                      onBlur={() => setIsDirty(true)}
                      variant='outlined'
@@ -121,30 +131,30 @@ const Register = (props) => {
                      type='password'
                      value={password}
                      onChange={(e) => handleInputChange(e)}
-                     margin='normal'
+                     margin='dense'
                      error={!isValid && isDirty}
                      onBlur={() => setIsDirty(true)}
                      variant='outlined'
                      required
                   />
                   <TextField
-                     label='age'
+                     label='Age'
                      id='age'
                      type='text'
                      value={age}
                      onChange={(e) => handleInputChange(e)}
-                     margin='normal'
+                     margin='dense'
                      error={!isValid && isDirty}
                      onBlur={() => setIsDirty(true)}
                      variant='outlined'
                      required
                   />
-                  <Box sx={{ maxWidth: 250 }}>
-                     <FormControl fullWidth>
+                  <Box sx={{ maxWidth: 250}}>
+                     <FormControl fullWidth margin='dense'>
                         <InputLabel id='select-label'>
                            Accessibility Required?
                         </InputLabel>
-                        <Select
+                        <Select sx={{height: 50}}
                            labelId='demo-simple-select-label'
                            id='isAccessible'
                            value={isAccessible}
@@ -165,8 +175,8 @@ const Register = (props) => {
                      color='primary'
                      sx={
                         isSmallScreen
-                           ? { mt: 4, ml: 2, width: '80%' }
-                           : { mt: 3, ml: 14, width: '50%' }
+                           ? { mt: 2, ml: 2, width: '80%' }
+                           : { mt: 1, ml: 14, width: '50%' }
                      }
                      style={{
                         borderRadius: 20,

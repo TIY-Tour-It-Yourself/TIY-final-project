@@ -5,6 +5,8 @@ header{
 
 .title{
     font-size: 1rem;
+    color: rgb(58, 81, 123);
+    max-width: 50%;
 }
 
 h1{
@@ -12,12 +14,17 @@ h1{
 }
 
 h2{
-    margin-top: -2%;
+    margin-top: -2.2%;
 }
 
 @media (max-width: 768px) {
     
     .title{
         font-size: 0.8rem;
+        max-width: 100%;
+    }
+
+    h2{
+        margin-top: -5%;
     }
 }

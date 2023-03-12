@@ -7,6 +7,7 @@ import {
    Link,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import FacebookLogin from "react-facebook-login";
 import { googleLogout, useGoogleLogin, GoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -16,6 +17,8 @@ import styles from './Login.module.css';
 import PageContainer from '../Additionals/Container/PageContainer';
 import Divider from '../Additionals/Divider/Divider';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFacebookF } from "@fortawesome/free-brands-svg-icons";
 
 const Login = (props) => {
    const [user, setUser] = useState([]);
@@ -24,8 +27,41 @@ const Login = (props) => {
    const [password, setPassword] = useState('');
    const [isValid, setIsValid] = useState(false);
    const [isDirty, setIsDirty] = useState(false); 
+
+  const [logged, setIsLogged] = useState(false);
+  const [data, setData] = useState({});
+  const [picture, setPicture] = useState("");
+
    const navigate = useNavigate();
 
+   //Get request
+   axios
+      .get("https://jsonplaceholder.typicode.com/users/1")
+      .then((response) => {
+         // displayOutput(response);
+   })
+   .catch((err) => console.log(err));
+
+
+   //Facebook login
+   const responseFacebook = (response) => {
+    console.log(response);
+    setData(response);
+    setPicture(response.picture.data.url);
+    if (response.accessToken) {
+      setIsLogged(true);
+    } else {
+      setIsLogged(false);
+    }
+  };
+
+  const fLogout = () => {
+   setIsLogged(false);
+   setData({});
+   setPicture("");
+ };
+
+  //Google Login
    const login = useGoogleLogin({
       onSuccess: (codeResponse) => setUser(codeResponse),
       onError: (error) => console.log('Login Failed:', error)
@@ -59,6 +95,25 @@ const Login = (props) => {
       [ user ]
   );
 
+  //Post request
+ /* useEffect(() => {
+   (async () => {
+     try {
+       const response = await axios.post(
+         url,
+         payload
+       );
+
+       setData(response.data);
+     } catch (error) {
+       setError(error.message);
+     } finally {
+       setLoaded(true);
+     }
+   })();
+ }, []);
+ */
+
   // log out function to log the user out of google and set the profile array to null
   const logOut = () => {
       googleLogout();
@@ -72,7 +127,7 @@ const Login = (props) => {
             <Header title='Welcome Back!' />
             <form onSubmit={handleSubmit}>
                <FormControl
-                  sx={isSmallScreen ? { width: '50%' } : { width: '40%' }}
+                  sx={isSmallScreen ? { width: '100%' } : { width: '45%' }}
                >
                   <TextField
                      className={styles.input}
@@ -80,7 +135,7 @@ const Login = (props) => {
                      type='email'
                      value={email}
                      onChange={(e) => setEmail(e.target.value)}
-                     margin='normal'
+                     margin='dense'
                      error={!isValid && isDirty}
                      onBlur={() => setIsDirty(true)}
                      variant='outlined'
@@ -92,7 +147,7 @@ const Login = (props) => {
                      type='password'
                      value={password}
                      onChange={(e) => setPassword(e.target.value)}
-                     margin='normal'
+                     margin='dense'
                      error={!isValid && isDirty}
                      onBlur={() => setIsDirty(true)}
                      variant='outlined'
@@ -105,8 +160,8 @@ const Login = (props) => {
                      color='primary'
                      sx={
                         isSmallScreen
-                           ? { mt: 4, ml: 2, width: '80%' }
-                           : { mt: 3, ml: 14, width: '50%' }
+                           ? { mt: 2, ml: 2, mb: 3, width: '80%' }
+                           : { mt: 3, ml: 12, mb: 3, width: '50%' }
                      }
                      style={{
                         borderRadius: 20,
@@ -117,7 +172,7 @@ const Login = (props) => {
                   </Button>
                </FormControl>
             </form>
-            <Typography sx={{ mt: 0, mb: 1 }}>
+            <Typography sx={{ mt: 0, mb: 1, mr: 1 }}>
                <Link style={{ fontSize: '0.75rem', color: 'black'}}
                   // Need to define navigation to retreive password
                   href='/'
@@ -147,9 +202,50 @@ const Login = (props) => {
             </Typography>
             <Divider title='Sign In With'/>
             <div className={styles.flexbox}>
-               <a href='#'>
+               {/* <a href='#'>
                   <div className={styles.facebook_icon}></div>
-               </a>
+               </a> */}
+               <div className="container">
+      {!logged && (
+        <FacebookLogin
+          appId="943123410051874"
+          autoLoad={false}
+         //  fields="name,email,picture"
+         //  scope="public_profile,email,user_friends"
+          callback={responseFacebook}
+          buttonStyle={{
+            backgroundColor: "#3b5998",
+            border: "none",
+            borderRadius: "3px",
+            marginRight: '15px',
+            fontSize: "35px",
+            color: "#fff",
+            fontWeight: "bold",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "38px",
+            height: "45px"
+          }}
+            textButton=""
+            icon={<FontAwesomeIcon icon={faFacebookF} />}
+         />
+      )}
+
+      {logged && (
+        <div className="card">
+          <div className="card-body">
+            <img className="rounded" src={picture} alt="Profile" />
+            <h5 className="card-title">{data.name}</h5>
+            <p className="card-text">Email ID: {data.email}</p>
+            <a href="#" className="btn btn-danger btn-sm" onClick={fLogout}>
+              Logout
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
             <div>
             {profile ? (
                {/* <button onClick={logOut}>Log out</button> */}
