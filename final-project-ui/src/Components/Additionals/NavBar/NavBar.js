@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './NavBar.module.css';
 import home from './nav_imgs/home.png';
 import user_settings from './nav_imgs/user-48.png';
@@ -13,6 +14,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Menu from '@mui/material/Menu';
 // import AddIcon from '@mui/icons-material/Add';
 import Toolbar from '@mui/material/Toolbar';
+import Link from '@mui/material/Link';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
@@ -28,6 +30,8 @@ const images = [{id: 1, title: "home", src:`${home}`, url: '#'},{id: 2, title: "
 const NavBar = () => {
    const [anchorElNav, setAnchorElNav] = useState('');
    const [anchorElUser, setAnchorElUser] = useState('');
+
+   const navigate = useNavigate();
 
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -52,7 +56,7 @@ const NavBar = () => {
                {/* Only present the following when screen is Desktop size */}
                {!isSmallScreen && (
                   <Box sx={{ flexGrow: 1, display: { md: 'flex' } }}>
-                     <div className={styles.logo} />
+                     <Link href='/dashboard'><div className={styles.logo}/></Link>
                   </Box>
                )}
                <Box sx={!isSmallScreen ? { flexGrow: 13, display: { xs: 'flex', md: 'flex' },  mr: 15 } : {display: 'none'}}>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
    TextField,
    Button,
@@ -8,7 +8,7 @@ import {
    Box,
    InputLabel,
    MenuItem,
-   Select
+   Select,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import axios from 'axios';
@@ -18,7 +18,6 @@ import Header from '../Additionals/Header/Header';
 import styles from './Register.module.css';
 import PageContainer from '../Additionals/Container/PageContainer';
 import Divider from '../Additionals/Divider/Divider';
-import { fontSize } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 
 const Register = (props) => {
@@ -36,70 +35,61 @@ const Register = (props) => {
    const handleSubmit = (e) => {
       e.preventDefault();
 
-      //Post request
-      // try {
-      //    const res = axios.post(url, {fullname: fullname, email: email, 
-      //       password: password, age: age, isAccessible: isAccessible});
-      //       console.log(res.data);
-      // } catch (error) {
-      //    console.log(error.response);
-      // }
-      console.log(fullname, email, password, age, isAccessible);
+      //Post request - need to post data to DB to register user
+      //If all fields are filled
+      if (fullname.trim().length !== 0 && email.trim().length !== 0 &&
+         password.trim().length !== 0 && age.trim().length !== 0 && isAccessible) {
+         axios
+            .post(`https://jsonplaceholder.typicode.com/users`, {
+               email,
+               password,
+            })
+            // .get("https://jsonplaceholder.typicode.com/users/1")
+            .then((response) => {
+               console.log(response.data.token);
+            })
+            .catch((err) => console.log(err));
 
-      //If all fields not filled
-      if(fullname.trim().length !== 0 && email.trim().length !== 0 && password.trim().length !== 0 && age.trim().length !== 0 && isAccessible){
-         console.log(fullname);
          setIsFormValid(true);
          navigate('/dashboard');
-      }
-      else
-         alert("All fields are required.");
-         setIsFormValid(false);
+
+      } else alert('All fields are required.');
+      setIsFormValid(false);
    };
 
    const handleInputChange = (e) => {
-         const {id , value} = e.target;
+      const { id, value } = e.target;
 
-         if(id === 'fullname'){
-            setFullname(value);
-         }
+      if (id === 'fullname') {
+         setFullname(value);
+      }
 
-         if(id === "email"){
-            setEmail(value);
-         }
+      if (id === 'email') {
+         setEmail(value);
+      }
 
-         if(id === "password"){
-            setPassword(value);
-         }
+      if (id === 'password') {
+         setPassword(value);
+      }
 
-         if(id === "age"){
-            setAge(value);
-         }
+      if (id === 'age') {
+         setAge(value);
+      }
    };
 
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-   // //Send data to server
-   // axios.post('/api/register', userData)
-   //    .then(response => {
-   //    // Handle the response from the server
-   //    })
-   //    .catch(error => {
-   //    // Handle errors
-   //    });
-   
-
    return (
       <>
          <PageContainer>
-            <Logo/>
+            <Logo />
             <Header title='Welcome!' secondaryTitle='Create A New Account' />
             <form onSubmit={handleSubmit}>
                <FormControl
                   sx={isSmallScreen ? { width: '100%' } : { width: '45%' }}
                >
-                  <TextField 
+                  <TextField
                      label='Full Name'
                      id='fullname'
                      type='text'
@@ -111,7 +101,7 @@ const Register = (props) => {
                      variant='outlined'
                      required
                   />
-                  <TextField 
+                  <TextField
                      className={styles.input}
                      label='Email'
                      id='email'
@@ -149,12 +139,13 @@ const Register = (props) => {
                      variant='outlined'
                      required
                   />
-                  <Box sx={{ maxWidth: 250}}>
+                  <Box sx={{ maxWidth: 250 }}>
                      <FormControl fullWidth margin='dense'>
                         <InputLabel id='select-label'>
                            Accessibility Required?
                         </InputLabel>
-                        <Select sx={{height: 50}}
+                        <Select
+                           sx={{ height: 50 }}
                            labelId='demo-simple-select-label'
                            id='isAccessible'
                            value={isAccessible}
@@ -168,7 +159,8 @@ const Register = (props) => {
                         </Select>
                      </FormControl>
                   </Box>
-                  <Button onClick={handleSubmit}
+                  <Button
+                     onClick={handleSubmit}
                      className={styles.button}
                      type='submit'
                      variant='contained'

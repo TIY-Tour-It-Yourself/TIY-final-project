@@ -27,21 +27,41 @@ const Login = (props) => {
    const [password, setPassword] = useState('');
    const [isValid, setIsValid] = useState(false);
    const [isDirty, setIsDirty] = useState(false); 
+   const [isFormValid, setIsFormValid] = useState(false);
 
   const [logged, setIsLogged] = useState(false);
   const [data, setData] = useState({});
   const [picture, setPicture] = useState("");
 
    const navigate = useNavigate();
+   
+      const handleSubmit = (e) => {
+         e.preventDefault();
+         console.log(`Email: ${email}, Password: ${password}`);
+        
+         if(email.trim().length !== 0 && password.trim().length !== 0){
+            setIsFormValid(true);
+            navigate('/dashboard');
+         }
+         else
+            alert("All fields are required.");
+            setIsFormValid(false);
+      };
 
-   //Get request
-   axios
-      .get("https://jsonplaceholder.typicode.com/users/1")
-      .then((response) => {
-         // displayOutput(response);
-   })
-   .catch((err) => console.log(err));
-
+   //Post request - need to post data to DB to check if specific user is already registered
+   useEffect(() => {
+      if(email.trim().length !== 0 && password.trim().length !== 0) {
+         axios
+            .post(`https://jsonplaceholder.typicode.com/users`, {email, password})
+            // .get("https://jsonplaceholder.typicode.com/users/1")
+            .then((response) => {
+               setData(response.data);
+               console.log(response.data.token);
+            })
+            .catch((err) => console.log(err));
+      } 
+   },[email, password]);
+ 
 
    //Facebook login
    const responseFacebook = (response) => {
@@ -67,11 +87,6 @@ const Login = (props) => {
       onError: (error) => console.log('Login Failed:', error)
   });
 
-   const handleSubmit = (e) => {
-      e.preventDefault();
-      console.log(`Email: ${email}, Password: ${password}`);
-   };
-
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -95,27 +110,21 @@ const Login = (props) => {
       [ user ]
   );
 
-  //Post request
- /* useEffect(() => {
-   (async () => {
-     try {
-       const response = await axios.post(
-         url,
-         payload
-       );
-
-       setData(response.data);
-     } catch (error) {
-       setError(error.message);
-     } finally {
-       setLoaded(true);
-     }
-   })();
- }, []);
- */
+  //Post request - need to post Google connection data of user to DB to check if specific user is already registered
+  useEffect(() => {
+   if(profile) {
+      axios
+         .post(`https://jsonplaceholder.typicode.com/users`, {profile})
+         // .get("https://jsonplaceholder.typicode.com/users/1")
+         .then((response) => {
+            console.log(response.data.token);
+         })
+         .catch((err) => console.log(err));
+   } 
+   },[profile]);
 
   // log out function to log the user out of google and set the profile array to null
-  const logOut = () => {
+  const gLogout = () => {
       googleLogout();
       setProfile(null);
    };
@@ -153,7 +162,7 @@ const Login = (props) => {
                      variant='outlined'
                      required
                   />
-                  <Button
+                  <Button onClick={handleSubmit}
                      className={styles.button}
                      type='submit'
                      variant='contained'
@@ -208,7 +217,7 @@ const Login = (props) => {
                <div className="container">
       {!logged && (
         <FacebookLogin
-          appId="943123410051874"
+          appId={process.env.REACT_APP_FACEBOOK_CLIENT_ID}
           autoLoad={false}
          //  fields="name,email,picture"
          //  scope="public_profile,email,user_friends"
@@ -217,7 +226,8 @@ const Login = (props) => {
             backgroundColor: "#3b5998",
             border: "none",
             borderRadius: "3px",
-            marginRight: '15px',
+            marginRight: '30px',
+            marginTop: '0',
             fontSize: "35px",
             color: "#fff",
             fontWeight: "bold",
