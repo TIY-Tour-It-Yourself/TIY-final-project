@@ -100,7 +100,7 @@ const Register = (props) => {
                   sx={isSmallScreen ? { width: '100%' } : { width: '45%' }}
                >
                   <TextField 
-                     label='Fullname'
+                     label='Full Name'
                      id='fullname'
                      type='text'
                      value={fullname}

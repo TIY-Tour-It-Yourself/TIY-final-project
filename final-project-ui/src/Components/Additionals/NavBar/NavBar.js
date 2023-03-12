@@ -45,7 +45,7 @@ const NavBar = () => {
    };
 
    return (
-      <AppBar position='fixed' color='transparent' sx={isSmallScreen ? {top: 'auto', bottom: 0} : {}}>
+      <AppBar position='fixed' style={{backgroundImage: 'linear-gradient(to top left, rgb(143, 215, 239), white)'}} sx={isSmallScreen ? {top: 'auto', bottom: 0} : {}}>
          <Container maxWidth='xl'>
             <Toolbar disableGutters>
           
