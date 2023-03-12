@@ -3,17 +3,14 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-// import { Example } from "./routes";
-// import { App } from "./oauth/ThreepartLogin";
-// import { App } from "./homePage/HomePage.js";
-// import { HomePage } from "./homePage/HomePage.js";
-import { Login } from "./oauth/Login.js";
-import { SignUp } from "./oauth/SignUp";
+import { Login_Facebook } from "./oauth/Login";
+// import { SignUp } from "./oauth/SignUp";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    {" "}
+    <App /> {/* <Login_Facebook /> */}{" "}
   </React.StrictMode>
 );
 

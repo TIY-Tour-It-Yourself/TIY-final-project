@@ -1,0 +1,27 @@
+.bar{
+    /* width: 100vw;
+    height: 9vh; */
+    /* position: fixed; */
+    /* border-bottom: 1px solid rgb(168, 168, 168); */
+}
+
+.logo{
+    background-image: url('../Assets/logo_nav.png');
+    background-repeat: no-repeat;
+    width: 65px;
+    height: 63px;
+    margin-left: 15px;
+}
+
+
+@media (max-width: 768px) {
+    .bar{
+        /* position: fixed;  */
+        bottom: 0;
+        /* border-top: 1px solid rgb(168, 168, 168);  */
+    }
+
+    /* .logo{
+        display: none;
+    } */
+}

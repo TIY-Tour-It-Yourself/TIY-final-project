@@ -21,32 +21,35 @@ export const SignUp = (props) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="email"></label>
-        <input
-          type="email"
-          id="email"
-          placeholder="Email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor="password"></label>
-        <input
-          type="password"
-          id="password"
-          placeholder="Password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-        />
-      </div>
-      <button type="submit">Sign up</button>
-      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-      <button onClick={() => props.onFormSwitch("login")}>
-        Already have an account? Login here
-      </button>
-    </form>
+    <div>
+      <h1>Registration</h1>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="email"></label>
+          <input
+            type="email"
+            id="email"
+            placeholder="Email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+        </div>
+        <div>
+          <label htmlFor="password"></label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
+        </div>
+        <button type="submit">Sign up</button>
+        {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+        <button onClick={() => props.onFormSwitch("login")}>
+          Already have an account? Login here
+        </button>
+      </form>
+    </div>
   );
 };
