@@ -1,47 +1,30 @@
-@media screen and (min-width: 400px) {
-    .Creation {
-      margin-left: 30px;
-      width: 380px;
-    }
-    .CreationForm {
-      /* direction: ltr; */
-      /* margin-right: 2000px; */
-      /* font-weight: bold; */
-      width: 380px;
-      margin-right: 100px;
-      margin-top: 20px;
-      color: rgb(150, 142, 142);
-    }
-    .Creation h6 {
-      text-align: center;
-      margin-top: 30px;
-    }
-    .date {
-      border: none;
-      border-bottom: 1px solid rgb(150, 142, 142);
-      color: rgb(150, 142, 142);
-    }
-    .time {
-      border: none;
-      border-bottom: 1px solid rgb(150, 142, 142);
-      margin-left: 50px;
-      color: rgb(150, 142, 142);
-    }
-    .AR {
-      border: none;
-      /* border-bottom: 1px solid rgb(150, 142, 142); */
-      margin-top: 20px;
-      color: rgb(150, 142, 142);
-      font-size: 200x;
-    }
-    .theme {
-      border: none;
-      border-bottom: 1px solid rgb(150, 142, 142);
-      margin-top: 20px;
-    }
-    Button {
-      margin-top: 20px;
-      margin-right: 100px;
-      width: 200px;
-    }
-  }
+.title {
+   margin-bottom: 0;
+   text-align: center;
+   padding-top: 80px;
+   color: rgb(58, 81, 123);
+   font-weight: bold;
+}
+
+.labels{
+  color: rgb(58, 81, 123);
+  margin-bottom: 5px;
+}
+
+.form{
+  display: flex;
+  max-width: 80%;
+  /* margin-left: 10%; */
+  margin: 0 auto;
+  /* position: relative;
+  left: 7%; */
+  justify-content: center;
+  /* border: 2px solid black; */
+}
+
+@media (max-width: 768px) {
+   .title {
+      padding-top: 5px;
+      font-size: 2rem;
+   }
+}

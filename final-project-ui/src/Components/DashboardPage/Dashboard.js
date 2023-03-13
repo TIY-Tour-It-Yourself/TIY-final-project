@@ -3,6 +3,7 @@ import styles from './Dashboard.module.css';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import NavBar from '../Additionals/NavBar/NavBar';
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -34,61 +35,64 @@ const Dashboard = () => {
          >
             <h1>What Would You Like To Do?</h1>
          </Typography>
-         <Container sx={{ display: 'flex', flexWrap: 'wrap', mt: 3, justifyContent: 'space-evenly'}}>
-         <Card className={styles.card} sx={{ width: 240 }}>
-            <CardMedia sx={isSmallScreen ? { position: 'relative', transform: 'translateX(-13.5%)' }: {}}
-            component="img"
-            height='100'
-            center
-            // width='200'
-            image={park}
-            alt="National Park"
-            />
-            <CardContent>
-               <Typography variant='h6' component='div'>
-                  Tour Suggestions
-               </Typography>
-            </CardContent>
-            <CardActions>
-               <Button size='small'>Enter</Button>
-            </CardActions>
-         </Card>
-         <Card className={styles.card} sx={{ width: 240 }}>
-         <CardMedia sx={isSmallScreen ? { position: 'relative', transform: 'translateX(-13.5%)' }: {}}
-            component="img"
-            height='100'
-            center
-            // width='200'
-            image={map}
-            alt="National Park"
-            />
-            <CardContent>
-               <Typography variant='h6' component='div'>
-                  Build Your Own Tour
-               </Typography>
-            </CardContent>
-            <CardActions>
-               <Button size='small'>Enter</Button>
-            </CardActions>
-         </Card>
-         <Card className={styles.card} sx={{ width: 240 }}>
-            <CardMedia sx={isSmallScreen ? { position: 'relative', transform: 'translateX(-13.5%)' }: {}}
+         <Container sx={{ display: 'flex', flexWrap: 'wrap', mt: 2, justifyContent: 'space-evenly'}}>
+            {/* <Card className={styles.card} sx={{ width: 240}}>
+               <CardMedia sx={isSmallScreen ? { position: 'relative', transform: 'translateX(-13.5%)' }: {}}
                component="img"
                height='100'
                center
                // width='200'
-               image={bursa}
+               image={park}
                alt="National Park"
-            />
-            <CardContent>
-               <Typography variant='h6' component='div'>
-                  Tour Suggestions
-               </Typography>
-            </CardContent>
-            <CardActions>
-               <Button size='small'>Enter</Button>
-            </CardActions>
-         </Card>
+               />
+               <CardContent>
+                  <Typography variant='h6' component='div'>
+                     Tour Suggestions
+                  </Typography>
+               </CardContent>
+               <CardActions>
+                  <Button size='small'>Enter</Button>
+               </CardActions>
+            </Card> */}
+            <Card className={styles.card} sx={{ width: 240 }}>
+               <CardMedia sx={isSmallScreen ? { position: 'relative', transform: 'translateX(-13.5%)' }: {}}
+                  component="img"
+                  height='100'
+                  center
+                  // width='200'
+                  image={bursa}
+                  alt="National Park"
+               />
+               <CardContent>
+                  <div style={{display:'flex', justifyContent: 'center'}}>
+                  <Typography variant='h6' component='div'>
+                     Tour Suggestions
+                  </Typography>
+                  </div>
+               </CardContent>
+               <CardActions>
+                  <Box sx={{ m: '0 auto'}}><Button href='/form_consumer' size='small' style={ isSmallScreen ? { fontWeight: 'bold'} : { fontWeight: 'bold', fontSize: '1rem' }}>Enter</Button></Box>
+               </CardActions>
+            </Card>
+            <Card className={styles.card} sx={{ width: 240 }}>
+            <CardMedia sx={isSmallScreen ? { position: 'relative', transform: 'translateX(-13.5%)' }: {}}
+               component="img"
+               height='100'
+               center
+               image={map}
+               alt="National Park"
+               />
+               <CardContent>
+               <div style={{display:'flex', justifyContent: 'center'}}>
+                  <Typography variant='h6' component='div'>
+                     Build Your Own Tour
+                  </Typography>
+               </div>
+               </CardContent>
+               <CardActions>
+               <Box sx={{ m: '0 auto'}}><Button size='small' style={isSmallScreen ? { fontWeight: 'bold'} : { fontWeight: 'bold', fontSize: '1rem' }} >Enter</Button></Box>
+               </CardActions>
+            </Card>
          </Container>
       </>
    );

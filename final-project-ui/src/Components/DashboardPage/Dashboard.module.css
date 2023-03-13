@@ -6,8 +6,6 @@ h1{
     color: rgb(58, 81, 123);
 }
 
-
-
 @media (max-width: 768px) {
     h1{
         font-size: 1.25rem;

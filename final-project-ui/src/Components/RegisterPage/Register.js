@@ -10,8 +10,8 @@ import {
    MenuItem,
    Select,
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import axios from 'axios';
+import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Logo from '../Additionals/Logo/Logo';
 import Header from '../Additionals/Header/Header';
@@ -53,8 +53,10 @@ const Register = (props) => {
          setIsFormValid(true);
          navigate('/dashboard');
 
-      } else alert('All fields are required.');
-      setIsFormValid(false);
+      } else {
+         alert('All fields are required.');
+         setIsFormValid(false);
+      }
    };
 
    const handleInputChange = (e) => {
@@ -161,7 +163,6 @@ const Register = (props) => {
                   </Box>
                   <Button
                      onClick={handleSubmit}
-                     className={styles.button}
                      type='submit'
                      variant='contained'
                      color='primary'
@@ -179,7 +180,7 @@ const Register = (props) => {
                   </Button>
                </FormControl>
             </form>
-            <Typography style={{ fontSize: 'small' }} sx={{ mt: 2, mb: 1 }}>
+            <Typography style={{ fontSize: 'small'}} sx={{ mt: 2, mb: 1 }}>
                <b>Already Have An Account?</b>{' '}
                <Link
                   href='/login'

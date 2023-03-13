@@ -24,8 +24,8 @@ import user from './user.png';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-const pages = ['Settings', 'Wallet', 'Events'];
-const images = [{id: 1, title: "home", src:`${home}`, url: '#'},{id: 2, title: "settings", src:`${user_settings}`, url: '#'},{id: 3, title: "wallet", src:`${wallet}`, url: '#'},{id: 4, title: "events", src:`${calendar}`, url: '#'}];
+const links = [{id: 1, title: 'Settings', url:'/dashboard'}, {id: 2, title: 'Wallet', url: '/dashboard'}, {id: 3, title: 'Events', url: '/dashboard'}];
+const images = [{id: 1, title: "home", src:`${home}`, url: '/dashboard'},{id: 2, title: "settings", src:`${user_settings}`, url: '#'},{id: 3, title: "wallet", src:`${wallet}`, url: '#'},{id: 4, title: "events", src:`${calendar}`, url: '#'}];
 
 const NavBar = () => {
    const [anchorElNav, setAnchorElNav] = useState('');
@@ -60,10 +60,9 @@ const NavBar = () => {
                   </Box>
                )}
                <Box sx={!isSmallScreen ? { flexGrow: 13, display: { xs: 'flex', md: 'flex' },  mr: 15 } : {display: 'none'}}>
-                  {pages.map((page) => (
-                     <Button
-                        key={page}
-                        onClick={handleCloseNavMenu}
+                  {links.map((link) => (
+                     <Button href={link.url}
+                        key={link.id}
                         sx={{
                            my: 2,
                            color: '#00337C',
@@ -72,7 +71,7 @@ const NavBar = () => {
                            fontWeight: 'bold',
                         }}
                      >
-                        {page}
+                        {link.title}
                      </Button>
                   ))}
                </Box>
