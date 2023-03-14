@@ -1,10 +1,3 @@
-.bar{
-    /* width: 100vw;
-    height: 9vh; */
-    /* position: fixed; */
-    /* border-bottom: 1px solid rgb(168, 168, 168); */
-}
-
 .logo{
     background-image: url('../Assets/logo_nav.png');
     background-repeat: no-repeat;
@@ -19,7 +12,7 @@
         display: flex;
     }
 
-    img {
-        margin-left: 30px;
+    .imgs{
+        margin-left: 27px;
     }
 }

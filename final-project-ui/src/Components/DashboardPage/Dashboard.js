@@ -25,41 +25,23 @@ const Dashboard = () => {
          <NavBar />
          <Typography
             className={styles.title}
-            sx={{
+            sx={ !isSmallScreen ? {
                display: 'flex',
                flexDirection: 'row',
                justifyContent: 'center',
                mt: '5%',
                textAlign: 'left',
-            }}
+            } : {}}
          >
             <h1>What Would You Like To Do?</h1>
          </Typography>
          <Container sx={{ display: 'flex', flexWrap: 'wrap', mt: 2, justifyContent: 'space-evenly'}}>
-            {/* <Card className={styles.card} sx={{ width: 240}}>
-               <CardMedia sx={isSmallScreen ? { position: 'relative', transform: 'translateX(-13.5%)' }: {}}
-               component="img"
-               height='100'
-               center
-               // width='200'
-               image={park}
-               alt="National Park"
-               />
-               <CardContent>
-                  <Typography variant='h6' component='div'>
-                     Tour Suggestions
-                  </Typography>
-               </CardContent>
-               <CardActions>
-                  <Button size='small'>Enter</Button>
-               </CardActions>
-            </Card> */}
             <Card className={styles.card} sx={{ width: 240 }}>
-               <CardMedia sx={isSmallScreen ? { position: 'relative', transform: 'translateX(-13.5%)' }: {}}
+               <CardMedia sx={isSmallScreen ? {}: {}}
+               // position: 'relative', transform: 'translateX(-13.5%)'
                   component="img"
                   height='100'
                   center
-                  // width='200'
                   image={bursa}
                   alt="National Park"
                />
@@ -75,7 +57,8 @@ const Dashboard = () => {
                </CardActions>
             </Card>
             <Card className={styles.card} sx={{ width: 240 }}>
-            <CardMedia sx={isSmallScreen ? { position: 'relative', transform: 'translateX(-13.5%)' }: {}}
+            <CardMedia sx={isSmallScreen ? {}: {}}
+            // position: 'relative', transform: 'translateX(-13.5%)'
                component="img"
                height='100'
                center

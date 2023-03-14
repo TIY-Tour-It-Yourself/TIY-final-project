@@ -13,43 +13,43 @@ const TourCarousel = () => {
    const tours = [
       {
          id: 1,
-         name: 'בעקבות ביאליק',
+         name: "Biyalik's Story",
          imageUrl: tour1,
          link: '/tour1',
          description:
-            'בואו להכיר את חייו של המשורר הלאומי חיים נחמן ביאליק בעיר רמת גן ',
+         'Get to know the Life of the Famous Israeli Poet',
       },
       {
          id: 2,
-         name: 'בעקבות ביאליק',
+         name: "Biyalik's Story",
          imageUrl: tour1,
          link: '/tour2',
          description:
-            'בואו להכיר את חייו של המשורר הלאומי חיים נחמן ביאליק בעיר רמת גן ',
+         'Get to know the Life of the Famous Israeli Poet',
       },
       {
          id: 3,
-         name: 'בעקבות ביאליק',
+         name: "Biyalik's Story",
          imageUrl: tour1,
          link: '/tour3',
          description:
-            'בואו להכיר את חייו של המשורר הלאומי חיים נחמן ביאליק בעיר רמת גן ',
+         'Get to know the Life of the Famous Israeli Poet',
       },
       {
          id: 4,
-         name: 'בעקבות ביאליק',
+         name: "Biyalik's Story",
          imageUrl: tour1,
          link: '/tour4',
          description:
-            'בואו להכיר את חייו של המשורר הלאומי חיים נחמן ביאליק בעיר רמת גן ',
+         'Get to know the Life of the Famous Israeli Poet',
       },
       {
          id: 5,
-         name: 'בעקבות ביאליק',
+         name: "Biyalik's Story",
          imageUrl: tour1,
          link: '/tour5',
          description:
-            'בואו להכיר את חייו של המשורר הלאומי חיים נחמן ביאליק בעיר רמת גן ',
+         'Get to know the Life of the Famous Israeli Poet',
       },
    ];
 
@@ -79,12 +79,12 @@ const TourCarousel = () => {
       <>
          <NavBar />
          <div className={styles.Carousel_Card}>
-         <Typography
-            component='div'
-            sx={{ display: 'flex', justifyContent: 'center' }}
-         >
-            <h1>Suggested For You:</h1>
-         </Typography>
+            <Typography
+               component='div'
+               sx={{ display: 'flex', justifyContent: 'center' }}
+            >
+               <h1>Suggested For You:</h1>
+            </Typography>
             <Slider {...settings}>
                {tours.map((tour) => (
                   <TourCard key={tour.id} tour={tour} />

@@ -79,7 +79,7 @@ const NavBar = () => {
                {isSmallScreen && 
                (<Box className={styles.images}>
                  { images.map((img) =>
-                  <div key={img.id}><a href={img.url}><img src={img.src} title={img.title} height='33' width='33'/></a></div>
+                  <div className={styles.imgs} key={img.id}><a href={img.url}><img src={img.src} title={img.title} height='33' width='33'/></a></div>
                   )}
                </Box>)}       
                

@@ -20,7 +20,7 @@ import { FiMapPin } from 'react-icons/fi';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { MobileTimePicker } from '@mui/x-date-pickers/MobileTimePicker';
 import { useNavigate } from 'react-router-dom';
@@ -40,18 +40,17 @@ const Form_Consumer = () => {
 
    const handleSubmit = (event) => {
       event.preventDefault();
-      
+
       //If all fields are filled
       if (date !== null && time !== null && experience && formTheme) {
          setIsFormValid(true);
          console.log(`${format(date, 'dd.MM.yy')}`);
          console.log(`${format(time, 'hh:mm a')}`);
-         navigate('/interactive_map');
+         navigate('/suggestions');
       } else {
-        alert('All fields are required.');
-        setIsFormValid(false);
+         alert('All fields are required.');
+         setIsFormValid(false);
       }
-
    };
 
    //Get Themes from DB
@@ -65,7 +64,6 @@ const Form_Consumer = () => {
             console.log(err);
          });
    }, []);
-
 
    return (
       <>
@@ -84,18 +82,20 @@ const Form_Consumer = () => {
                   <b>Choose Date & Time:</b>
                </label>
                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <MobileDatePicker sx={{width:'90%'}}
+                  <MobileDatePicker
+                     sx={{ width: '90%' }}
                      defaultValue={dayjs()}
                      value={date}
                      onChange={(newDate) => setDate(newDate)}
-                     renderInput={(params) => <TextField {...params}/>}
+                     renderInput={(params) => <TextField {...params} />}
                      required
                   />
-                  <MobileTimePicker sx={{width:'90%', mt: '10px'}}
+                  <MobileTimePicker
+                     sx={{ width: '90%', mt: '10px' }}
                      defaultValue={dayjs()}
                      value={time}
                      onChange={(newTime) => setTime(newTime)}
-                     renderInput={(params) => <TextField {...params}/>}
+                     renderInput={(params) => <TextField {...params} />}
                      required
                   />
                </LocalizationProvider>
@@ -103,7 +103,7 @@ const Form_Consumer = () => {
                <label className={styles.labels} htmlFor='date-and-time'>
                   <b>Choose AR Experience:</b>
                </label>
-               <FormControl sx={{width:'90%'}} margin='dense'>
+               <FormControl sx={{ width: '90%' }} margin='dense'>
                   <InputLabel id='select-label'>
                      Choose AR Experience
                   </InputLabel>
@@ -124,7 +124,7 @@ const Form_Consumer = () => {
                <label className={styles.labels} htmlFor='date-and-time'>
                   <b>Choose Tour Theme:</b>
                </label>
-               <FormControl sx={{width:'90%'}} margin='normal'>
+               <FormControl sx={{ width: '90%' }} margin='normal'>
                   <InputLabel id='select-label'>Choose Theme...</InputLabel>
                   <Select
                      sx={{ height: 50 }}
