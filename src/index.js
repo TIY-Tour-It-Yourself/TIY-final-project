@@ -8,6 +8,9 @@ import { Login_Facebook } from "./oauth/Login";
 import Maps2 from "./Try2/maps2";
 import ProducerForm from "./Try2/ProducerForm";
 // import Suggestion1 from "./Components/SuggestionsPage/suggestion1";
+import Form from "./Try3/form";
+import Print from "./Try3/print";
+import BialikMap from "./Try2/BialikMap";
 import {
   BrowserRouter as Router,
   Routes,
@@ -20,9 +23,10 @@ root.render(
     {" "}
     <Router>
       <Routes>
-        <Route path="/map2" element={<Maps2 />} />{" "}
+        <Route path="/form" element={<Form />} />{" "}
         {/* <Route path="/" element={<Login_Facebook onLogin={handleLogin} />} /> */}{" "}
-        <Route path="/producer_form" element={<ProducerForm />} />{" "}
+        <Route path="/print" element={<Print />} />{" "}
+        <Route path="/bialik" element={<BialikMap />} />{" "}
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}{" "}
       </Routes>{" "}
     </Router>{" "}
