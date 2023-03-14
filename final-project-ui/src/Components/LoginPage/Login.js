@@ -220,6 +220,9 @@ const Login = (props) => {
                   <div className={styles.facebook_icon}></div>
                </a> */}
                <div className='container'>
+               <a href='#'>
+                  <div className={styles.facebook_icon}></div>
+               </a>
                   {/* {!logged && (
                      <FacebookLogin
                         appId={process.env.REACT_APP_FACEBOOK_CLIENT_ID}
