@@ -5,12 +5,28 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Login_Facebook } from "./oauth/Login";
 // import { SignUp } from "./oauth/SignUp";
-
+import Maps2 from "./Try2/maps2";
+import ProducerForm from "./Try2/ProducerForm";
+// import Suggestion1 from "./Components/SuggestionsPage/suggestion1";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     {" "}
-    <App /> {/* <Login_Facebook /> */}{" "}
+    <Router>
+      <Routes>
+        <Route path="/map2" element={<Maps2 />} />{" "}
+        {/* <Route path="/" element={<Login_Facebook onLogin={handleLogin} />} /> */}{" "}
+        <Route path="/producer_form" element={<ProducerForm />} />{" "}
+        {/* <Route path="/dashboard" element={<Dashboard />} /> */}{" "}
+      </Routes>{" "}
+    </Router>{" "}
+    {/* <App /> */}{" "}
   </React.StrictMode>
 );
 

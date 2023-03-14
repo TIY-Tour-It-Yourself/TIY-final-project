@@ -42,14 +42,10 @@ class MapContainer extends Component {
       );
     });
   };
-
   onMarkerClick = (props, marker, e) => {
     const { google } = this.props;
     const origin = new google.maps.LatLng(47.444, -122.176);
-    const destination = new google.maps.LatLng(
-      props.position.lat,
-      props.position.lng
-    );
+    const destination = marker.getPosition();
 
     const directionsService = new google.maps.DirectionsService();
     directionsService.route(
@@ -70,25 +66,42 @@ class MapContainer extends Component {
     );
 
     console.log("onMarkerClick called");
+
+    // set the state to null to clear any previous directions
+    this.setState({
+      directions: null,
+    });
   };
 
   render() {
+    const { interest1 } = this.props;
+    console.log(interest1);
     return (
-      <Map
-        google={this.props.google}
-        zoom={8}
-        style={mapStyles}
-        initialCenter={{ lat: 47.444, lng: -122.176 }}
-      >
-        {this.displayMarkers()}
-        {this.state.directions && (
-          <DirectionsRenderer directions={this.state.directions} />
-        )}
-      </Map>
+      <div>
+        <Map
+          google={this.props.google}
+          zoom={8}
+          style={mapStyles}
+          initialCenter={{ lat: 47.444, lng: -122.176 }}
+        >
+          {this.displayMarkers()}
+          {this.state.directions && (
+            <DirectionsRenderer
+              directions={this.state.directions}
+              map={this.props.google.maps}
+            />
+          )}
+        </Map>
+
+        {/* <p>You selected:</p>
+        <ul>
+          <li>{interest1}</li>
+        </ul> */}
+      </div>
     );
   }
 }
 
 export default GoogleApiWrapper({
-  apiKey: "AIzaSyCllAxN8UPm063fYrOP5knrcn8MzP_YVIE",
+  apiKey: "AIzaSyAV-WIlrC-DdcfG3kDWdlRLFN4L5lP7mWI",
 })(MapContainer);

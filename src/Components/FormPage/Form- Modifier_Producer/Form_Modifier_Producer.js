@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./ProducerForm.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Form, Button } from "react-bootstrap";
+import MapContainer from "../../MapPage/Map";
 
 export function Form_Modifier_Producer() {
   const [date, setDate] = useState("");
@@ -13,8 +14,17 @@ export function Form_Modifier_Producer() {
   const [interest3, setInterest3] = useState("");
   const [interest4, setInterest4] = useState("");
   const [interest5, setInterest5] = useState("");
-  const [userInterest, setUserInterest] = useState("");
-  //   const [options, setOptions] = useState([]);
+  const [poi, setPoi] = useState([]);
+  // const [poi1, setPoi1] = useState('');
+
+  function handlePoiChange(event) {
+    const { name, value } = event.target;
+
+    setPoi((prevLocations) => ({
+      ...prevLocations,
+      [name]: value,
+    }));
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -42,7 +52,7 @@ export function Form_Modifier_Producer() {
     ];
 
     return options.filter((option) =>
-      option.name.toLowerCase().includes(userInterest.toLowerCase())
+      option.name.toLowerCase().includes(poi.toLowerCase())
     );
   };
   return (
@@ -126,7 +136,8 @@ export function Form_Modifier_Producer() {
             className="POIS"
             id="interest1"
             value={interest1}
-            onChange={(e) => setInterest1(e.target.value)}
+            // onChange={(e) => setInterest1(e.target.value)}
+            onChange={handlePoiChange}
             required
           >
             <option value=""> Select Interest 1 </option>{" "}
@@ -142,7 +153,8 @@ export function Form_Modifier_Producer() {
             className="POIS"
             id="interest2"
             value={interest2}
-            onChange={(e) => setInterest2(e.target.value)}
+            // onChange={(e) => setInterest2(e.target.value)}
+            onChange={handlePoiChange}
             required
           >
             <option value=""> Select Interest 2 </option>{" "}
@@ -158,7 +170,8 @@ export function Form_Modifier_Producer() {
             className="POIS"
             id="interest3"
             value={interest3}
-            onChange={(e) => setInterest3(e.target.value)}
+            // onChange={(e) => setInterest3(e.target.value)}
+            onChange={handlePoiChange}
             required
           >
             <option value=""> Select Interest 3 </option>{" "}
@@ -174,7 +187,8 @@ export function Form_Modifier_Producer() {
             className="POIS"
             id="interest4"
             value={interest4}
-            onChange={(e) => setInterest4(e.target.value)}
+            // onChange={(e) => setInterest4(e.target.value)}
+            onChange={handlePoiChange}
             required
           >
             <option value=""> Select Interest 4 </option>{" "}
@@ -190,7 +204,8 @@ export function Form_Modifier_Producer() {
             className="POIS"
             id="interest5"
             value={interest5}
-            onChange={(e) => setInterest5(e.target.value)}
+            // onChange={(e) => setInterest5(e.target.value)}
+            onChange={handlePoiChange}
             required
           >
             <option value=""> Select Interest 5 </option>
@@ -207,6 +222,7 @@ export function Form_Modifier_Producer() {
           Build Tour
         </Button>
       </Form>
+      {/* <MapContainer interest1={this.state.interest1} /> */}
     </div>
   );
 }
