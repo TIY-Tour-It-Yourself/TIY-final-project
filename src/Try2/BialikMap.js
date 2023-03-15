@@ -85,10 +85,10 @@ const BialikMap = () => {
     return () => geo.clearWatch(watcher);
   }, []);
 
-  const markerPosition1 = { lat: 32.079596752557755, lng: 34.823331062420216 };
-  const markerPosition2 = { lat: 32.08380426675733, lng: 34.81488770244669 };
-  const markerPosition3 = { lat: 32.084531024037936, lng: 34.813179804299615 };
-  const markerPosition4 = { lat: 32.08632988098686, lng: 34.8183145058031 };
+  const markerPosition1 = { lat: 32.079596752557755, lng: 34.823331062420216 }; //Beit Yad Lebanim
+  const markerPosition2 = { lat: 32.08380426675733, lng: 34.81488770244669 }; //Kikar Ramabam
+  const markerPosition3 = { lat: 32.084531024037936, lng: 34.813179804299615 }; //Beit Bialik
+  const markerPosition4 = { lat: 32.08632988098686, lng: 34.8183145058031 }; //Gan Avrahm
 
   const calculateRoute = async () => {
     if (!map) {
