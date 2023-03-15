@@ -11,6 +11,8 @@ import {
 import "./maps2.css";
 import ReactModal from "react-modal";
 import { faLess } from "@fortawesome/free-brands-svg-icons";
+import axios from "axios";
+import arIcon from "./images/ar_icon.png";
 
 const center = {
   lat: 32.0809,
@@ -31,6 +33,24 @@ const BialikMap = () => {
   const [isInfoWindowOpen2, setIsInfoWindowOpen2] = useState(false);
   const [isInfoWindowOpen3, setIsInfoWindowOpen3] = useState(false);
   const [isInfoWindowOpen4, setIsInfoWindowOpen4] = useState(false);
+  const [data, setData] = useState([]);
+  const [dataArray, setDataArray] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("https://tiys.herokuapp.com/api/pois");
+        setDataArray(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Use dataArray.coordinates outside of useEffect
+  const coordinates = dataArray.map((item) => item.coordinates);
+  console.log(coordinates[0]);
 
   const handleInfoWindowOpen1 = () => {
     setIsInfoWindowOpen1(true);
@@ -176,81 +196,6 @@ const BialikMap = () => {
     });
   };
 
-  //   directionsRenderer.setMap(map);
-  //   directionsRenderer.setOptions({ suppressMarkers: true });
-  //   directionsRenderer.setDirections(results);
-  // };
-  //   const calculateRoute = async () => {
-  //     if (!map) {
-  //       return;
-  //     }
-  //     const markerArray = [];
-
-  //     const origin = "Hibat Tsyion 29, Ramat Gan, Israel";
-  //     const destination = "Kikar Rambam 5, Ramat Gan, Israel";
-  //     const waypoints = [
-  //       { location: "Bialik 57, Ramat Gan, Israel", stopover: true },
-  //       { location: "Moshe Sharet 27, Ramat Gan, Israel", stopover: true },
-  //     ];
-
-  //     const directionsService = new window.google.maps.DirectionsService();
-  //     const results = await directionsService.route({
-  //       origin,
-  //       destination,
-  //       waypoints,
-  //       travelMode: window.google.maps.TravelMode.WALKING,
-  //     });
-
-  //     console.log(results); // Add this line to check if there are any errors
-
-  //     // Center the map on the first destination
-  //     const firstDestination = results.routes[0].legs[0].end_location;
-  //     map.panTo(firstDestination);
-  //     // if (directionsResponse) {
-  //     // Display the route as a line
-  //     const routePath = new window.google.maps.Polyline({
-  //       path: results.routes[0].overview_path,
-  //       strokeColor: "#0000FF",
-  //       strokeOpacity: 0.7,
-  //       strokeWeight: 4,
-  //       map: map,
-  //     });
-
-  //     routePath.setMap(map);
-
-  // Add markers to indicate the start and end points of the route
-  //   const startMarker = new window.google.maps.Marker({
-  //     position: results.routes[0].legs[0].start_location,
-  //     map: map,
-  //     title: "Start",
-  //   });
-
-  //   const endMarker = new window.google.maps.Marker({
-  //     position: results.routes[0].legs[0].end_location,
-  //     map: map,
-  //     title: "End",
-  //   });
-
-  //   markerArray.push(startMarker);
-  //   markerArray.push(endMarker);
-
-  // Add markers to indicate the waypoints
-  //   for (let i = 0; i < results.routes[0].legs.length; i++) {
-  //     for (
-  //       let j = 0;
-  //       j < results.routes[0].legs[i].via_waypoints.length;
-  //       j++
-  //     ) {
-  //       const waypointMarker = new window.google.maps.Marker({
-  //         position: results.routes[0].legs[i].via_waypoints[j],
-  //         map: map,
-  //         title: "Waypoint " + (j + 1),
-  //       });
-  //       markerArray.push(waypointMarker);
-  //     }
-  //   }
-  // }
-
   const handleOpenModal = () => {
     setShowModal(true);
   };
@@ -277,14 +222,6 @@ const BialikMap = () => {
             calculateRoute();
           }}
         >
-          {/* <Marker position={center} />
-          <ReactModal
-            isOpen={showModal}
-            onRequestClose={handleCloseModal}
-            contentLabel="Minimal Modal Example"
-          >
-            <button onClick={handleCloseModal}>Close Modal</button>
-          </ReactModal> */}
           {directionsResponse && (
             <DirectionsRenderer
               directions={directionsResponse}
@@ -295,10 +232,13 @@ const BialikMap = () => {
           {currentPosition && (
             <Marker position={markerPosition1} onClick={handleInfoWindowOpen1}>
               {isInfoWindowOpen1 && (
-                <InfoWindow onCloseClick={handleInfoWindowClose1}>
+                <InfoWindow
+                  onCloseClick={handleInfoWindowClose1}
+                  disableAutoPan={true}
+                >
                   <div>
-                    <a href="https://cdn.glitch.global/e974619b-5809-4dcb-bd75-55d296fd7ad8/ar2.png?v=1678729186878">
-                      Please Click For AR Element!
+                    <a href="https://tiy-poc.glitch.me/1.html">
+                      <img src={arIcon} alt="ar icon" />{" "}
                     </a>
                   </div>
                 </InfoWindow>
@@ -309,11 +249,14 @@ const BialikMap = () => {
           {currentPosition && (
             <Marker position={markerPosition2} onClick={handleInfoWindowOpen2}>
               {isInfoWindowOpen2 && (
-                <InfoWindow onCloseClick={handleInfoWindowClose2}>
+                <InfoWindow
+                  onCloseClick={handleInfoWindowClose2}
+                  disableAutoPan={true}
+                >
                   <div>
-                    <a href="https://cdn.glitch.global/e974619b-5809-4dcb-bd75-55d296fd7ad8/ar3.png?v=1678729192888">
+                    <a href="https://tiy-poc.glitch.me/2.html">
                       {" "}
-                      Please Click For AR Element!
+                      <img src={arIcon} alt="ar icon" />{" "}
                     </a>
                   </div>
                 </InfoWindow>
@@ -324,11 +267,13 @@ const BialikMap = () => {
           {currentPosition && (
             <Marker position={markerPosition3} onClick={handleInfoWindowOpen3}>
               {isInfoWindowOpen3 && (
-                <InfoWindow onCloseClick={handleInfoWindowClose3}>
+                <InfoWindow
+                  onCloseClick={handleInfoWindowClose3}
+                  disableAutoPan={true}
+                >
                   <div>
-                    <a href="https://cdn.glitch.global/e974619b-5809-4dcb-bd75-55d296fd7ad8/ar1.png?v=1678729176535">
-                      {" "}
-                      Please Click For AR Element!
+                    <a href="https://tiy-poc.glitch.me/3.html">
+                      <img src={arIcon} alt="ar icon" />{" "}
                     </a>
                   </div>
                 </InfoWindow>
@@ -339,11 +284,13 @@ const BialikMap = () => {
           {currentPosition && (
             <Marker position={markerPosition4} onClick={handleInfoWindowOpen4}>
               {isInfoWindowOpen4 && (
-                <InfoWindow onCloseClick={handleInfoWindowClose4}>
+                <InfoWindow
+                  onCloseClick={handleInfoWindowClose4}
+                  disableAutoPan={true}
+                >
                   <div>
-                    <a href="https://cdn.glitch.global/e974619b-5809-4dcb-bd75-55d296fd7ad8/ar4.png?v=1678729195894">
-                      {" "}
-                      Please Click For AR Element!
+                    <a href="https://tiy-poc.glitch.me/4.html">
+                      <img src={arIcon} alt="ar icon" />{" "}
                     </a>
                   </div>
                 </InfoWindow>
