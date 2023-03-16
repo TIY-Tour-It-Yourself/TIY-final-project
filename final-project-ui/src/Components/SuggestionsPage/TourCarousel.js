@@ -15,7 +15,7 @@ const TourCarousel = () => {
          id: 1,
          name: "Biyalik's Story",
          imageUrl: tour1,
-         link: '/tour1',
+         link: '/bialik',
          description:
          'Get to know the Life of the Famous Israeli Poet',
       },
@@ -23,7 +23,7 @@ const TourCarousel = () => {
          id: 2,
          name: "Biyalik's Story",
          imageUrl: tour1,
-         link: '/tour2',
+         link: '/bialik',
          description:
          'Get to know the Life of the Famous Israeli Poet',
       },
@@ -31,7 +31,7 @@ const TourCarousel = () => {
          id: 3,
          name: "Biyalik's Story",
          imageUrl: tour1,
-         link: '/tour3',
+         link: '/bialik',
          description:
          'Get to know the Life of the Famous Israeli Poet',
       },
@@ -39,7 +39,7 @@ const TourCarousel = () => {
          id: 4,
          name: "Biyalik's Story",
          imageUrl: tour1,
-         link: '/tour4',
+         link: '/bialik',
          description:
          'Get to know the Life of the Famous Israeli Poet',
       },
@@ -47,7 +47,7 @@ const TourCarousel = () => {
          id: 5,
          name: "Biyalik's Story",
          imageUrl: tour1,
-         link: '/tour5',
+         link: '/bialik',
          description:
          'Get to know the Life of the Famous Israeli Poet',
       },

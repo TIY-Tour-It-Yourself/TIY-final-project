@@ -51,7 +51,7 @@ export const TourPage = ({ tourId }) => {
       <div className={styles.tour_page}>
          <h2 className={styles.tour_title}>{tour.name}</h2> <img src={tour.imageUrl} alt={tour.name} />
          <p>{tour.description}</p>
-         <Link style={{textDecoration: 'none'}} to='/interactive_map'>Start Tour!</Link>
+         <a style={{textDecoration: 'none'}} to='/bialik'>Start Tour!</a>
       </div>
     </>   
    );

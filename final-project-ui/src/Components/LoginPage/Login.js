@@ -41,7 +41,7 @@ const Login = (props) => {
 
       if (email.trim().length !== 0 && password.trim().length !== 0) {
          setIsFormValid(true);
-         navigate('/dashboard');
+         navigate('/form_consumer');
       } else alert('All fields are required.');
       setIsFormValid(false);
    };
@@ -104,7 +104,7 @@ const Login = (props) => {
             )
             .then((res) => {
                setProfile(res.data);
-               navigate('/dashboard');
+               navigate('/form_consumer');
             })
             .catch((err) => console.log(err));
       }

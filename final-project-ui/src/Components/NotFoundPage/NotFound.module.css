@@ -1,0 +1,28 @@
+section{
+    color: rgb(15, 77, 139);
+}
+
+.title{
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    align-items: center;
+    max-width: max-content;
+}
+
+h1,p{
+}
+.title > h1{
+    font-size: 5rem;
+}
+
+p{
+    font-size: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    p{
+        font-size: 0.9rem;
+        text-align: center;
+    }
+}
