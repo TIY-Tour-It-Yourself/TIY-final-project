@@ -12,6 +12,7 @@ section{
 
 h1,p{
 }
+
 .title > h1{
     font-size: 5rem;
 }

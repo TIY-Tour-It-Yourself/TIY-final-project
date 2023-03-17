@@ -21,11 +21,11 @@ import Divider from '../Additionals/Divider/Divider';
 import { useNavigate } from 'react-router-dom';
 
 const Register = (props) => {
-   const [fullname, setFullname] = useState('');
+   const [fname, setFname] = useState('');
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
    const [age, setAge] = useState('');
-   const [isAccessible, setIsAccessible] = useState('');
+   const [is_accessible, setIsAccessible] = useState('');
    const [isValid, setIsValid] = useState(false);
    const [isDirty, setIsDirty] = useState(false);
    const [isFormValid, setIsFormValid] = useState(false);
@@ -37,21 +37,38 @@ const Register = (props) => {
 
       //Post request - need to post data to DB to register user
       //If all fields are filled
-      if (fullname.trim().length !== 0 && email.trim().length !== 0 &&
-         password.trim().length !== 0 && age.trim().length !== 0 && isAccessible) {
+      if (
+         fname.trim().length !== 0 &&
+         email.trim().length !== 0 &&
+         password.trim().length !== 0 &&
+         age.trim().length !== 0 &&
+         is_accessible
+      ) {
          axios
-            .post(`https://jsonplaceholder.typicode.com/users`, {
+            .post(`https://tiys.herokuapp.com/api/users`, {
+               fname,
                email,
                password,
+               age,
+               is_accessible,
             })
-            // .get("https://jsonplaceholder.typicode.com/users/1")
             .then((response) => {
-               console.log(response.data.token);
+               console.log(response.data);
+               setIsFormValid(true);
+               if (response.status == 200) {
+                  navigate('/dashboard');
+               } else {
+                  console.log('Status is not 200');
+               }
             })
-            .catch((err) => console.log(err));
-
-         setIsFormValid(true);
-         navigate('/dashboard');
+            .catch((err) => {
+               console.log(err.response.data.errors[0])
+               if (err.response.data.errors[0].msg == 'User already exists') {
+                  alert('Email already exists.');
+               } else {
+                  alert('Invalid Credentials.');
+               }
+            });
 
       } else {
          alert('All fields are required.');
@@ -62,8 +79,8 @@ const Register = (props) => {
    const handleInputChange = (e) => {
       const { id, value } = e.target;
 
-      if (id === 'fullname') {
-         setFullname(value);
+      if (id === 'fname') {
+         setFname(value);
       }
 
       if (id === 'email') {
@@ -93,9 +110,9 @@ const Register = (props) => {
                >
                   <TextField
                      label='Full Name'
-                     id='fullname'
+                     id='fname'
                      type='text'
-                     value={fullname}
+                     value={fname}
                      onChange={(e) => handleInputChange(e)}
                      margin='dense'
                      error={!isValid && isDirty}
@@ -132,7 +149,7 @@ const Register = (props) => {
                   <TextField
                      label='Age'
                      id='age'
-                     type='text'
+                     type='number'
                      value={age}
                      onChange={(e) => handleInputChange(e)}
                      margin='dense'
@@ -149,9 +166,9 @@ const Register = (props) => {
                         <Select
                            sx={{ height: 50 }}
                            labelId='demo-simple-select-label'
-                           id='isAccessible'
-                           value={isAccessible}
-                           label='isAccessible'
+                           id='is_accessible'
+                           value={is_accessible}
+                           label='Is Accessible'
                            required
                            onChange={(e) => setIsAccessible(e.target.value)}
                            onBlur={() => setIsDirty(true)}
@@ -180,7 +197,7 @@ const Register = (props) => {
                   </Button>
                </FormControl>
             </form>
-            <Typography style={{ fontSize: 'small'}} sx={{ mt: 2, mb: 1 }}>
+            <Typography style={{ fontSize: 'small' }} sx={{ mt: 2, mb: 1 }}>
                <b>Already Have An Account?</b>{' '}
                <Link
                   href='/login'

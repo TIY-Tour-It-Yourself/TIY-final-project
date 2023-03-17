@@ -15,10 +15,12 @@ import park from './card_images/national_park.jpg';
 import { display } from '@mui/system';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+   const navigate = useNavigate();
 
    return (
       <>
@@ -53,7 +55,7 @@ const Dashboard = () => {
                   </div>
                </CardContent>
                <CardActions>
-                  <Box sx={{ m: '0 auto'}}><Button href='/form_consumer' size='small' style={ isSmallScreen ? { fontWeight: 'bold'} : { fontWeight: 'bold', fontSize: '1rem' }}>Enter</Button></Box>
+                  <Box sx={{ m: '0 auto'}}><Button onClick={() => navigate('/form_consumer')} size='small' style={ isSmallScreen ? { fontWeight: 'bold'} : { fontWeight: 'bold', fontSize: '1rem' }}>Enter</Button></Box>
                </CardActions>
             </Card>
             <Card className={styles.card} sx={{ width: 240 }}>
@@ -73,7 +75,7 @@ const Dashboard = () => {
                </div>
                </CardContent>
                <CardActions>
-               <Box sx={{ m: '0 auto'}}><Button size='small' style={isSmallScreen ? { fontWeight: 'bold'} : { fontWeight: 'bold', fontSize: '1rem' }} >Enter</Button></Box>
+               <Box sx={{ m: '0 auto'}}><Button onClick={() => navigate('/form_consumer')} size='small' style={isSmallScreen ? { fontWeight: 'bold'} : { fontWeight: 'bold', fontSize: '1rem' }} >Enter</Button></Box>
                </CardActions>
             </Card>
          </Container>

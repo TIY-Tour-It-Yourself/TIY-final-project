@@ -39,29 +39,44 @@ const Login = (props) => {
       e.preventDefault();
       console.log(`Email: ${email}, Password: ${password}`);
 
-      if (email.trim().length !== 0 && password.trim().length !== 0) {
-         setIsFormValid(true);
-         navigate('/form_consumer');
-      } else alert('All fields are required.');
-      setIsFormValid(false);
-   };
-
-   //Post request - need to post data to DB to check if specific user is already registered
-   useEffect(() => {
+      //Post request - need to post data to DB to check if specific user is already registered
       if (email.trim().length !== 0 && password.trim().length !== 0) {
          axios
-            .post(`https://jsonplaceholder.typicode.com/users`, {
+            .post(`https://tiys.herokuapp.com/api/auth`, {
                email,
                password,
             })
-            // .get("https://jsonplaceholder.typicode.com/users/1")
             .then((response) => {
+               console.log(response.data);
+               setIsFormValid(true);
                setData(response.data);
-               console.log(response.data.token);
+
+               if (response.status == 200) {
+                  navigate('/dashboard');
+               } else {
+                  console.log('Status is not 200');
+               }
+               // console.log(response.data.token);
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+               console.log(err.response.data.errors[0]);
+               if (
+                  err.response.data.errors[0].msg == 'Password is not correct'
+               ) {
+                  alert('Password is not correct.');
+               } else if (
+                  err.response.data.errors[0].msg == 'Email is not correct'
+               ) {
+                  alert('Email is not correct.');
+               } else {
+                  alert('Invalid Credentials.');
+               }
+            });
+      } else {
+         alert('All fields are required.');
+         setIsFormValid(false);
       }
-   }, [email, password]);
+   };
 
    //Facebook login
    const responseFacebook = (response) => {
@@ -90,6 +105,7 @@ const Login = (props) => {
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
+   //Login through Google - Takes data from Google
    useEffect(() => {
       if (user) {
          axios
@@ -220,9 +236,9 @@ const Login = (props) => {
                   <div className={styles.facebook_icon}></div>
                </a> */}
                <div className='container'>
-               <a href='#'>
-                  <div className={styles.facebook_icon}></div>
-               </a>
+                  <a href='#'>
+                     <div className={styles.facebook_icon}></div>
+                  </a>
                   {/* {!logged && (
                      <FacebookLogin
                         appId={process.env.REACT_APP_FACEBOOK_CLIENT_ID}
@@ -271,7 +287,7 @@ const Login = (props) => {
                         </div>
                      </div>
                   )}*/}
-               </div> 
+               </div>
                <div>
                   {profile ? (
                      {
