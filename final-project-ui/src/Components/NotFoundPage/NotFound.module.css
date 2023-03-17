@@ -10,20 +10,40 @@ section{
     max-width: max-content;
 }
 
-h1,p{
-}
-
 .title > h1{
     font-size: 5rem;
 }
 
-p{
-    font-size: 1.5rem;
+.error{
+    margin: 0 auto;
+    max-width: max-content;
+    position: absolute;
+    left: 35%;
+    top: 35%;
+}
+
+.additional_err{
+    font-size: 1rem;
+    position: absolute;
+    top: 25%;
 }
 
 @media (max-width: 768px) {
-    p{
+
+    .additional_err{
         font-size: 0.9rem;
-        text-align: center;
+        top: 30%;
+    }
+
+    .img_err{
+        width: 340px;
+        height: 350px;
+    }
+
+    .error{
+        margin: 0 auto;
+        max-width: max-content;
+        left: 0;
+        top: 43%;
     }
 }

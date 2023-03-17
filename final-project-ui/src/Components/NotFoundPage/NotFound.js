@@ -1,49 +1,23 @@
 import React from 'react';
 import styles from './NotFound.module.css';
-import { Box, Button } from '@mui/material';
+import { Link, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import error from './tourist_man_confused.png';
 
 const NotFound = () => {
    const navigate = useNavigate();
 
-   const theme = useTheme();
-   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
-   const handleSubmit = (e) => {
-      e.preventDefault();
-      navigate('/dashboard');
-   };
    return (
       <>
          <section>
             <div className={styles.title}>
                <h1>Oops!</h1>
-               <p>We Can't Seem To Find The Page You're Looking For.</p>
+               <p className={styles.additional_err}>We Can't Seem To Find The Page You're Looking For.</p>
             </div>
-            <Button
-               type='submit'
-               variant='contained'
-               color='primary'
-               onClick={handleSubmit}
-               sx={
-                isSmallScreen
-                   ? { mt: 5, ml: 7, width: '60%' }
-                   : { mt: 1, ml: 76, width: '20%' }
-             }
-             style={ isSmallScreen ? {
-                borderRadius: 20,
-                backgroundColor: '#2471A3',
-                fontSize: '13px',
-             } : {
-                borderRadius: 20,
-                backgroundColor: '#2471A3',
-                fontSize: '15px',
-            }}
-            >
-               Go Back Home
-            </Button>
+            <div className={styles.error}>
+               <img className={styles.img_err} src={error} alt="404" width='450' height='450'/>
+            </div>
+            <Box component='div' style={{margin: '0 auto', maxWidth: 'max-content', cursor: 'pointer'}} ><Link style={{ textDecoration: 'none', cursor: 'pointer', margin: '0 auto'}} onClick={() => { navigate('/dashboard')}}>Go Home</Link></Box>
          </section>
       </>
    );

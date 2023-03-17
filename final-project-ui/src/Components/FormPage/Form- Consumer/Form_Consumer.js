@@ -27,10 +27,8 @@ import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
 
 const Form_Consumer = () => {
-   const [date, setDate] = useState(null);
-   const [time, setTime] = useState(null);
    const [experience, setExperience] = useState('');
-   const [formTheme, setFormTheme] = useState('');
+   const [formTheme, setFormTheme] = useState(null);
    const [isFormValid, setIsFormValid] = useState(false);
 
    const theme = useTheme();
@@ -42,10 +40,10 @@ const Form_Consumer = () => {
       event.preventDefault();
 
       //If all fields are filled
-      if (date !== null && time !== null && experience && formTheme) {
+      if (experience && formTheme) {
          setIsFormValid(true);
-         console.log(`${format(date, 'dd.MM.yy')}`);
-         console.log(`${format(time, 'hh:mm a')}`);
+         // console.log(`${format(date, 'dd.MM.yy')}`);
+         // console.log(`${format(time, 'hh:mm a')}`);
          navigate('/suggestions');
       } else {
          alert('All fields are required.');
@@ -56,7 +54,7 @@ const Form_Consumer = () => {
    //Get Themes from DB
    useEffect(() => {
       axios
-         .get('https://jsonplaceholder.typicode.com/users')
+         .get('https://tiys.herokuapp.com/api/routes')
          .then((response) => {
             setFormTheme(response.data);
          })
@@ -73,12 +71,84 @@ const Form_Consumer = () => {
                Choose Your Tour
             </h1>
          </Typography>
+         <Box
+            component='div'
+            className={styles.sec_titles}
+            style={
+               !isSmallScreen
+                  ? {
+                       display: 'flex',
+                       flexWrap: 'wrap',
+                       flexDirection: 'row',
+                       justifyContent: 'center',
+                       margin: '0 auto',
+                       width: '80%',
+                    }
+                  : {
+                       display: 'flex',
+                       flexDirection: 'column',
+                       border: '2px solid black',
+                    }
+            }
+         >
+            <Box>
+               <div>
+                  <span>
+                     <b>Choose Tour Theme:</b>
+                  </span>
+               </div>
+               <FormControl sx={!isSmallScreen ? { width: '200px' }:{ width: '200px' }} margin='normal'>
+                  <InputLabel id='select-label'>Choose Theme...</InputLabel>
+                  <Select
+                     sx={{ height: 50 }}
+                     labelId='demo-simple-select-label'
+                     id='formTheme'
+                     value={formTheme}
+                     label='formTheme'
+                     required
+                     onChange={(e) => setFormTheme(e.target.value)}
+                  >
+                     <MenuItem value={'Sport'}>Sport</MenuItem>
+                     <MenuItem value={'Music'}>Music</MenuItem>
+                     <MenuItem value={'Culture'}>Culture</MenuItem>
+                     <MenuItem value={'Food'}>Food</MenuItem>
+                     <MenuItem value={'History'}>History</MenuItem>
+                     <MenuItem value={'Education'}>Education</MenuItem>
+                  </Select>
+               </FormControl>
+            </Box>
+            <Box>
+               <div>
+                  <span>
+                     <b>Choose AR Experience:</b>
+                  </span>
+               </div>
+               <FormControl sx={{ width: '100%' }} margin='dense'>
+                  <div>
+                     blablabla
+                  </div>
+                  {/* <Select
+                     sx={{ height: 50, marginBottom: 1 }}
+                     labelId='demo-simple-select-label'
+                     id='experience'
+                     value={experience}
+                     label='experience'
+                     required
+                     onChange={(e) => setExperience(e.target.value)}
+                  >
+                     <MenuItem value={'Intermediate'}>Intermediate</MenuItem>
+                     <MenuItem value={'Advanced'}>Advanced</MenuItem>
+                     <MenuItem value={'Professional'}>Professional</MenuItem>
+                  </Select> */}
+               </FormControl>
+            </Box>
+         </Box>
          <Box className={styles.form}>
             <FormControl
                onSubmit={handleSubmit}
                sx={isSmallScreen ? { width: '100%' } : { width: '45%' }}
             >
-               <label className={styles.labels} htmlFor='date-and-time'>
+               {/* <label className={styles.labels} htmlFor='date-and-time'>
                   <b>Choose Date & Time:</b>
                </label>
                <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -98,51 +168,8 @@ const Form_Consumer = () => {
                      renderInput={(params) => <TextField {...params} />}
                      required
                   />
-               </LocalizationProvider>
-               <br />
-               <label className={styles.labels} htmlFor='date-and-time'>
-                  <b>Choose AR Experience:</b>
-               </label>
-               <FormControl sx={{ width: '90%' }} margin='dense'>
-                  <InputLabel id='select-label'>
-                     Choose AR Experience
-                  </InputLabel>
-                  <Select
-                     sx={{ height: 50, marginBottom: 1 }}
-                     labelId='demo-simple-select-label'
-                     id='experience'
-                     value={experience}
-                     label='experience'
-                     required
-                     onChange={(e) => setExperience(e.target.value)}
-                  >
-                     <MenuItem value={'Intermediate'}>Intermediate</MenuItem>
-                     <MenuItem value={'Advanced'}>Advanced</MenuItem>
-                     <MenuItem value={'Professional'}>Professional</MenuItem>
-                  </Select>
-               </FormControl>
-               <label className={styles.labels} htmlFor='date-and-time'>
-                  <b>Choose Tour Theme:</b>
-               </label>
-               <FormControl sx={{ width: '90%' }} margin='normal'>
-                  <InputLabel id='select-label'>Choose Theme...</InputLabel>
-                  <Select
-                     sx={{ height: 50 }}
-                     labelId='demo-simple-select-label'
-                     id='formTheme'
-                     value={formTheme}
-                     label='formTheme'
-                     required
-                     onChange={(e) => setFormTheme(e.target.value)}
-                  >
-                     <MenuItem value={'Sport'}>Sport</MenuItem>
-                     <MenuItem value={'Music'}>Music</MenuItem>
-                     <MenuItem value={'Culture'}>Culture</MenuItem>
-                     <MenuItem value={'Food'}>Food</MenuItem>
-                     <MenuItem value={'History'}>History</MenuItem>
-                     <MenuItem value={'Education'}>Education</MenuItem>
-                  </Select>
-               </FormControl>
+               </LocalizationProvider> */}
+
                <Button
                   onClick={handleSubmit}
                   type='submit'
