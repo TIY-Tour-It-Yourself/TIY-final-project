@@ -1,8 +1,9 @@
 .logo{
-    background-image: url('../Assets/logo_nav.png');
+    background-image: url('../Assets/logo_nav_no_sub.png');
     background-repeat: no-repeat;
     width: 65px;
     height: 63px;
+    margin-top: 8px;
     margin-left: 15px;
 }
 
@@ -13,6 +14,6 @@
     }
 
     .imgs{
-        margin-left: 27px;
+        margin-left: 35px;
     }
 }

@@ -1,21 +1,74 @@
+*{
+   color: rgb(58, 81, 123);
+}
+
+.routes{
+   margin-left: 15%;
+   margin-top: 2%;
+}
+
 .title {
    text-align: center;
    padding-top: 100px;
-   color: rgb(58, 81, 123);
    font-weight: bold;
    border: 2px solid transparent;
 }
 
-.sec_titles > div{
-   margin: 0 200px;
-   color: rgb(58, 81, 123);
+.theme_div, .AR_exp_div{
+   margin-left: 15%;
+   margin-bottom: 0;
+   /* border: 2px solid black; */
+}
+
+.ar_imgs{
+   display: flex;
+   max-width: 50%;
+   margin-top: 1%;
+   flex-wrap: wrap;
+   flex-direction: row; 
+   /* border: 2px solid black; */
+}
+
+.ar_imgs > div{
+   margin-right: 7%;
+}
+
+.ar_imgs > div > img{
+   border-radius: 50%;
+   border: 1px dashed rgb(83, 125, 203);
+   cursor: pointer;
 }
 
 .form{
-  display: flex;
-  max-width: 80%;
-  margin: 0 auto;
-  justify-content: center;
+   display: flex;
+   max-width: 80%;
+   margin: 0 auto;
+   justify-content: center;
+}
+
+.routes_title{
+   margin-left: 15%;
+   margin-top: 3%;
+}
+
+.routes_imgs{
+   display: flex;
+   flex-direction: row;
+   flex-wrap: wrap;
+   justify-content: center;
+}
+
+.routes_imgs > div {
+   margin-left: 3%;
+   /* border: 2px solid black; */
+   margin-bottom: 3%;
+   
+}
+
+.routes_imgs > div > img{
+   border: 1px solid gray;
+   border-radius: 30px;
+   height: 230px;
 }
 
 @media (max-width: 768px) {
@@ -23,12 +76,45 @@
       padding-top: 5px;
       font-size: 2rem;
    }
-
-   .sec_titles > div{
-      margin: 0 auto;
+   
+   .AR_exp_div{
+      margin-left: 20%;
+   } 
+   
+   .theme_div{
+      margin-bottom: 0;
+      margin-left: 7%;
    }
    
-   .sec_titles > span {
-      font-size: 1rem;
+   .ar_imgs{
+      justify-content: center;
+      flex-direction: column;
+      margin-bottom: -15px;
+      margin-left: 12%; 
+      max-width: max-content;
+   }
+   
+   .ar_imgs > div > img {
+      margin-bottom: 8%;
+      width: 120px;
+      height: 120px;
+   }
+
+   .routes_title{
+      margin-left: 28%;
+      margin-top: 7%;
+   }
+
+   .routes_imgs > div {
+      margin-left: 2.5px;
+      margin-top: 2%;
+   }
+
+   .routes_imgs > div:last-child{
+      margin-bottom: 30%;
+   }
+   
+   .routes_imgs > div > img{
+      max-width: max-content;
    }
 }
