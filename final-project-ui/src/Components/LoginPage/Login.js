@@ -37,7 +37,6 @@ const Login = (props) => {
 
    const handleSubmit = (e) => {
       e.preventDefault();
-      console.log(`Email: ${email}, Password: ${password}`);
 
       //Post request - need to post data to DB to check if specific user is already registered
       if (email.trim().length !== 0 && password.trim().length !== 0) {

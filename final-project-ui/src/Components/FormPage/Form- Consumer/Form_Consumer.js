@@ -10,37 +10,37 @@ import ARFirstLevel from './ar_imgs/boy_with_mobile_level_2.jpg';
 import ARSecondLevel from './ar_imgs/ar_img_1.jpg';
 import Bialik from './routes_imgs/tour_bialik.jpg';
 
-const themes = [
-   { id: 1, name: 'Sport' },
-   { id: 2, name: 'Music' },
-   { id: 3, name: 'Culture' },
-   { id: 4, name: 'Culinary' },
-   { id: 5, name: 'History' },
-   { id: 6, name: 'Education' },
-];
+// const themes = [
+//    { id: 1, name: 'Sport' },
+//    { id: 2, name: 'Music' },
+//    { id: 3, name: 'Culture' },
+//    { id: 4, name: 'Culinary' },
+//    { id: 5, name: 'History' },
+//    { id: 6, name: 'Education' },
+// ];
 
-const routes = [
-   {
-      routeid: 1,
-      image: Bialik,
-      description: 'Historical places in Ramat Gan',
-      pois: [1, 2, 3, 4],
-      evaluation_grade: '0',
-      experience_level: '2',
-      themeid: '5',
-      url: '',
-   },
-   {
-      routeid: 2,
-      image: Bialik,
-      description: 'Culinary experiences in Ramat Gan',
-      pois: [1, 2, 3, 4],
-      evaluation_grade: '5',
-      experience_level: '1',
-      themeid: '3',
-      url: '',
-   },
-];
+// const routes = [
+//    {
+//       routeid: 1,
+//       image: Bialik,
+//       description: 'Historical places in Ramat Gan',
+//       pois: [1, 2, 3, 4],
+//       evaluation_grade: '0',
+//       experience_level: '2',
+//       themeid: '5',
+//       url: '',
+//    },
+//    {
+//       routeid: 2,
+//       image: Bialik,
+//       description: 'Culinary experiences in Ramat Gan',
+//       pois: [1, 2, 3, 4],
+//       evaluation_grade: '5',
+//       experience_level: '1',
+//       themeid: '3',
+//       url: '',
+//    },
+// ];
 
 const arImgs = [
    { id: 1, name: 'Intermediate', src: ARFirstLevel },
@@ -48,11 +48,12 @@ const arImgs = [
 ];
 
 const Form_Consumer = () => {
-   const [experience, setExperience] = useState('');
-   const [formTheme, setFormTheme] = useState(null);
-   const [selected, setSelected] = useState('');
-   const [levelSelected, setLevelSelected] = useState(true);
+   const [formTheme, setFormTheme] = useState('');
+   const [themeSelected, setThemeSelected] = useState('');
+   const [selectedLevelId, setSelectedLevelId] = useState('');
    const [isFormValid, setIsFormValid] = useState(false);
+   const [routeChosen, setRouteChosen] = useState('');
+   const [routes, setRoutes] = useState('');
 
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -60,53 +61,73 @@ const Form_Consumer = () => {
    const navigate = useNavigate();
 
    const setSelectedTheme = (value) => {
-      if (selected.indexOf(value) > -1) {
-         setSelected(value);
-         // selected.backgroundColor = '#BAD7E9';
+      if (themeSelected.indexOf(value) > -1) {
+         setThemeSelected(value);
+         // themeSelected.backgroundColor = '#BAD7E9';
       } else {
-         setSelected(value);
+         setThemeSelected(value);
       }
    };
 
-   const handleARExperience = (arLevel) => {
-      if (!levelSelected) {
-         setLevelSelected(!levelSelected);
-      }
-      console.log(levelSelected);
-      console.log(arLevel);
+   const handleARExperience = (arId) => {
+      setSelectedLevelId(arId);
    };
 
-   const chooseRoute = (routeid) => {
-      if (experience && formTheme) {
+   /*const handleARExperience = (arId) => {
+      console.log(arId);
+      console.log(levelSelected.border);
+      if (levelSelected.level === arId) {
+         // console.log(levelSelected.border);
+         // levelSelected.border = 'solid';
+         setLevelSelected({...levelSelected, level: arId, border: '2px solid rgb(83, 125, 203)'});
+      }
+      // console.log(levelSelected);
+      // console.log(arId);
+   };*/
+
+   //Redirect to chosen route on the map
+   const chooseRoute = (routeid) => { 
+      if (selectedLevelId && themeSelected.trim().length !== 0) {
+         setRouteChosen(routeid);
          setIsFormValid(true);
+
          //Navigate to interactive map
          navigate('/bialik');
+      } else {
+         setIsFormValid(false);
       }
    };
-   // const handleSubmit = (event) => {
-   //    event.preventDefault();
 
-   //    //If all fields are filled
-   //    if (experience && formTheme) {
-   //       setIsFormValid(true);
-   //       navigate('/suggestions');
-   //    } else {
-   //       alert('All fields are required.');
-   //       setIsFormValid(false);
-   //    }
-   // };
+      useEffect(() => {
+            //Get Themes from DB
+            axios
+               .get('https://tiys.herokuapp.com/api/themes')
+               .then((response) => {
+                  setFormTheme(response.data);
+               })
+               .catch((err) => {
+                  console.log(err);
+               });
 
-   //Get Themes from DB
-   useEffect(() => {
-      axios
-         .get('https://tiys.herokuapp.com/api/routes')
-         .then((response) => {
-            setFormTheme(response.data);
-         })
-         .catch((err) => {
-            console.log(err);
-         });
-   }, []);
+               //Get Routes from DB
+               axios
+               .get('https://tiys.herokuapp.com/api/routes')
+               .then((response) => {
+                  // console.log(response.data);
+                  setRoutes(response.data);
+               })
+               .catch((err) => {
+                  console.log(err);
+               })
+      }, []);
+      
+      // console.log(formTheme);
+      console.log(routes);
+      
+      //While data hasn't become an array yet- keep loading
+      if (!Array.isArray(formTheme) || !Array.isArray(routes)) {
+         return <div>Loading...</div>;
+      }
 
    return (
       <>
@@ -146,13 +167,15 @@ const Form_Consumer = () => {
                        }
                }
             >
-               {themes.map((tourTheme) => (
+               {formTheme.map((theme) => (
                   <Button
-                     key={tourTheme.id}
-                     onClick={() => setSelectedTheme(tourTheme.name)}
-                     value={tourTheme}
+                     key={theme.themeid}
+                     onClick={() => setSelectedTheme(theme.theme)}
+                     value={theme}
                      variant={
-                        selected === tourTheme.name ? 'contained' : 'outlined'
+                        themeSelected === theme.theme
+                           ? 'contained'
+                           : 'outlined'
                      }
                      sx={
                         !isSmallScreen
@@ -170,7 +193,7 @@ const Form_Consumer = () => {
                              }
                      }
                   >
-                     {tourTheme.name}
+                     {theme.theme}
                   </Button>
                ))}
             </Box>
@@ -191,7 +214,13 @@ const Form_Consumer = () => {
                      <img
                         value={arImg}
                         src={arImg.src}
-                        onClick={() => handleARExperience(arImg.name)}
+                        style={{
+                           border:
+                              selectedLevelId === arImg.id
+                                 ? '2px solid rgb(83, 125, 203)'
+                                 : '1px dashed rgb(83, 125, 203)',
+                        }}
+                        onClick={() => handleARExperience(arImg.id)}
                         alt={arImg.name}
                         width='150'
                         height='150'
@@ -218,14 +247,12 @@ const Form_Consumer = () => {
          <div className={styles.routes_imgs}>
             {routes.map((route) => (
                <div
-                  style={{ }}
+                  style={{ cursor: 'pointer' }}
                   key={route.routeid}
                   onClick={() => chooseRoute(route.routeid)}
                >
-                  <img
-                     src={route.image}
-                     alt={route.description}
-                  />
+                  <img src={Bialik} alt={route.description} />
+                  <Typography component='p' sx={ !isSmallScreen ? { fontStyle: 'italic', fontSize: '0.9rem', ml: 1.5 } : { fontSize: '0.8rem', fontStyle: 'italic', ml: 1 }}>{route.description}</Typography>
                </div>
             ))}
          </div>

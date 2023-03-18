@@ -17,7 +17,6 @@
 .theme_div, .AR_exp_div{
    margin-left: 15%;
    margin-bottom: 0;
-   /* border: 2px solid black; */
 }
 
 .ar_imgs{
@@ -26,7 +25,6 @@
    margin-top: 1%;
    flex-wrap: wrap;
    flex-direction: row; 
-   /* border: 2px solid black; */
 }
 
 .ar_imgs > div{
@@ -35,7 +33,6 @@
 
 .ar_imgs > div > img{
    border-radius: 50%;
-   border: 1px dashed rgb(83, 125, 203);
    cursor: pointer;
 }
 
@@ -59,15 +56,14 @@
 }
 
 .routes_imgs > div {
-   margin-left: 3%;
-   /* border: 2px solid black; */
-   margin-bottom: 3%;
-   
+   /* border: 2px solid red; */
+   padding: 1%;
 }
 
 .routes_imgs > div > img{
    border: 1px solid gray;
    border-radius: 30px;
+   margin-left: 14%;
    height: 230px;
 }
 
@@ -116,5 +112,6 @@
    
    .routes_imgs > div > img{
       max-width: max-content;
+      margin-left: 9%;
    }
 }
