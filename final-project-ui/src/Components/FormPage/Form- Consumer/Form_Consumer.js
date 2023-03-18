@@ -54,6 +54,7 @@ const Form_Consumer = () => {
    const [isFormValid, setIsFormValid] = useState(false);
    const [routeChosen, setRouteChosen] = useState('');
    const [routes, setRoutes] = useState('');
+   const [filteredData, setFilteredData] = useState([]);
 
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -73,61 +74,60 @@ const Form_Consumer = () => {
       setSelectedLevelId(arId);
    };
 
-   /*const handleARExperience = (arId) => {
-      console.log(arId);
-      console.log(levelSelected.border);
-      if (levelSelected.level === arId) {
-         // console.log(levelSelected.border);
-         // levelSelected.border = 'solid';
-         setLevelSelected({...levelSelected, level: arId, border: '2px solid rgb(83, 125, 203)'});
-      }
-      // console.log(levelSelected);
-      // console.log(arId);
-   };*/
+   useEffect(() => {
+      //Get Themes from DB
+      axios
+         .get('https://tiys.herokuapp.com/api/themes')
+         .then((response) => {
+            setFormTheme(response.data);
+         })
+         .catch((err) => {
+            console.log(err);
+         });
 
-   //Redirect to chosen route on the map
-   const chooseRoute = (routeid) => { 
+      //Get Routes from DB
+      axios
+         .get('https://tiys.herokuapp.com/api/routes')
+         .then((response) => {
+            // console.log(response.data);
+            setRoutes(response.data);
+         })
+         .catch((err) => {
+            console.log(err);
+         });
+   }, []);
+
+   // console.log(formTheme);
+   // console.log(routes);
+
+   //While data hasn't become an array yet- keep loading
+   if (!Array.isArray(formTheme) || !Array.isArray(routes)) {
+      return <div>Loading...</div>;
+   }
+
+   // let filtered1; //NEED TO CHECK WHY NOT WORKING
+
+   //Filtered routes according to Theme & AR Experience
+   const filteredRoutes = (id, ARLevel) => {
+      const filtered = routes.filter((route) => {
+         return route.routeid === id && route.experience_level === ARLevel;
+      });
+      // let filtered1 = filtered;
+      setFilteredData(filtered);
+   };
+
+     //Redirect to chosen route on the map
+     const chooseRoute = (routeid) => {
       if (selectedLevelId && themeSelected.trim().length !== 0) {
          setRouteChosen(routeid);
          setIsFormValid(true);
 
          //Navigate to interactive map
-         navigate('/bialik');
+         // navigate('/bialik');
       } else {
          setIsFormValid(false);
       }
    };
-
-      useEffect(() => {
-            //Get Themes from DB
-            axios
-               .get('https://tiys.herokuapp.com/api/themes')
-               .then((response) => {
-                  setFormTheme(response.data);
-               })
-               .catch((err) => {
-                  console.log(err);
-               });
-
-               //Get Routes from DB
-               axios
-               .get('https://tiys.herokuapp.com/api/routes')
-               .then((response) => {
-                  // console.log(response.data);
-                  setRoutes(response.data);
-               })
-               .catch((err) => {
-                  console.log(err);
-               })
-      }, []);
-      
-      // console.log(formTheme);
-      console.log(routes);
-      
-      //While data hasn't become an array yet- keep loading
-      if (!Array.isArray(formTheme) || !Array.isArray(routes)) {
-         return <div>Loading...</div>;
-      }
 
    return (
       <>
@@ -173,9 +173,7 @@ const Form_Consumer = () => {
                      onClick={() => setSelectedTheme(theme.theme)}
                      value={theme}
                      variant={
-                        themeSelected === theme.theme
-                           ? 'contained'
-                           : 'outlined'
+                        themeSelected === theme.theme ? 'contained' : 'outlined'
                      }
                      sx={
                         !isSmallScreen
@@ -244,18 +242,62 @@ const Form_Consumer = () => {
                </Typography>
             </div>
          </Box>
-         <div className={styles.routes_imgs}>
-            {routes.map((route) => (
-               <div
-                  style={{ cursor: 'pointer' }}
-                  key={route.routeid}
-                  onClick={() => chooseRoute(route.routeid)}
-               >
-                  <img src={Bialik} alt={route.description} />
-                  <Typography component='p' sx={ !isSmallScreen ? { fontStyle: 'italic', fontSize: '0.9rem', ml: 1.5 } : { fontSize: '0.8rem', fontStyle: 'italic', ml: 1 }}>{route.description}</Typography>
-               </div>
-            ))}
-         </div>
+         {/*  onClick={() => chooseRoute(route.routeid); filteredRoutes(e.target.value, ARLevel);} */}
+          {/* onClick={() => chooseRoute(route.routeid); filteredRoutes(id, e.target.value);} */}
+         {filteredData.length == 0 ? (
+            <div className={styles.routes_imgs}>
+               {routes.map((route) => (
+                  <div
+                     style={{ cursor: 'pointer' }}
+                     key={route.routeid}
+                     onClick={() => chooseRoute(route.routeid)}
+                  >
+                     <img src={Bialik} alt={route.description} />
+                     <Typography
+                        component='p'
+                        sx={
+                           !isSmallScreen
+                              ? {
+                                   fontStyle: 'italic',
+                                   fontSize: '0.9rem',
+                                   ml: 1.5,
+                                }
+                              : { fontSize: '0.8rem', fontStyle: 'italic' }
+                        }
+                     >
+                        {route.description}
+                     </Typography>
+                  </div>
+               ))}
+            </div>
+         ) : (
+            <div className={styles.routes_imgs}>
+               {filteredData.map((route) => (
+                  <div
+                     style={{ cursor: 'pointer' }}
+                     key={route.routeid}
+                     onClick={(e) => {chooseRoute(route.routeid); filteredRoutes(e.target.value, selectedLevelId);}}
+                  >
+                     <img src={Bialik} alt={route.description} />
+                     <Typography
+                        component='p'
+                        sx={
+                           !isSmallScreen
+                              ? {
+                                   fontStyle: 'italic',
+                                   fontSize: '0.9rem',
+                                   ml: 1.5,
+                                }
+                              : { fontSize: '0.8rem', 
+                                 fontStyle: 'italic' }
+                        }
+                     >
+                        {route.description}
+                     </Typography>
+                  </div>
+               ))}
+            </div>
+         )}
       </>
    );
 };
