@@ -49,7 +49,7 @@ const arImgs = [
 
 const Form_Consumer = () => {
    const [formTheme, setFormTheme] = useState('');
-   const [themeSelected, setThemeSelected] = useState('');
+   const [themeSelectedId, setThemeSelectedId] = useState('');
    const [selectedLevelId, setSelectedLevelId] = useState('');
    const [isFormValid, setIsFormValid] = useState(false);
    const [routeChosen, setRouteChosen] = useState('');
@@ -62,11 +62,11 @@ const Form_Consumer = () => {
    const navigate = useNavigate();
 
    const setSelectedTheme = (value) => {
-      if (themeSelected.indexOf(value) > -1) {
-         setThemeSelected(value);
+      if (themeSelectedId !== '') {
+         setThemeSelectedId(value);
          // themeSelected.backgroundColor = '#BAD7E9';
       } else {
-         setThemeSelected(value);
+         setThemeSelectedId(value);
       }
    };
 
@@ -86,20 +86,55 @@ const Form_Consumer = () => {
          });
 
       //Get Routes from DB
-      axios
-         .get('https://tiys.herokuapp.com/api/routes')
-         .then((response) => {
-            // console.log(response.data);
-            setRoutes(response.data);
-         })
-         .catch((err) => {
-            console.log(err);
-         });
+      // axios
+      //    .get('https://tiys.herokuapp.com/api/routes')
+      //    .then((response) => {
+      //       setRoutes(response.data);
+      //    })
+      //    .catch((err) => {
+      //       console.log(err);
+      //    });
+
+         // //Filtered routes according to Theme & AR Experience
+         // const filtered = themeSelectedId && selectedLevelId ? 
+         // routes.filter((route) => {
+         //    return route.themeid === themeSelectedId && route.experience_level === selectedLevelId;
+         // }) : routes;
+         
+         // setFil/teredData(filtered);
+
    }, []);
 
-   // console.log(formTheme);
-   // console.log(routes);
+   useEffect(() => {
+      const filterData = async () => {
+        try {
+          // Make an API request to fetch the routes data
+         axios
+          .get('https://tiys.herokuapp.com/api/routes')
+          .then((response) => {
+             setRoutes(response.data);
+          })
+          .catch((err) => {
+             console.log(err);
+          });
+    
+          // Filter the data based on the selected values
+          const filtered = routes.filter(route => {
+            return route.themeid === themeSelectedId && route.experience_level === selectedLevelId;
+          });
+    
+          // Update the state with the filtered data
+          setFilteredData(filtered);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    
+      filterData();
+    }, [themeSelectedId, selectedLevelId]);
 
+
+   console.log(`filtered: ${filteredData.length}`);
    //While data hasn't become an array yet- keep loading
    if (!Array.isArray(formTheme) || !Array.isArray(routes)) {
       return <div>Loading...</div>;
@@ -108,17 +143,19 @@ const Form_Consumer = () => {
    // let filtered1; //NEED TO CHECK WHY NOT WORKING
 
    //Filtered routes according to Theme & AR Experience
-   const filteredRoutes = (id, ARLevel) => {
-      const filtered = routes.filter((route) => {
-         return route.routeid === id && route.experience_level === ARLevel;
-      });
-      // let filtered1 = filtered;
-      setFilteredData(filtered);
-   };
+   //    const filtered = themeSelectedId && selectedLevelId ? 
+   //       routes.filter((route) => {
+   //       return route.themeid === themeSelectedId && route.experience_level === selectedLevelId;
+   //    }) : routes;
+   //    setFilteredData(filtered);
+   
+   // console.log(`filtered: ${filteredData.length}`);
 
      //Redirect to chosen route on the map
      const chooseRoute = (routeid) => {
-      if (selectedLevelId && themeSelected.trim().length !== 0) {
+      if (selectedLevelId && themeSelectedId) {
+         // console.log(`line 122: ${selectedLevelId}, ${themeSelectedId}`);
+         // console.log(routeid);
          setRouteChosen(routeid);
          setIsFormValid(true);
 
@@ -170,10 +207,10 @@ const Form_Consumer = () => {
                {formTheme.map((theme) => (
                   <Button
                      key={theme.themeid}
-                     onClick={() => setSelectedTheme(theme.theme)}
+                     onClick={() => setSelectedTheme(theme.themeid)}
                      value={theme}
                      variant={
-                        themeSelected === theme.theme ? 'contained' : 'outlined'
+                        themeSelectedId === theme.themeid ? 'contained' : 'outlined'
                      }
                      sx={
                         !isSmallScreen
@@ -242,8 +279,6 @@ const Form_Consumer = () => {
                </Typography>
             </div>
          </Box>
-         {/*  onClick={() => chooseRoute(route.routeid); filteredRoutes(e.target.value, ARLevel);} */}
-          {/* onClick={() => chooseRoute(route.routeid); filteredRoutes(id, e.target.value);} */}
          {filteredData.length == 0 ? (
             <div className={styles.routes_imgs}>
                {routes.map((route) => (
@@ -276,7 +311,7 @@ const Form_Consumer = () => {
                   <div
                      style={{ cursor: 'pointer' }}
                      key={route.routeid}
-                     onClick={(e) => {chooseRoute(route.routeid); filteredRoutes(e.target.value, selectedLevelId);}}
+                     onClick={(e) => chooseRoute(route.routeid)}
                   >
                      <img src={Bialik} alt={route.description} />
                      <Typography
