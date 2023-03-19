@@ -13,19 +13,19 @@ import ReactModal from "react-modal";
 import { faLess } from "@fortawesome/free-brands-svg-icons";
 import axios from "axios";
 import arIcon from "./images/ar_icon.png";
+import { useLocation } from "react-router-dom";
 
 const center = {
   lat: 32.0809,
   lng: 34.8149,
 };
 
-const BialikMap = () => {
+const ProducerMap = () => {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: "AIzaSyAV-WIlrC-DdcfG3kDWdlRLFN4L5lP7mWI",
     libraries: ["places"], // Add 'places' library here
   });
-  console.log(isLoaded.id);
   const [map, setMap] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [directionsResponse, setDirectionsResponse] = useState(null);
@@ -36,6 +36,7 @@ const BialikMap = () => {
   const [isInfoWindowOpen4, setIsInfoWindowOpen4] = useState(false);
   const [data, setData] = useState([]);
   const [dataArray, setDataArray] = useState([]);
+  const { state } = useLocation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,7 +52,6 @@ const BialikMap = () => {
 
   // Use dataArray.coordinates outside of useEffect
   const coordinates = dataArray.map((item) => item.coordinates);
-  console.log(coordinates[0]);
 
   const handleInfoWindowOpen1 = () => {
     setIsInfoWindowOpen1(true);
@@ -106,10 +106,10 @@ const BialikMap = () => {
     return () => geo.clearWatch(watcher);
   }, []);
 
-  const markerPosition1 = { lat: 32.079596752557755, lng: 34.823331062420216 }; //Beit Yad Lebanim
-  const markerPosition2 = { lat: 32.08380426675733, lng: 34.81488770244669 }; //Kikar Ramabam
-  const markerPosition3 = { lat: 32.084531024037936, lng: 34.813179804299615 }; //Beit Bialik
-  const markerPosition4 = { lat: 32.08632988098686, lng: 34.8183145058031 }; //Gan Avrahm
+  const markerPosition1 = state.selectedValues.select1; //Beit Yad Lebanim
+  const markerPosition2 = state.selectedValues.select2; //Kikar Ramabam
+  const markerPosition3 = state.selectedValues.select3; //Beit Bialik
+  const markerPosition4 = state.selectedValues.select4; //Gan Avrahm
 
   const calculateRoute = async (
     markerPosition1,
@@ -117,10 +117,9 @@ const BialikMap = () => {
     markerPosition3,
     markerPosition4
   ) => {
-    if (!map) {
+    if (!map || !dataArray) {
       return;
     }
-
     const origin = markerPosition1;
     const destination = markerPosition2;
     const waypoints = [
@@ -148,7 +147,7 @@ const BialikMap = () => {
     const directionsRenderer = new window.google.maps.DirectionsRenderer({
       map,
       directions: results,
-      suppressMarkers: true,
+      suppressMarkers: false,
     });
 
     // Loop through the markers of the DirectionsRenderer and set their map property to null
@@ -162,10 +161,9 @@ const BialikMap = () => {
       });
     });
 
-    directionsRenderer.setOptions({ markerOptions: { visible: false } });
+    directionsRenderer.setOptions({ markerOptions: { visible: true } });
     directionsRenderer.setOptions({ suppressMarkers: true });
 
-    // Get the DirectionsResult object from the DirectionsRenderer
     const directionsResult = directionsRenderer.getDirections();
 
     // Loop through the legs array of each route to create the markers and info windows
@@ -192,6 +190,7 @@ const BialikMap = () => {
   };
 
   return isLoaded ? (
+    // return (
     <div>
       <div className="Map">
         <GoogleMap
@@ -200,26 +199,26 @@ const BialikMap = () => {
           mapContainerStyle={{ width: "100%", height: "100vh" }}
           options={{
             zoomControl: false,
-            streetViewControl: true,
-            mapTypeControl: true,
-            fullscreenControl: true,
+            streetViewControl: false,
+            mapTypeControl: false,
+            fullscreenControl: false,
             mapTypeId: window.google.maps.MapTypeId.TERRAIN,
-            tilt: 60,
+            tilt: 40,
           }}
           onLoad={(map) => {
             setMap(map);
             calculateRoute(
-              markerPosition1,
-              markerPosition2,
-              markerPosition3,
-              markerPosition4
+              state.selectedValues.select1,
+              state.selectedValues.select2,
+              state.selectedValues.select3,
+              state.selectedValues.select4
             );
           }}
         >
           {directionsResponse && (
             <DirectionsRenderer
               directions={directionsResponse}
-              options={{ suppressMarkers: true }}
+              options={{ suppressMarkers: false }}
             />
           )}
 
@@ -313,4 +312,4 @@ const BialikMap = () => {
   );
 };
 
-export default BialikMap;
+export default ProducerMap;

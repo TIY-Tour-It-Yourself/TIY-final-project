@@ -3,9 +3,9 @@ import { useLocation } from "react-router-dom";
 
 const Print = () => {
   const { state } = useLocation();
-  console.log(state.selectedValues.select1);
-  console.log(state.selectedValues.select2);
-  console.log(state.selectedValues.select3);
+  // console.log(state.selectedValues.select1);
+  // console.log(state.selectedValues.select2);
+  // console.log(state.selectedValues.select3);
 
   return (
     <div>

@@ -4,12 +4,20 @@ import "./Event.css";
 
 export function Event() {
   const [events, setEvents] = useState([]);
+  const [forceUpdate, setForceUpdate] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchEvents = async () => {
-      const response = await axios.post("http://localhost:5000/run_script");
-      setEvents(response.data.events);
+      try {
+        const response = await axios.post("http://127.0.0.1:5000/run_script");
+        setEvents(response.data.events);
+        setIsLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
     };
+
     fetchEvents();
   }, []);
 
@@ -18,11 +26,15 @@ export function Event() {
       <h1>
         <b>לוח אירועים עירוני</b>
       </h1>
-      {events.map((event, index) => (
-        <div key={index}>
-          <p>{event}</p>
-        </div>
-      ))}
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        events.map((event, index) => (
+          <div key={index}>
+            <p>{event}</p>
+          </div>
+        ))
+      )}
     </div>
   );
 }

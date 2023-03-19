@@ -5,11 +5,11 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Login_Facebook } from "./oauth/Login";
 // import { SignUp } from "./oauth/SignUp";
-import Maps2 from "./Try2/maps2";
+// import Maps2 from "./Try2/ProducerMap";
 import ProducerForm from "./Try2/ProducerForm";
 // import Suggestion1 from "./Components/SuggestionsPage/suggestion1";
-import Form from "./Try3/form";
-import Print from "./Try3/print";
+import Form from "./Try2/form";
+import Print from "./Try2/print";
 import BialikMap from "./Try2/BialikMap";
 import {
   BrowserRouter as Router,
@@ -17,20 +17,12 @@ import {
   Route,
   useNavigate,
 } from "react-router-dom";
+import { Event } from "./Components//Events/Event";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    {" "}
-    <Router>
-      <Routes>
-        <Route path="/form" element={<Form />} />{" "}
-        {/* <Route path="/" element={<Login_Facebook onLogin={handleLogin} />} /> */}{" "}
-        <Route path="/print" element={<Print />} />{" "}
-        <Route path="/bialik" element={<BialikMap />} />{" "}
-        {/* <Route path="/dashboard" element={<Dashboard />} /> */}{" "}
-      </Routes>{" "}
-    </Router>{" "}
-    {/* <App /> */}{" "}
+    <App />
   </React.StrictMode>
 );
 
