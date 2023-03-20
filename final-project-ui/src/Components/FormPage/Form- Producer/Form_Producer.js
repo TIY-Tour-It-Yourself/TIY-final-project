@@ -75,23 +75,24 @@ const Form_Producer = () => {
          });
    }, []);
 
-   //Get Routes from DB
+   //Get POIS from DB
    useEffect(() => {
       const filterData = async () => {
          try {
             // Make an API request to fetch the routes data
             const response = await axios.get(
-               'https://tiys.herokuapp.com/api/routes'
+               'https://tiys.herokuapp.com/api/pois'
             );
-            setRoutes(response.data);
+            setCoordinates(response.data);
+            console.log(response.data);
 
             // Check if both Theme and ARlevel have been selected
             if (themeSelectedId && selectedLevelId) {
                // Filter the data based on the selected values
-               const filtered = response.data.filter((route) => {
+               const filtered = response.data.filter((coordinate) => {
                   return (
-                     route.themeid === themeSelectedId &&
-                     route.experience_level === selectedLevelId
+                     coordinate.theme.themeid === themeSelectedId &&
+                     coordinate.arid.level === selectedLevelId
                   );
                });
 
@@ -114,7 +115,6 @@ const Form_Producer = () => {
    //While data hasn't become an array yet- keep loading
    if (
       !Array.isArray(formTheme) ||
-      !Array.isArray(routes) ||
       !Array.isArray(coordinates)
    ) {
       return <div>Loading...</div>;
@@ -268,7 +268,7 @@ const Form_Producer = () => {
                </Typography>
             </div>
          </Box>
-         {selectedPOIs.length >= 1 && (
+         {selectedPOIs.length >= 3 && (
                <div style={{ textAlign: 'center', marginTop: '5px', marginRight: '6px' }}>
                   <Button sx={
                   !isSmallScreen
@@ -295,6 +295,7 @@ const Form_Producer = () => {
                </Button>
                </div>
             )}
+         {!filteredData ? (
          <div className={styles.poi_imgs}>
             {coordinates.map((poi) => (
                <div
@@ -320,8 +321,35 @@ const Form_Producer = () => {
                   </Typography>
                </div>
             ))}
-            
          </div>
+         ) : (
+            <div className={styles.poi_imgs}>
+            {filteredData.map((poi) => (
+               <div
+               style={{ cursor: 'pointer', position: 'relative' }}
+               key={poi.poiid}
+               value={JSON.stringify(poi.coordinates)}
+               onClick={() => handlePOISelection(poi)}
+               >
+                  <img src={Location} alt={poi.name} />
+                  <Typography
+                     component='p'
+                     sx={
+                        !isSmallScreen
+                        ? {
+                           fontStyle: 'italic',
+                           fontSize: '0.9rem',
+                           ml: 1.5,
+                        }
+                        : { fontSize: '0.8rem', fontStyle: 'italic' }
+                     }
+                     >
+                     {poi.name}
+                  </Typography>
+               </div>
+            ))}
+         </div>
+         )}
       </>
    );
 };
