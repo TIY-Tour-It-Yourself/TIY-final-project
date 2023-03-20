@@ -38,20 +38,21 @@ const ProducerMap = () => {
   const [dataArray, setDataArray] = useState([]);
   const { state } = useLocation();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("https://tiys.herokuapp.com/api/pois");
-        setDataArray(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get("https://tiys.herokuapp.com/api/pois");
+  //       setDataArray(response.data);
+  //       console.log(response.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
   // Use dataArray.coordinates outside of useEffect
-  const coordinates = dataArray.map((item) => item.coordinates);
+  // const coordinates = dataArray.map((item) => item.coordinates);
 
   const handleInfoWindowOpen1 = () => {
     setIsInfoWindowOpen1(true);
@@ -105,11 +106,10 @@ const ProducerMap = () => {
 
     return () => geo.clearWatch(watcher);
   }, []);
-
-  const markerPosition1 = state.selectedValues.select1; //Beit Yad Lebanim
-  const markerPosition2 = state.selectedValues.select2; //Kikar Ramabam
-  const markerPosition3 = state.selectedValues.select3; //Beit Bialik
-  const markerPosition4 = state.selectedValues.select4; //Gan Avrahm
+  const markerPosition1 = state.selectedValues.select1;
+  const markerPosition2 = state.selectedValues.select2;
+  const markerPosition3 = state.selectedValues.select3;
+  const markerPosition4 = state.selectedValues.select4;
 
   const calculateRoute = async (
     markerPosition1,
@@ -177,14 +177,14 @@ const ProducerMap = () => {
         });
 
         // Create an InfoWindow for the start marker
-        const startInfowindow = new window.google.maps.InfoWindow({
-          content: "Custom InfoWindow Content for Marker " + (index + 1),
-        });
+        // const startInfowindow = new window.google.maps.InfoWindow({
+        //   content: "Custom InfoWindow Content for Marker " + (index + 1),
+        // });
 
         // Add a click event listener to the start marker to open the InfoWindow
-        startMarker.addListener("click", () => {
-          startInfowindow.open(map, startMarker);
-        });
+        // startMarker.addListener("click", () => {
+        //   startInfowindow.open(map, startMarker);
+        // });
       });
     });
   };
@@ -208,10 +208,10 @@ const ProducerMap = () => {
           onLoad={(map) => {
             setMap(map);
             calculateRoute(
-              state.selectedValues.select1,
-              state.selectedValues.select2,
-              state.selectedValues.select3,
-              state.selectedValues.select4
+              markerPosition1,
+              markerPosition2,
+              markerPosition3,
+              markerPosition4
             );
           }}
         >

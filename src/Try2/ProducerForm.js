@@ -30,6 +30,7 @@ const Form2 = () => {
       select3: JSON.parse(select3),
       select4: JSON.parse(select4),
     };
+    console.log(JSON.parse(select1));
     navigate("/producer", { state: { selectedValues, coordinates } });
   };
 
@@ -39,7 +40,12 @@ const Form2 = () => {
       <form onSubmit={handleSubmit}>
         <label>
           Select 1:
-          <select value={select1} onChange={(e) => setSelect1(e.target.value)}>
+          <select
+            value={select1}
+            onChange={(e) => {
+              setSelect1(e.target.value);
+            }}
+          >
             <option value="">--Please select an option--</option>
             {coordinates.map((poi) => (
               <option key={poi.id} value={JSON.stringify(poi.coordinates)}>
@@ -51,7 +57,12 @@ const Form2 = () => {
         <br />
         <label>
           Select 2:
-          <select value={select2} onChange={(e) => setSelect2(e.target.value)}>
+          <select
+            value={select2}
+            onChange={(e) => {
+              setSelect2(e.target.value);
+            }}
+          >
             <option value="">--Please select an option--</option>
             {coordinates.map((poi) => (
               <option key={poi.id} value={JSON.stringify(poi.coordinates)}>
@@ -63,7 +74,12 @@ const Form2 = () => {
         <br />
         <label>
           Select 3:
-          <select value={select3} onChange={(e) => setSelect3(e.target.value)}>
+          <select
+            value={select3}
+            onChange={(e) => {
+              setSelect3(e.target.value);
+            }}
+          >
             <option value="">--Please select an option--</option>
             {coordinates.map((poi) => (
               <option key={poi.id} value={JSON.stringify(poi.coordinates)}>
@@ -75,7 +91,12 @@ const Form2 = () => {
         <br />
         <label>
           Select 4:
-          <select value={select4} onChange={(e) => setSelect4(e.target.value)}>
+          <select
+            value={select4}
+            onChange={(e) => {
+              setSelect4(e.target.value);
+            }}
+          >
             <option value="">--Please select an option--</option>
             {coordinates.map((poi) => (
               <option key={poi.id} value={JSON.stringify(poi.coordinates)}>

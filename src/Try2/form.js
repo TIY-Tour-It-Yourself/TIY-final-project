@@ -33,7 +33,7 @@ const Form = () => {
       select4: JSON.parse(select4),
     };
     console.log(select1);
-    navigate("/producer", { state: { selectedValues } });
+    navigate("/producer2", { state: { selectedValues } });
   };
   const markerPosition1 = { lat: 32.079596752557755, lng: 34.823331062420216 }; //Beit Yad Lebanim
   const markerPosition2 = { lat: 32.08380426675733, lng: 34.81488770244669 }; //Kikar Ramabam

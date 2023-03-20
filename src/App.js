@@ -16,11 +16,14 @@ import { Login } from "./Components/LoginPage/Login";
 import { Login_Facebook } from "./oauth/Login";
 import { Dashboard } from "./Components/DashboardPage/Dashboard";
 import BialikMap from "./Try2/BialikMap";
+import BialikMap2 from "./Try2/BialikMap2";
 import MapContainer1 from "./Try3/Ar";
 import Form from "./Try2/form";
 import Form2 from "./Try2/ProducerForm";
 import Print from "./Try2/print";
 import ProducerMap from "./Try2/ProducerMap";
+import ProducerMap2 from "./Try2/ProducerMap2";
+
 function App() {
   const [login, setLogin] = useState(false);
   // const navigate = useNavigate();
@@ -45,12 +48,14 @@ function App() {
         <Route path="/evaluations" element={<Evaluations />} />
         <Route path="/suggestions" element={<Suggestions />} />
         {/* <Route path="/map" element={<MapContainer />} /> */}
-        <Route path="/" element={<BialikMap />} />
+        {/* <Route path="/" element={<BialikMap />} /> */}
         {/* <Route path="/amap" element={<MapContainer1 />} /> */}
-        <Route path="/form" element={<Form />} />
+        <Route path="/" element={<Form />} />
         <Route path="/form2" element={<Form2 />} />
         <Route path="/print" element={<Print />} />
-        {/* <Route path="/producer" element={<ProducerMap />} /> */}
+        <Route path="/producer" element={<ProducerMap />} />
+        <Route path="/producer2" element={<ProducerMap2 />} />
+        <Route path="/bialik2" element={<BialikMap2 />} />
       </Routes>
     </Router>
   );
