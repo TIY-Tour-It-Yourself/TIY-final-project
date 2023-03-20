@@ -10,11 +10,12 @@ import DashboardPage from './Pages/DashboardPage';
 import FormConsumerPage from './Pages/FormConsumerPage';
 import TourCarousel from './Components/SuggestionsPage/TourCarousel';
 import TourPage from './Components/SuggestionsPage/TourPage';
-import BialikMap from './Components/MapPage/BiyalikMap';
+import BiyalikMap from './Components/MapPage/BiyalikMap';
 import NotFound from './Components/NotFoundPage/NotFound';
 import InteractiveMapPage from './Pages/InteractiveMapPage';
 import MapProducerPage from './Pages/MapProducerPage';
 import FormProducerPage from './Pages/FormProducerPage';
+import BialikMapPage from "./Pages/BialikMapPage";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -32,7 +33,8 @@ root.render(
                <Route path='/form_producer' element={<FormProducerPage />} />
                <Route path='/map_producer' element={<MapProducerPage />} />
                <Route path='/interactive_map' element={<InteractiveMapPage />} />
-               <Route path='/bialik' element={<BialikMap />} />
+               {/* <Route path='/bialik' element={<BialikMap />} /> */}
+               <Route path='/bialikmap' element={<BialikMapPage />} />
                <Route path='/suggestions' element={<TourCarousel />} />
                <Route path='/tour1' element={<TourPage tourId={1} />} />
                <Route path='/tour2' element={<TourPage tourId={2} />} />
