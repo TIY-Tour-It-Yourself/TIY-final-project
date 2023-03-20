@@ -18,8 +18,14 @@ const BialikMap2 = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://tiys.herokuapp.com/api/pois");
-        setDataArray(response.data);
+        const response = await axios.get(
+          "https://tiys.herokuapp.com/api/routes"
+        );
+        const coordinates = response.data.map((routes) => routes.pois);
+
+        setDataArray(coordinates);
+        console.log(response.data);
+        console.log(dataArray);
       } catch (error) {
         console.log(error);
       }
@@ -162,7 +168,7 @@ const BialikMap2 = () => {
               options={{
                 destination: { lat: locations[3].lat, lng: locations[3].lng },
                 origin: { lat: locations[0].lat, lng: locations[0].lng },
-                travelMode: window.google.maps.TravelMode.DRIVING,
+                travelMode: window.google.maps.TravelMode.WALKING,
               }}
             >
               {(result) => {
