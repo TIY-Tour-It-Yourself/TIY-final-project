@@ -101,7 +101,8 @@ const Form_Consumer = () => {
          setRouteChosen(routeid);
          setIsFormValid(true);
          //Navigate to interactive map
-         navigate('/interactive_map');
+         // navigate('/interactive_map');
+         navigate(`/biyalik_map?themeSelectedId=${themeSelectedId}&selectedLevelId=${selectedLevelId}`);
       } else {
          setIsFormValid(false);
       }

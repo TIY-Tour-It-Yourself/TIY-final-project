@@ -23,7 +23,7 @@ const center = {
 const ProducerMap = () => {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "AIzaSyAV-WIlrC-DdcfG3kDWdlRLFN4L5lP7mWI",
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY,
     libraries: ["places"], // Add 'places' library here
   });
   const [map, setMap] = useState(null);
