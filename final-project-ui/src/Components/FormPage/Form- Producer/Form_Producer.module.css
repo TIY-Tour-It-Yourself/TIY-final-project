@@ -1,8 +1,8 @@
-*{
+* {
    color: rgb(58, 81, 123);
 }
 
-.routes{
+.routes {
    margin-left: 15%;
    margin-top: 2%;
 }
@@ -14,56 +14,57 @@
    border: 2px solid transparent;
 }
 
-.theme_div, .AR_exp_div{
+.theme_div,
+.AR_exp_div {
    margin-left: 15%;
    margin-bottom: 0;
 }
 
-.ar_imgs{
+.ar_imgs {
    display: flex;
    max-width: 50%;
    margin-top: 1%;
    flex-wrap: wrap;
-   flex-direction: row; 
+   flex-direction: row;
 }
 
-.ar_imgs > div{
+.ar_imgs > div {
    margin-right: 7%;
 }
 
-.ar_imgs > div > img{
+.ar_imgs > div > img {
    border-radius: 50%;
    cursor: pointer;
 }
 
-.form{
+.form {
    display: flex;
    max-width: 80%;
    margin: 0 auto;
    justify-content: center;
 }
 
-.routes_title{
+.pois_title {
    margin-left: 15%;
    margin-top: 3%;
 }
 
-.routes_imgs{
+.poi_imgs {
    display: flex;
    flex-direction: row;
    flex-wrap: wrap;
    justify-content: center;
 }
 
-.routes_imgs > div {
+.poi_imgs > div {
    padding: 1%;
+   text-align: center;
 }
 
-.routes_imgs > div > img{
-   border: 1px solid gray;
-   border-radius: 30px;
+.poi_imgs > div > img {
    margin-left: 14%;
-   height: 230px;
+   width: 50px;
+   height: 50px;
 }
 
 .arlevel_name {
@@ -79,47 +80,53 @@
       padding-top: 5px;
       font-size: 2rem;
    }
-   
-   .AR_exp_div{
+
+   .AR_exp_div {
       margin-left: 20%;
-   } 
-   
-   .theme_div{
+   }
+
+   .theme_div {
       margin-bottom: 0;
       margin-left: 7%;
    }
-   
-   .ar_imgs{
+
+   .ar_imgs {
       justify-content: center;
       flex-direction: column;
       margin-bottom: -15px;
-      margin-left: 12%; 
+      margin-left: 12%;
       max-width: max-content;
    }
-   
+
    .ar_imgs > div > img {
       margin-bottom: 8%;
       width: 120px;
       height: 120px;
    }
 
-   .routes_title{
-      margin-left: 28%;
+   .pois_title {
+      margin-left: 11%;
       margin-top: 7%;
    }
 
-   .routes_imgs > div {
+   .poi_imgs{
+      flex-direction: column;
+   }
+   .poi_imgs > div {
       margin-left: 2.5px;
       margin-top: 2%;
+      /* border: 2px solid black; */
    }
 
-   .routes_imgs > div:last-child{
+   .poi_imgs > div:last-child {
       margin-bottom: 30%;
    }
-   
-   .routes_imgs > div > img{
-      max-width: max-content;
-      margin-left: 3px;
+
+   .poi_imgs > div > img {
+      width: 45px;
+      height: 45px;
+      margin-left: 0;
+      margin: 0 auto;
    }
 
    .arlevel_name {

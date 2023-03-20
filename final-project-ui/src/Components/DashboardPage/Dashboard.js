@@ -40,7 +40,6 @@ const Dashboard = () => {
          <Container sx={{ display: 'flex', flexWrap: 'wrap', mt: 2, justifyContent: 'space-evenly'}}>
             <Card className={styles.card} sx={{ width: 240 }}>
                <CardMedia sx={isSmallScreen ? {}: {}}
-               // position: 'relative', transform: 'translateX(-13.5%)'
                   component="img"
                   height='100'
                   center
@@ -60,7 +59,6 @@ const Dashboard = () => {
             </Card>
             <Card className={styles.card} sx={{ width: 240 }}>
             <CardMedia sx={isSmallScreen ? {}: {}}
-            // position: 'relative', transform: 'translateX(-13.5%)'
                component="img"
                height='100'
                center
@@ -75,7 +73,7 @@ const Dashboard = () => {
                </div>
                </CardContent>
                <CardActions>
-               <Box sx={{ m: '0 auto'}}><Button onClick={() => navigate('/form_consumer')} size='small' style={isSmallScreen ? { fontWeight: 'bold'} : { fontWeight: 'bold', fontSize: '1rem' }} >Enter</Button></Box>
+               <Box sx={{ m: '0 auto'}}><Button onClick={() => navigate('/form_producer')} size='small' style={isSmallScreen ? { fontWeight: 'bold'} : { fontWeight: 'bold', fontSize: '1rem' }} >Enter</Button></Box>
                </CardActions>
             </Card>
          </Container>

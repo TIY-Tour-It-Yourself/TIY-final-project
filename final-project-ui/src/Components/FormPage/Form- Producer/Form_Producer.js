@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from './Form_Consumer.module.css';
+import styles from './Form_Producer.module.css';
 import axios from 'axios';
 import { Button, Typography, Box, Grid } from '@mui/material';
 import NavBar from '../../Additionals/NavBar/NavBar';
@@ -9,14 +9,14 @@ import { useNavigate } from 'react-router-dom';
 import ARFirstLevel from './ar_imgs/boy_with_mobile_level_2.jpg';
 import ARSecondLevel from './ar_imgs/ar_img_1.jpg';
 import Bialik from './routes_imgs/tour_bialik.jpg';
-import Culinary from './routes_imgs/baklava_pic.jpg';
+import Location from './routes_imgs/pin_red.png';
 
 const arImgs = [
    { id: 1, name: 'Intermediate', src: ARFirstLevel },
    { id: 2, name: 'Advanced', src: ARSecondLevel },
 ];
 
-const Form_Consumer = () => {
+const Form_Producer = () => {
    const [formTheme, setFormTheme] = useState('');
    const [themeSelectedId, setThemeSelectedId] = useState('');
    const [selectedLevelId, setSelectedLevelId] = useState('');
@@ -24,6 +24,14 @@ const Form_Consumer = () => {
    const [routeChosen, setRouteChosen] = useState('');
    const [routes, setRoutes] = useState('');
    const [filteredData, setFilteredData] = useState([]);
+
+   //POIs' states
+   const [poi1, setPoi1] = useState('');
+   const [poi2, setPoi2] = useState('');
+   const [poi3, setPoi3] = useState('');
+   const [poi4, setPoi4] = useState('');
+   const [coordinates, setCoordinates] = useState([]);
+   const [selectedPOIs, setSelectedPOIs] = useState('');
 
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -43,8 +51,8 @@ const Form_Consumer = () => {
       setSelectedLevelId(arId);
    };
 
+   //Get Themes from DB
    useEffect(() => {
-      //Get Themes from DB
       axios
          .get('https://tiys.herokuapp.com/api/themes')
          .then((response) => {
@@ -52,6 +60,18 @@ const Form_Consumer = () => {
          })
          .catch((err) => {
             console.log(err);
+         });
+   }, []);
+
+   //Get all POIs
+   useEffect(() => {
+      axios
+         .get('https://tiys.herokuapp.com/api/pois')
+         .then((response) => {
+            setCoordinates(response.data);
+         })
+         .catch((error) => {
+            console.error('Error fetching POIs: ', error);
          });
    }, []);
 
@@ -74,11 +94,12 @@ const Form_Consumer = () => {
                      route.experience_level === selectedLevelId
                   );
                });
+
                // Update the state with the filtered data
                setFilteredData(filtered);
                console.log(`filtered: ${filtered.length}`);
             } else {
-               //If either theme or level is not selected, set filtered data to null
+               // If either theme or level is not selected, set filtered data to null
                setFilteredData(null);
             }
          } catch (error) {
@@ -89,21 +110,42 @@ const Form_Consumer = () => {
       filterData();
    }, [themeSelectedId, selectedLevelId]);
 
+
    //While data hasn't become an array yet- keep loading
-   if (!Array.isArray(formTheme) || !Array.isArray(routes)) {
+   if (
+      !Array.isArray(formTheme) ||
+      !Array.isArray(routes) ||
+      !Array.isArray(coordinates)
+   ) {
       return <div>Loading...</div>;
    }
 
-   //Redirect to chosen route on the map
-   const chooseRoute = (routeid) => {
-      if (selectedLevelId && themeSelectedId) {
-         // console.log(routeid);
-         setRouteChosen(routeid);
-         setIsFormValid(true);
-         //Navigate to interactive map
-         navigate('/interactive_map');
+   const handleBuildTour = (event) => {
+      event.preventDefault();
+      const selectedValues = {
+         poi1: JSON.parse(poi1),
+         poi2: JSON.parse(poi2),
+         poi3: JSON.parse(poi3),
+         poi4: JSON.parse(poi4),
+      };
+      navigate('/map_producer', { state: { selectedValues, coordinates } });
+   };
+
+   //Update array according to filter and selection
+   const handlePOISelection = (poi) => {
+      // console.log(poi);
+      //Check if POI is already selected
+      const poiIndex = selectedPOIs.indexOf(poi);
+      if (poiIndex === -1) {
+         //POI not already selected- add to array
+         setSelectedPOIs([...selectedPOIs, poi]);
+         console.log(`line 130: ${selectedPOIs}`);
       } else {
-         setIsFormValid(false);
+         console.log(`removed ${selectedPOIs}`);
+         //POI already selected- remove from array
+         const updatedPOIs = [...selectedPOIs];
+         updatedPOIs.splice(poiIndex, 1);
+         setSelectedPOIs(updatedPOIs);
       }
    };
 
@@ -112,7 +154,7 @@ const Form_Consumer = () => {
          <NavBar />
          <Typography component='div' className={styles.title}>
             <h1 style={!isSmallScreen ? {} : { fontSize: '25px' }}>
-               Choose Your Tour
+               Build Your Tour
             </h1>
          </Typography>
          <Box component='div' className={styles.theme_div}>
@@ -146,7 +188,7 @@ const Form_Consumer = () => {
                }
             >
                {formTheme.map((theme) => (
-                     <Button
+                  <Button
                      key={theme.themeid}
                      onClick={() => setSelectedTheme(theme.themeid)}
                      value={theme}
@@ -194,15 +236,15 @@ const Form_Consumer = () => {
                         src={arImg.src}
                         style={{
                            border:
-                              selectedLevelId === arImg.id
-                                 ? '2px solid rgb(83, 125, 203)'
-                                 : '1px dashed rgb(83, 125, 203)',
+                           selectedLevelId === arImg.id
+                           ? '2px solid rgb(83, 125, 203)'
+                           : '1px dashed rgb(83, 125, 203)',
                         }}
                         onClick={() => handleARExperience(arImg.id)}
                         alt={arImg.name}
                         width='150'
                         height='150'
-                     />
+                        />
                      <div className={styles.arlevel_name}
                      >
                         <span>{arImg.name}</span>
@@ -213,7 +255,7 @@ const Form_Consumer = () => {
          </Box>
          {/* Routes List */}
          <Box>
-            <div className={styles.routes_title}>
+            <div className={styles.pois_title}>
                <Typography
                   component='h3'
                   sx={
@@ -221,66 +263,67 @@ const Form_Consumer = () => {
                         ? { fontSize: '1rem' }
                         : { fontSize: '1.25rem' }
                   }
-               >
-                  <b>Available Routes:</b>
+                  >
+                  <b>Choose the POIs you want to visit:</b>
                </Typography>
             </div>
          </Box>
-         {!filteredData ? (
-            <div className={styles.routes_imgs}>
-               {routes.map((route) => (
-                  <div
-                     style={{ cursor: 'pointer' }}
-                     key={route.routeid}
-                     onClick={() => chooseRoute(route.routeid)}
-                  >
-                     <img src={Bialik} alt={route.description} />
-                     <Typography
-                        component='p'
-                        sx={
-                           !isSmallScreen
-                              ? {
-                                   fontStyle: 'italic',
-                                   fontSize: '0.9rem',
-                                   ml: 1.5,
-                                }
-                              : { fontSize: '0.8rem', fontStyle: 'italic' }
+         {selectedPOIs.length >= 1 && (
+               <div style={{ textAlign: 'center', marginTop: '5px', marginRight: '6px' }}>
+                  <Button sx={
+                  !isSmallScreen
+                     ? {
+                          width: '120px',
+                          borderRadius: '20px',
+                          height: '30px',
+                          marginLeft: 1,
+                          marginTop: 2,
+                          background: '#C9EEFF',
+                          fontSize: '0.75rem'
+                       }
+                     : {
+                          marginLeft: 1.5,
+                          marginBottom: 1,
+                          height: '30px',
+                          borderRadius: '20px',
+                          background: '#C9EEFF',
+                          fontSize: '0.75rem'
+                       }
+               }
+               onClick={() => navigate('/map_producer')}>
+                  Build Tour
+               </Button>
+               </div>
+            )}
+         <div className={styles.poi_imgs}>
+            {coordinates.map((poi) => (
+               <div
+               style={{ cursor: 'pointer', position: 'relative' }}
+               key={poi.poiid}
+               value={JSON.stringify(poi.coordinates)}
+               onClick={() => handlePOISelection(poi)}
+               >
+                  <img src={Location} alt={poi.name} />
+                  <Typography
+                     component='p'
+                     sx={
+                        !isSmallScreen
+                        ? {
+                           fontStyle: 'italic',
+                           fontSize: '0.9rem',
+                           ml: 1.5,
                         }
+                        : { fontSize: '0.8rem', fontStyle: 'italic' }
+                     }
                      >
-                        {route.description}
-                     </Typography>
-                  </div>
-               ))}
-            </div>
-         ) : (
-            <div className={styles.routes_imgs}>
-               {filteredData.map((route) => (
-                  <div
-                     style={{ cursor: 'pointer' }}
-                     key={route.routeid}
-                     onClick={(e) => chooseRoute(route.routeid)}
-                  >
-                     <img src={Bialik} alt={route.description} />
-                     <Typography
-                        component='p'
-                        sx={
-                           !isSmallScreen
-                              ? {
-                                   fontStyle: 'italic',
-                                   fontSize: '0.9rem',
-                                   ml: 1.5,
-                                }
-                              : { fontSize: '0.8rem', fontStyle: 'italic' }
-                        }
-                     >
-                        {route.description}
-                     </Typography>
-                  </div>
-               ))}
-            </div>
-         )}
+                     {poi.name}
+                  </Typography>
+               </div>
+            ))}
+            
+         </div>
       </>
    );
 };
 
-export default Form_Consumer;
+export default Form_Producer;
