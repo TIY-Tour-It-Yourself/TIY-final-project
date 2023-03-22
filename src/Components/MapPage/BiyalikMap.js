@@ -151,7 +151,6 @@ const BiyalikMap = () => {
         const infoWindow = new window.google.maps.InfoWindow({
           content: `<div>
                                <h3>${locationName[index]}</h3>
-                   
                                <a href="${aridArray[index]}" target="_blank">
                                  <img src="${arIcon}" alt="AR Icon">
                                </a>

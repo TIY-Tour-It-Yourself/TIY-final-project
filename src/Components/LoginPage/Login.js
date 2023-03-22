@@ -1,244 +1,242 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
-   TextField,
-   Button,
-   FormControl,
-   Typography,
-   Link,
-} from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+  TextField,
+  Button,
+  FormControl,
+  Typography,
+  Link,
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 // import FacebookLogin from 'react-facebook-login';
-import { googleLogout, useGoogleLogin, GoogleLogin } from '@react-oauth/google';
-import axios from 'axios';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import Logo from '../Additionals/Logo/Logo';
-import Header from '../Additionals/Header/Header';
-import styles from './Login.module.css';
-import PageContainer from '../Additionals/Container/PageContainer';
-import Divider from '../Additionals/Divider/Divider';
-import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebookF } from '@fortawesome/free-brands-svg-icons';
+import { googleLogout, useGoogleLogin, GoogleLogin } from "@react-oauth/google";
+import axios from "axios";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Logo from "../Additionals/Logo/Logo";
+import Header from "../Additionals/Header/Header";
+import styles from "./Login.module.css";
+import PageContainer from "../Additionals/Container/PageContainer";
+import Divider from "../Additionals/Divider/Divider";
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFacebookF } from "@fortawesome/free-brands-svg-icons";
 
 const Login = (props) => {
-   const [user, setUser] = useState([]);
-   const [profile, setProfile] = useState(false);
-   const [email, setEmail] = useState('');
-   const [password, setPassword] = useState('');
-   const [isValid, setIsValid] = useState(false);
-   const [isDirty, setIsDirty] = useState(false);
-   const [isFormValid, setIsFormValid] = useState(false);
+  const [user, setUser] = useState([]);
+  const [profile, setProfile] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isValid, setIsValid] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
 
-   const [logged, setIsLogged] = useState(false);
-   const [data, setData] = useState({});
-   const [picture, setPicture] = useState('');
+  const [logged, setIsLogged] = useState(false);
+  const [data, setData] = useState({});
+  const [picture, setPicture] = useState("");
 
-   const navigate = useNavigate();
+  const navigate = useNavigate();
 
-   const handleSubmit = (e) => {
-      e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-      //Post request - need to post data to DB to check if specific user is already registered
-      if (email.trim().length !== 0 && password.trim().length !== 0) {
-         axios
-            .post(`https://tiys.herokuapp.com/api/auth`, {
-               email,
-               password,
-            })
-            .then((response) => {
-               console.log(response.data);
-               setIsFormValid(true);
-               setData(response.data);
+    //Post request - need to post data to DB to check if specific user is already registered
+    if (email.trim().length !== 0 && password.trim().length !== 0) {
+      axios
+        .post(`https://tiys.herokuapp.com/api/auth`, {
+          email,
+          password,
+        })
+        .then((response) => {
+          console.log(response.data);
+          setIsFormValid(true);
+          setData(response.data);
 
-               if (response.status == 200) {
-                  navigate('/dashboard');
-               } else {
-                  console.log('Status is not 200');
-               }
-               // console.log(response.data.token);
-            })
-            .catch((err) => {
-               console.log(err.response.data.errors[0]);
-               if (
-                  err.response.data.errors[0].msg == 'Password is not correct'
-               ) {
-                  alert('Password is not correct.');
-               } else if (
-                  err.response.data.errors[0].msg == 'Email is not correct'
-               ) {
-                  alert('Email is not correct.');
-               } else {
-                  alert('Invalid Credentials.');
-               }
-            });
-      } else {
-         alert('All fields are required.');
-         setIsFormValid(false);
-      }
-   };
+          if (response.status == 200) {
+            navigate("/dashboard");
+          } else {
+            console.log("Status is not 200");
+          }
+          // console.log(response.data.token);
+        })
+        .catch((err) => {
+          console.log(err.response.data.errors[0]);
+          if (err.response.data.errors[0].msg == "Password is not correct") {
+            alert("Password is not correct.");
+          } else if (
+            err.response.data.errors[0].msg == "Email is not correct"
+          ) {
+            alert("Email is not correct.");
+          } else {
+            alert("Invalid Credentials.");
+          }
+        });
+    } else {
+      alert("All fields are required.");
+      setIsFormValid(false);
+    }
+  };
 
-   //Facebook login
-   const responseFacebook = (response) => {
-      console.log(response);
-      setData(response);
-      setPicture(response.picture.data.url);
-      if (response.accessToken) {
-         setIsLogged(true);
-      } else {
-         setIsLogged(false);
-      }
-   };
-
-   const fLogout = () => {
+  //Facebook login
+  const responseFacebook = (response) => {
+    console.log(response);
+    setData(response);
+    setPicture(response.picture.data.url);
+    if (response.accessToken) {
+      setIsLogged(true);
+    } else {
       setIsLogged(false);
-      setData({});
-      setPicture('');
-   };
+    }
+  };
 
-   //Google Login
-   const login = useGoogleLogin({
-      onSuccess: (codeResponse) => setUser(codeResponse),
-      onError: (error) => console.log('Login Failed:', error),
-   });
+  const fLogout = () => {
+    setIsLogged(false);
+    setData({});
+    setPicture("");
+  };
 
-   const theme = useTheme();
-   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  //Google Login
+  //   const login = useGoogleLogin({
+  //     onSuccess: (codeResponse) => setUser(codeResponse),
+  //     onError: (error) => console.log("Login Failed:", error),
+  //   });
 
-   //Login through Google - Takes data from Google
-   useEffect(() => {
-      if (user) {
-         axios
-            .get(
-               `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`,
-               {
-                  headers: {
-                     Authorization: `Bearer ${user.access_token}`,
-                     Accept: 'application/json',
-                  },
-               }
-            )
-            .then((res) => {
-               setProfile(res.data);
-               navigate('/form_consumer');
-            })
-            .catch((err) => console.log(err));
-      }
-   }, [user]);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-   //Post request - need to post Google connection data of user to DB to check if specific user is already registered
-   useEffect(() => {
-      if (profile) {
-         axios
-            .post(`https://jsonplaceholder.typicode.com/users`, { profile })
-            // .get("https://jsonplaceholder.typicode.com/users/1")
-            .then((response) => {
-               console.log(response.data.token);
-            })
-            .catch((err) => console.log(err));
-      }
-   }, [profile]);
+  //Login through Google - Takes data from Google
+  //   useEffect(() => {
+  //     if (user) {
+  //       axios
+  //         .get(
+  //           `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`,
+  //           {
+  //             headers: {
+  //               Authorization: `Bearer ${user.access_token}`,
+  //               Accept: "application/json",
+  //             },
+  //           }
+  //         )
+  //         .then((res) => {
+  //           setProfile(res.data);
+  //           navigate("/form_consumer");
+  //         })
+  //         .catch((err) => console.log(err));
+  //     }
+  //   }, [user]);
 
-   // log out function to log the user out of google and set the profile array to null
-   const gLogout = () => {
-      googleLogout();
-      setProfile(null);
-   };
+  //Post request - need to post Google connection data of user to DB to check if specific user is already registered
+  useEffect(() => {
+    if (profile) {
+      axios
+        .post(`https://jsonplaceholder.typicode.com/users`, { profile })
+        // .get("https://jsonplaceholder.typicode.com/users/1")
+        .then((response) => {
+          console.log(response.data.token);
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [profile]);
 
-   return (
-      <>
-         <PageContainer>
-            <Logo />
-            <Header title='Welcome Back!' />
-            <form onSubmit={handleSubmit}>
-               <FormControl
-                  sx={isSmallScreen ? { width: '100%' } : { width: '45%' }}
-               >
-                  <TextField
-                     className={styles.input}
-                     label='Email'
-                     type='email'
-                     value={email}
-                     onChange={(e) => setEmail(e.target.value)}
-                     margin='dense'
-                     error={!isValid && isDirty}
-                     onBlur={() => setIsDirty(true)}
-                     variant='outlined'
-                     required
-                  />
-                  <TextField
-                     className={styles.input}
-                     label='Password'
-                     type='password'
-                     value={password}
-                     onChange={(e) => setPassword(e.target.value)}
-                     margin='dense'
-                     error={!isValid && isDirty}
-                     onBlur={() => setIsDirty(true)}
-                     variant='outlined'
-                     required
-                  />
-                  <Button
-                     onClick={handleSubmit}
-                     className={styles.button}
-                     type='submit'
-                     variant='contained'
-                     color='primary'
-                     sx={
-                        isSmallScreen
-                           ? { mt: 2, ml: 2, mb: 3, width: '80%' }
-                           : { mt: 3, ml: 12, mb: 3, width: '50%' }
-                     }
-                     style={{
-                        borderRadius: 20,
-                        backgroundColor: '#2471A3',
-                     }}
-                  >
-                     Login
-                  </Button>
-               </FormControl>
-            </form>
-            <Typography sx={{ mt: 0, mb: 1, mr: 1 }}>
-               <Link
-                  style={{ fontSize: '0.75rem', color: 'black' }}
-                  // Need to define navigation to retreive password
-                  href='/'
-                  sx={{
-                     textDecoration: 'none',
-                     '&:hover': {
-                        textDecoration: 'underline',
-                     },
-                  }}
-               >
-                  <b>Forgot Password?</b>
-               </Link>
-            </Typography>
-            <Typography
-               style={{ fontSize: 'small' }}
-               sx={isSmallScreen ? { mb: 1 } : { mt: 2, mb: 4 }}
+  // log out function to log the user out of google and set the profile array to null
+  const gLogout = () => {
+    googleLogout();
+    setProfile(null);
+  };
+
+  return (
+    <>
+      <PageContainer>
+        <Logo />
+        <Header title="Welcome Back!" />
+        <form onSubmit={handleSubmit}>
+          <FormControl
+            sx={isSmallScreen ? { width: "100%" } : { width: "45%" }}
+          >
+            <TextField
+              className={styles.input}
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              margin="dense"
+              error={!isValid && isDirty}
+              onBlur={() => setIsDirty(true)}
+              variant="outlined"
+              required
+            />
+            <TextField
+              className={styles.input}
+              label="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              margin="dense"
+              error={!isValid && isDirty}
+              onBlur={() => setIsDirty(true)}
+              variant="outlined"
+              required
+            />
+            <Button
+              onClick={handleSubmit}
+              className={styles.button}
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={
+                isSmallScreen
+                  ? { mt: 2, ml: 2, mb: 3, width: "80%" }
+                  : { mt: 3, ml: 12, mb: 3, width: "50%" }
+              }
+              style={{
+                borderRadius: 20,
+                backgroundColor: "#2471A3",
+              }}
             >
-               <b>Don't Have An Account?</b>{' '}
-               <Link
-                  href='/register'
-                  sx={{
-                     textDecoration: 'none',
-                     '&:hover': {
-                        textDecoration: 'underline',
-                     },
-                  }}
-               >
-                  Sign Up
-               </Link>
-            </Typography>
-            <Divider title='Sign In With' />
-            <div className={styles.flexbox}>
-               {/* <a href='#'>
+              Login
+            </Button>
+          </FormControl>
+        </form>
+        <Typography sx={{ mt: 0, mb: 1, mr: 1 }}>
+          <Link
+            style={{ fontSize: "0.75rem", color: "black" }}
+            // Need to define navigation to retreive password
+            href="/"
+            sx={{
+              textDecoration: "none",
+              "&:hover": {
+                textDecoration: "underline",
+              },
+            }}
+          >
+            <b>Forgot Password?</b>
+          </Link>
+        </Typography>
+        <Typography
+          style={{ fontSize: "small" }}
+          sx={isSmallScreen ? { mb: 1 } : { mt: 2, mb: 4 }}
+        >
+          <b>Don't Have An Account?</b>{" "}
+          <Link
+            href="/register"
+            sx={{
+              textDecoration: "none",
+              "&:hover": {
+                textDecoration: "underline",
+              },
+            }}
+          >
+            Sign Up
+          </Link>
+        </Typography>
+        <Divider title="Sign In With" />
+        <div className={styles.flexbox}>
+          {/* <a href='#'>
                   <div className={styles.facebook_icon}></div>
                </a> */}
-               <div className='container'>
-                  <a href='#'>
-                     <div className={styles.facebook_icon}></div>
-                  </a>
-                  {/* {!logged && (
+          <div className="container">
+            <a href="#">
+              <div className={styles.facebook_icon}></div>
+            </a>
+            {/* {!logged && (
                      <FacebookLogin
                         appId={process.env.REACT_APP_FACEBOOK_CLIENT_ID}
                         autoLoad={false}
@@ -286,33 +284,29 @@ const Login = (props) => {
                         </div>
                      </div>
                   )}*/}
-               </div>
-               <div>
-                  {profile ? (
-                     {
-                        /* <button onClick={logOut}>Log out</button> */
-                     }
-                  ) : (
-                     //  <div>
-                     //      <img src={profile.picture} alt="user image" />
-                     //      <h3>User Logged in</h3>
-                     //      <p>Name: {profile.name}</p>
-                     //      <p>Email Address: {profile.email}</p>
-                     //      <br />
-                     //      <br />
-                     //      <button onClick={logOut}>Log out</button>
-                     //  </div> */}
-
-                     <div
-                        className={styles.google_icon}
-                        onClick={() => login()}
-                     ></div>
-                  )}
-               </div>
-            </div>
-         </PageContainer>
-      </>
-   );
+          </div>
+          {/* <div>
+            {profile ? (
+              {
+                 <button onClick={logOut}>Log out</button> 
+              }
+            ) : (
+                <div>
+                   <img src={profile.picture} alt="user image" />
+                    <h3>User Logged in</h3>
+                   <p>Name: {profile.name}</p>
+                    <p>Email Address: {profile.email}</p>
+                    <br />
+                    <br />
+                    <button onClick={logOut}>Log out</button>
+                </div> */}
+          {/* <div className={styles.google_icon} onClick={() => login()}></div> */}
+          {/* )} */}
+          {/* </div> */} */
+        </div>
+      </PageContainer>
+    </>
+  );
 };
 
 export default Login;

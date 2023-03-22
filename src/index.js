@@ -26,14 +26,14 @@ root.render(
       <BrowserRouter>
         <Routes>
           {" "}
-          {/* <Route path="/" element={<LoginPage />} />{" "} */}{" "}
+          <Route path="/" element={<LoginPage />} />{" "}
           <Route path="/login" element={<LoginPage />} />{" "}
           <Route path="/register" element={<RegisterPage />} />{" "}
           <Route path="/dashboard" element={<DashboardPage />} />{" "}
           <Route path="/form_consumer" element={<FormConsumerPage />} />{" "}
           <Route path="/form_producer" element={<FormProducerPage />} />{" "}
           <Route path="/map_producer" element={<MapProducerPage />} />{" "}
-          <Route path="/" element={<InteractiveMapPage />} />{" "}
+          <Route path="/interactive_map" element={<InteractiveMapPage />} />{" "}
           {/* <Route path='/bialik' element={<BialikMap />} /> */}{" "}
           <Route path="/bialikmap" element={<BialikMapPage />} />{" "}
           <Route path="/interactive_map" element={<InteractiveMapPage />} />{" "}

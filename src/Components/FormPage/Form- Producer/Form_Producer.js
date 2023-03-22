@@ -82,7 +82,7 @@ const Form_Producer = () => {
         // Make an API request to fetch the routes data
         const response = await axios.get("https://tiys.herokuapp.com/api/pois");
         setCoordinates(response.data);
-        console.log(response.data);
+        // console.log(response.data);
 
         // Check if both Theme and ARlevel have been selected
         if (themeSelectedId && selectedLevelId) {
@@ -142,6 +142,27 @@ const Form_Producer = () => {
       setSelectedPOIs(updatedPOIs);
     }
   };
+  const poiid = selectedPOIs ? selectedPOIs.map((item) => item.poiid) : [];
+  console.log("line 146 :", poiid);
+
+  // Convert poiid array to an object with numbered keys
+  const poiidMap = poiid.reduce((accumulator, current, i) => {
+    accumulator[`poi${i + 1}`] = current;
+    return accumulator;
+  }, {});
+
+  // console.log("line 145 :", poiid[0]);
+
+  // let coordinate = [];
+  // if (selectedPOIs) {
+  //   for (let i = 0; i < selectedPOIs.length; i++) {
+  //     coordinate.push(selectedPOIs[i].coordinates);
+  //   }
+  // }
+
+  // for (let i = 0; i < coordinate.length; i++) {
+  //   console.log("POI " + (i + 1) + " latitude: " + coordinate[i].lat);
+  // }
 
   return (
     <>
@@ -257,7 +278,7 @@ const Form_Producer = () => {
           </Typography>{" "}
         </div>{" "}
       </Box>{" "}
-      {selectedPOIs.length >= 3 && (
+      {selectedPOIs.length >= 4 && (
         <div
           style={{ textAlign: "center", marginTop: "5px", marginRight: "6px" }}
         >
@@ -282,7 +303,17 @@ const Form_Producer = () => {
                     fontSize: "0.75rem",
                   }
             }
-            onClick={() => navigate("/map_producer")}
+            onClick={
+              () =>
+                navigate(
+                  `/map_producer?${Object.entries(poiidMap)
+                    .map(([key, value]) => `${key}=${value}`)
+                    .join("&")}`
+                )
+              // {
+              //   navigate(`/map_producer`);
+              // }
+            }
           >
             Build Tour{" "}
           </Button>{" "}
@@ -290,7 +321,6 @@ const Form_Producer = () => {
       )}{" "}
       {!filteredData ? (
         <div className={styles.poi_imgs}>
-          {" "}
           {coordinates.map((poi) => (
             <div
               style={{ cursor: "pointer", position: "relative" }}
@@ -340,7 +370,6 @@ const Form_Producer = () => {
                     : { fontSize: "0.8rem", fontStyle: "italic" }
                 }
               >
-                {" "}
                 {poi.name}{" "}
               </Typography>{" "}
             </div>
