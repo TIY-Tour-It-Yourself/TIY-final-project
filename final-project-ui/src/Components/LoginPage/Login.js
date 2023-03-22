@@ -3,8 +3,7 @@ import {
    TextField,
    Button,
    FormControl,
-   Typography,
-   Link,
+   Typography
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 // import FacebookLogin from 'react-facebook-login';
@@ -20,7 +19,7 @@ import Header from '../Additionals/Header/Header';
 import styles from './Login.module.css';
 import PageContainer from '../Additionals/Container/PageContainer';
 import Divider from '../Additionals/Divider/Divider';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { faFacebookF } from '@fortawesome/free-brands-svg-icons';
 
@@ -222,7 +221,7 @@ const Login = (props) => {
             >
                <b>Don't Have An Account?</b>{' '}
                <Link
-                  href='/register'
+                  to='/register'
                   sx={{
                      textDecoration: 'none',
                      '&:hover': {

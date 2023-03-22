@@ -32,7 +32,7 @@ img {
 }
 
 h3 {
-  display: inline;
+   display: inline;
 }
 
 .tour_card {
@@ -45,41 +45,41 @@ h3 {
    border: 1px solid #1b1010;
    border-radius: 0.5rem;
    max-width: 80%;
- }
- 
- .slick-prev:before,
- .slick-next:before {
+}
+
+.slick-prev:before,
+.slick-next:before {
    color: black;
- }
- 
- .Carousel_Card {
+}
+
+.Carousel_Card {
    margin-top: 5%;
    color: rgb(58, 81, 123);
- }
- 
- h1 {
+}
+
+h1 {
    text-align: center;
- }
- 
- h6 {
+}
+
+h6 {
    text-align: center;
- }
- 
- .App {
+}
+
+.App {
    width: 70%;
    margin: 0 auto;
    margin-top: 50px;
- }
- 
- .slick-slide > div {
+}
+
+.slick-slide > div {
    margin: 0 10px;
- }
- 
- .slick-list {
+}
+
+.slick-list {
    margin: 0 -10px;
- }
- 
- .card {
+}
+
+.card {
    border: 1px solid #fff;
    background: black;
    border-radius: 8px;
@@ -87,44 +87,44 @@ h3 {
    height: 400px;
    color: #fff;
    cursor: pointer;
- }
- 
- .card-top h1 {
+}
+
+.card-top h1 {
    font-size: 0.9rem;
    margin: 20px;
- }
- 
- .card-top > img {
+}
+
+.card-top > img {
    width: 100%;
    height: 200px;
    object-fit: cover;
    background: black;
- }
- 
- .card-bottom {
+}
+
+.card-bottom {
    margin: 10px 20px;
- }
- 
- .category {
+}
+
+.category {
    position: relative;
- }
- 
- .category::before {
-   content: "";
+}
+
+.category::before {
+   content: '';
    background: rgb(255, 61, 61);
    position: absolute;
    top: calc(100% + 10px);
    left: 0;
    right: 0;
    height: 2px;
- }
- 
- @media (max-width: 768px) {
+}
+
+@media (max-width: 600px) {
    h1 {
       font-size: 1.5rem;
    }
 
-   h2{
+   h2 {
       font-size: 1.25rem;
    }
 }

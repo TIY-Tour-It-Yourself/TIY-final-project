@@ -10,7 +10,6 @@ import arIcon from './images/ar_icon1.png';
 import { useLocation } from 'react-router-dom';
 
 const BiyalikMap = (props) => {
-   // const { themeSelectedId, selectedLevelId, handleStateChange } = props;
    const [isMapLoaded, setIsMapLoaded] = useState(false);
    const [isLocationsLoaded, setIsLocationsLoaded] = useState(false);
    const [poisData, setPoisData] = useState([]);
@@ -35,15 +34,12 @@ const BiyalikMap = (props) => {
                // `https://tiys.herokuapp.com/api/routes/${routeChosen}`
                `https://tiys.herokuapp.com/api/routes`
                );
-               // console.log(response.data);
                
             //Get route pois
             const pois = response.data[0].pois;
             
             //Get all pois' coordinates
             const coordinatesArray = pois.map((poi) => poi.coordinates);
-            // console.log(coordinatesArray[0].lat);
-            // console.log(coordinatesArray[0].lng);
             setPoisCoordinatesData(coordinatesArray);
             
             let latArray = [];
@@ -92,12 +88,6 @@ const BiyalikMap = (props) => {
                'https://tiys.herokuapp.com/api/pois'
             );
             setPoisData(response.data);
-            // const ARPois = response.data;
-            // let urlsArray = [];
-            // const ARUrls = ARPois.map((poi) => console.log(poi.arid.url));
-            
-            // Set the state variable to true when data is loaded
-            setIsLocationsLoaded(true);
          } catch (error) {
             console.log(error);
          }
@@ -105,18 +95,20 @@ const BiyalikMap = (props) => {
       getPoisData();
    }, []);
 
-   // useEffect(()=> {
-   //    if(poisData) {
-         const locations = poisData.map((item) => item.coordinates);
+   let locations, ARURLArray, locationName;
+
+   
+   if(isLocationsLoaded) { 
+         console.log("loaded");
+         locations = poisData.map((item) => item.coordinates);
          // console.log(locations);
-         const ARURLArray = poisData.map((item) => item.arid.url);
+         ARURLArray = poisData.map((item) => item.arid.url);
          console.log(ARURLArray);
-         const locationName = poisData.map((item) => item.name);
+         locationName = poisData.map((item) => item.name);
          console.log(locationName);
          // const locationDes = poisData.map((item) => item.description);
          // console.log(locationDes);
-      // }
-   // })
+      }
 
    const initializeMap = () => {
       // Check if locations data is loaded and available

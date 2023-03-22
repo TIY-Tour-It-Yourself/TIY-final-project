@@ -268,7 +268,7 @@ const Form_Producer = () => {
                </Typography>
             </div>
          </Box>
-         {selectedPOIs.length >= 3 && (
+         {selectedPOIs.length >= 4 && (
                <div style={{ textAlign: 'center', marginTop: '5px', marginRight: '6px' }}>
                   <Button sx={
                   !isSmallScreen
