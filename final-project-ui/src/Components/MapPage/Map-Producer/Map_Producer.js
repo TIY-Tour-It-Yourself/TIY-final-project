@@ -3,14 +3,14 @@ import {
    useJsApiLoader,
    GoogleMap,
    Marker,
-   Autocomplete,
+   // Autocomplete,
    DirectionsRenderer,
-   google,
+   // google,
    InfoWindow,
 } from '@react-google-maps/api';
 import './maps2.css';
-import ReactModal from 'react-modal';
-import { faLess } from '@fortawesome/free-brands-svg-icons';
+// import ReactModal from 'react-modal';
+// import { faLess } from '@fortawesome/free-brands-svg-icons';
 import axios from 'axios';
 import arIcon from './ar_icon1.png';
 import { useLocation } from 'react-router-dom';

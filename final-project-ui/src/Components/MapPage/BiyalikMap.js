@@ -6,33 +6,78 @@ import {
    DirectionsRenderer,
 } from '@react-google-maps/api';
 import axios from 'axios';
-import arIcon from './images/ar_icon.png';
+import arIcon from './images/ar_icon1.png';
 import { useLocation } from 'react-router-dom';
 
 const BiyalikMap = (props) => {
    // const { themeSelectedId, selectedLevelId, handleStateChange } = props;
    const [isMapLoaded, setIsMapLoaded] = useState(false);
    const [isLocationsLoaded, setIsLocationsLoaded] = useState(false);
-   const [poisData, setPoisData] = useState('');
-   const [dataArray, setDataArray] = useState([]);
+   const [poisData, setPoisData] = useState([]);
+   const [poisLatData, setPoisLatData] = useState([]);
+   const [poisLngData, setPoisLngData] = useState([]);
+   const [themeSelectedId, setThemeSelectedId] = useState('');
+   const [selectedLevelId, setSelectedLevelId] = useState('');
+   const [poisCoordinatesData, setPoisCoordinatesData] = useState([]);
+   const [filteredRoutes, setFilteredRoutes] = useState([]);
    const [filteredData, setFilteredData] = useState([]);
 
    const location = useLocation();
-
+   
    useEffect(() => {
       const searchParams = new URLSearchParams(location.search);
-      const themeSelectedId = searchParams.get('themeSelectedId');
-      const selectedLevelId = searchParams.get('selectedLevelId');
-      console.log(
-         `State variables received: ${themeSelectedId}, ${selectedLevelId}`
-      );
-      // do something with the state variables
+      const routeChosen = searchParams.get('routeChosen');
+      
+      //Get Route by ID
+      const fetchRoute = async () => {
+         try {
+            const response = await axios.get(
+               // `https://tiys.herokuapp.com/api/routes/${routeChosen}`
+               `https://tiys.herokuapp.com/api/routes`
+               );
+               // console.log(response.data);
+               
+            //Get route pois
+            const pois = response.data[0].pois;
+            
+            //Get all pois' coordinates
+            const coordinatesArray = pois.map((poi) => poi.coordinates);
+            // console.log(coordinatesArray[0].lat);
+            // console.log(coordinatesArray[0].lng);
+            setPoisCoordinatesData(coordinatesArray);
+            
+            let latArray = [];
+            let lngArray = [];
+            
+            pois.forEach((poi) => {
+               latArray.push(poi.coordinates.lat);
+               lngArray.push(poi.coordinates.lng);
+            });
+            
+            setPoisLatData(latArray);
+            setPoisLngData(lngArray);
+            
+            // Set the state variable to true when data is loaded
+            setIsLocationsLoaded(true);
+         } catch (error) {
+            console.log(error);
+         }
+      };
+      fetchRoute();
    }, [location.search]);
+   
+   useEffect(() => {
+      if (poisLatData.length > 0 && poisLngData.length > 0 && poisCoordinatesData > 0) {
+         console.log(poisLatData, poisLngData);
+         console.log(poisCoordinatesData);
+      }
+   }, [poisLatData, poisLngData, poisCoordinatesData]);
 
    // Load the Google Maps API script
    const loadGoogleMapsScript = () => {
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&libraries=places`;
+      // script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_API_KEY}&libraries=places`;
+      script.defer = true;
       script.onload = () => {
          initializeMap();
       };
@@ -40,73 +85,47 @@ const BiyalikMap = (props) => {
    };
 
    //Get POIs from DB
-   //    useEffect(() => {
-   //    const filterData = async () => {
-   //       try {
-   //          // Make an API request to fetch the routes data
-   //          const response = await axios.get(
-   //             'https://tiys.herokuapp.com/api/pois'
-   //          );
-   //          setPoisData(response.data);
-
-   //          //Check if ThemeId and ARlevelId were received from Form_Consumer Page
-   //          if ({themeSelectedId} && {selectedLevelId}) {
-   //             console.log({themeSelectedId}, {selectedLevelId});
-   //             // Filter the data based on the selected values
-   //             const filtered = response.data.filter((poi) => {
-   //                return (
-   //                   poi.theme.themeid === themeSelectedId &&
-   //                   poi.arid.level === selectedLevelId
-   //                );
-   //             });
-   //             // Update the state with the filtered data
-   //             setFilteredData(filtered);
-   //             console.log(`filtered: ${filtered.length}`);
-   //          } else {
-   //             //If either theme or level is not selected, set filtered data to null
-   //             setFilteredData(null);
-   //          }
-   //       } catch (error) {
-   //          console.log(error);
-   //       }
-   //    };
-
-   //    filterData();
-   // }, [themeSelectedId, selectedLevelId]);
-
-   //Get POIs from DB
    useEffect(() => {
-      const fetchData = async () => {
+      const getPoisData = async () => {
          try {
             const response = await axios.get(
                'https://tiys.herokuapp.com/api/pois'
             );
-            setDataArray(response.data);
+            setPoisData(response.data);
+            // const ARPois = response.data;
+            // let urlsArray = [];
+            // const ARUrls = ARPois.map((poi) => console.log(poi.arid.url));
+            
             // Set the state variable to true when data is loaded
             setIsLocationsLoaded(true);
          } catch (error) {
             console.log(error);
          }
       };
-      fetchData();
+      getPoisData();
    }, []);
 
-   const locations = dataArray.map((item) => item.coordinates);
-
-   useEffect(() => {
-      if (locations.length > 0) {
-         console.log(locations[0].lat);
-      }
-   }, [locations]);
+   // useEffect(()=> {
+   //    if(poisData) {
+         const locations = poisData.map((item) => item.coordinates);
+         // console.log(locations);
+         const ARURLArray = poisData.map((item) => item.arid.url);
+         console.log(ARURLArray);
+         const locationName = poisData.map((item) => item.name);
+         console.log(locationName);
+         // const locationDes = poisData.map((item) => item.description);
+         // console.log(locationDes);
+      // }
+   // })
 
    const initializeMap = () => {
       // Check if locations data is loaded and available
-      if (isLocationsLoaded && locations.length > 0) {
+      if (isLocationsLoaded && poisCoordinatesData) {
          // Create a map object and center it on the first location
          const map = new window.google.maps.Map(
             document.getElementById('map'),
             {
-               center: { lat: locations[0].lat, lng: locations[0].lng },
+               center: { lat: poisLatData[0], lng: poisLngData[0] },
                zoom: 12,
             }
          );
@@ -116,12 +135,12 @@ const BiyalikMap = (props) => {
             suppressMarkers: true, // add this line to suppress markers
          });
          const origin = new window.google.maps.LatLng(
-            locations[0].lat,
-            locations[0].lng
+            poisLatData[0],
+            poisLngData[0]
          );
          const destination = new window.google.maps.LatLng(
-            locations[3].lat,
-            locations[3].lng
+            poisLatData[poisLatData.length-1],
+            poisLngData[poisLatData.length-1]
          );
 
          const request = {
@@ -130,15 +149,15 @@ const BiyalikMap = (props) => {
             waypoints: [
                {
                   location: new window.google.maps.LatLng(
-                     locations[1].lat,
-                     locations[1].lng
+                     poisLatData[1],
+                     poisLngData[1]
                   ),
                   stopover: true,
                },
                {
                   location: new window.google.maps.LatLng(
-                     locations[2].lat,
-                     locations[2].lng
+                     poisLatData[2],
+                     poisLngData[2]
                   ),
                   stopover: true,
                },
@@ -151,19 +170,51 @@ const BiyalikMap = (props) => {
                directionsRenderer.setDirections(response);
             }
          });
-         // Create a Marker object for each location and add an info window
-         locations.forEach((location) => {
+
+         // Create a Marker object for each poi and add an info window
+         poisCoordinatesData.forEach((poi) => {
             const marker = new window.google.maps.Marker({
-               position: { lat: location.lat, lng: location.lng },
+               position: { lat: poi.lat, lng: poi.lng },
                map: map,
             });
+
+            // ARURLArray.forEach((arUrl) => {
+            //    const infoWindow = new window.google.maps.InfoWindow({
+            //      content: location.name, // set the content of the info window
+            //    });
+     
+
             const infoWindow = new window.google.maps.InfoWindow({
                content: location.name, // set the content of the info window
             });
+            
             marker.addListener('click', () => {
                infoWindow.open(map, marker); // open the info window when the marker is clicked
             });
          });
+
+         poisCoordinatesData.forEach((poi, index) => {
+            const marker = new window.google.maps.Marker({
+              position: { lat: poi.lat, lng: poi.lng },
+              map: map,
+            });
+
+            const infoWindow = new window.google.maps.InfoWindow({
+               content: `<div style={{display: 'flex', justifyContent: 'center' , border: '2px solid black'}}>
+                                    <h4>${locationName[index]}</h4>
+                        
+                                    <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
+                                       <a href="${ARURLArray[index]}" target="_blank">
+                                       <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
+                                       </a>
+                                    </div>
+                        </div>`,
+             });
+     
+             marker.addListener("click", () => {
+               infoWindow.open(map, marker);
+             });
+           });
 
          // Create a Marker object for the current user location
          if (navigator.geolocation) {
@@ -196,13 +247,13 @@ const BiyalikMap = (props) => {
 
    useEffect(() => {
       // Load the Google Maps API script when the component mounts
-      loadGoogleMapsScript();
+      // loadGoogleMapsScript();
       setIsMapLoaded(true);
    }, []);
 
    return (
       <div id='map' style={{ height: '100vh', width: '100%' }}>
-         {/* {isMapLoaded && <LoadScript />} */}
+         {/* {isMapLoaded && <LoadScript />} */};
          {window.google === undefined ? (
             <LoadScript>
                <GoogleMap />

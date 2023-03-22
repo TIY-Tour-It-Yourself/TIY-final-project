@@ -27,24 +27,17 @@ const Form_Consumer = () => {
 
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
+   
    const navigate = useNavigate();
 
-   const setSelectedTheme = (value) => {
-      if (themeSelectedId !== '') {
-         setThemeSelectedId(value);
-         // themeSelected.backgroundColor = '#BAD7E9';
-      } else {
-         setThemeSelectedId(value);
-      }
-   };
-
-   const handleARExperience = (arId) => {
-      setSelectedLevelId(arId);
-   };
-
    useEffect(() => {
-      //Get Themes from DB
+      if (routeChosen) {
+        navigate(`/biyalik_map?routeId=${routeChosen}`);
+      }
+    }, [routeChosen, navigate]);
+
+   //Get Themes from DB
+   useEffect(() => {
       axios
          .get('https://tiys.herokuapp.com/api/themes')
          .then((response) => {
@@ -70,9 +63,9 @@ const Form_Consumer = () => {
                // Filter the data based on the selected values
                const filtered = response.data.filter((route) => {
                   return (
-                     route.themeid === themeSelectedId &&
+                     route.theme.themeid === themeSelectedId &&
                      route.experience_level === selectedLevelId
-                  );
+                     );
                });
                // Update the state with the filtered data
                setFilteredData(filtered);
@@ -88,25 +81,38 @@ const Form_Consumer = () => {
 
       filterData();
    }, [themeSelectedId, selectedLevelId]);
-
+   
    //While data hasn't become an array yet- keep loading
    if (!Array.isArray(formTheme) || !Array.isArray(routes)) {
       return <div>Loading...</div>;
    }
-
+   
    //Redirect to chosen route on the map
    const chooseRoute = (routeid) => {
       if (selectedLevelId && themeSelectedId) {
-         // console.log(routeid);
+         console.log(routeid);
          setRouteChosen(routeid);
          setIsFormValid(true);
          //Navigate to interactive map
-         // navigate('/interactive_map');
-         navigate(`/biyalik_map?themeSelectedId=${themeSelectedId}&selectedLevelId=${selectedLevelId}`);
+         // navigate(`/biyalik_map?themeSelectedId=${themeSelectedId}&selectedLevelId=${selectedLevelId}`);
+         // navigate(`/biyalik_map?routeId=${routeChosen}`);
       } else {
          setIsFormValid(false);
       }
    };
+
+   const setSelectedTheme = (value) => {
+      if (themeSelectedId !== '') {
+            setThemeSelectedId(value);
+            // themeSelected.backgroundColor = '#BAD7E9';
+         } else {
+            setThemeSelectedId(value);
+         }
+      };
+   
+      const handleARExperience = (arId) => {
+         setSelectedLevelId(arId);
+      };
 
    return (
       <>

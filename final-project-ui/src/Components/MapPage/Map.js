@@ -3,14 +3,14 @@ import {
   useJsApiLoader,
   GoogleMap,
   Marker,
-  Autocomplete,
+  // Autocomplete,
   DirectionsRenderer,
-  google,
-  InfoWindow,
+  // google,
+  // InfoWindow,
 } from "@react-google-maps/api";
 import styles from './Map.module.css';
 import ReactModal from "react-modal";
-import { faLess } from "@fortawesome/free-brands-svg-icons";
+// import { faLess } from "@fortawesome/free-brands-svg-icons";
 
 const center = {
   lat: 32.0809,

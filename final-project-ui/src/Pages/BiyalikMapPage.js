@@ -4,8 +4,8 @@ import BiyalikMap from '../Components/MapPage/BiyalikMap';
 // import BialikMap from '../Components/MapPage/BiyalikMap';
 
 const BiyalikMapPage = () => {
-   // return <InteractiveMap />;
-   return(<BiyalikMap/>);
+   return <InteractiveMap />;
+   // return(<BiyalikMap/>);
 };
 
 export default BiyalikMapPage;

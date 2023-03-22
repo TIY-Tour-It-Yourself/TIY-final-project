@@ -8,7 +8,11 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 // import FacebookLogin from 'react-facebook-login';
-import { googleLogout, useGoogleLogin, GoogleLogin } from '@react-oauth/google';
+import { 
+   googleLogout, 
+   useGoogleLogin, 
+   // GoogleLogin 
+} from '@react-oauth/google';
 import axios from 'axios';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Logo from '../Additionals/Logo/Logo';
@@ -17,8 +21,8 @@ import styles from './Login.module.css';
 import PageContainer from '../Additionals/Container/PageContainer';
 import Divider from '../Additionals/Divider/Divider';
 import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebookF } from '@fortawesome/free-brands-svg-icons';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faFacebookF } from '@fortawesome/free-brands-svg-icons';
 
 const Login = (props) => {
    const [user, setUser] = useState([]);

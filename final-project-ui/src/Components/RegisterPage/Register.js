@@ -55,7 +55,7 @@ const Register = (props) => {
             .then((response) => {
                console.log(response.data);
                setIsFormValid(true);
-               if (response.status == 200) {
+               if (response.status === 200) {
                   navigate('/dashboard');
                } else {
                   console.log('Status is not 200');
@@ -63,7 +63,7 @@ const Register = (props) => {
             })
             .catch((err) => {
                console.log(err.response.data.errors[0])
-               if (err.response.data.errors[0].msg == 'User already exists') {
+               if (err.response.data.errors[0].msg === 'User already exists') {
                   alert('Email already exists.');
                } else {
                   alert('Invalid Credentials.');
