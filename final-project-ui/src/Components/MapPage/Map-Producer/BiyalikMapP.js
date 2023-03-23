@@ -9,7 +9,7 @@ import axios from 'axios';
 import arIcon from './images/ar_icon1.png';
 import { useLocation } from 'react-router-dom';
 
-const BiyalikMap = (props) => {
+const MapProducer = (props) => {
    const [isMapLoaded, setIsMapLoaded] = useState(false);
    const [isLocationsLoaded, setIsLocationsLoaded] = useState(false);
    const [poisData, setPoisData] = useState([]);
@@ -22,37 +22,35 @@ const BiyalikMap = (props) => {
    const [filteredData, setFilteredData] = useState([]);
 
    const location = useLocation();
-   
+
    useEffect(() => {
       const searchParams = new URLSearchParams(location.search);
       const routeChosen = searchParams.get('routeChosen');
-      
-      //Get Route by ID
-      const fetchRoute = async () => {
+
+      //Get POIs by ID
+      const fetchPOIs = async () => {
          try {
             const response = await axios.get(
-               // `https://tiys.herokuapp.com/api/routes/${routeChosen}`
-               `https://tiys.herokuapp.com/api/routes`
-               );
-               
-            //Get route pois
-            const pois = response.data[0].pois;
-            
+               `https://tiys.herokuapp.com/api/pois`
+            );
+            const pois = response.data;
+
+            pois.filter((poi) => poi.includes(poiid));
             //Get all pois' coordinates
             const coordinatesArray = pois.map((poi) => poi.coordinates);
             setPoisCoordinatesData(coordinatesArray);
-            
+
             let latArray = [];
             let lngArray = [];
-            
+
             pois.forEach((poi) => {
                latArray.push(poi.coordinates.lat);
                lngArray.push(poi.coordinates.lng);
             });
-            
+
             setPoisLatData(latArray);
             setPoisLngData(lngArray);
-            
+
             // Set the state variable to true when data is loaded
             setIsLocationsLoaded(true);
          } catch (error) {
@@ -61,9 +59,13 @@ const BiyalikMap = (props) => {
       };
       fetchRoute();
    }, [location.search]);
-   
+
    useEffect(() => {
-      if (poisLatData.length > 0 && poisLngData.length > 0 && poisCoordinatesData > 0) {
+      if (
+         poisLatData.length > 0 &&
+         poisLngData.length > 0 &&
+         poisCoordinatesData > 0
+      ) {
          console.log(poisLatData, poisLngData);
          console.log(poisCoordinatesData);
       }
@@ -97,13 +99,15 @@ const BiyalikMap = (props) => {
 
    let locations, ARURLArray, locationName;
 
-   
-   if(isLocationsLoaded) { 
-         locations = poisData.map((item) => item.coordinates);
-         ARURLArray = poisData.map((item) => item.arid.url);
-         locationName = poisData.map((item) => item.name);
-         // const locationDes = poisData.map((item) => item.description);
-         // console.log(locationDes);
+   if (isLocationsLoaded) {
+      locations = poisData.map((item) => item.coordinates);
+      // console.log(locations);
+      ARURLArray = poisData.map((item) => item.arid.url);
+      console.log(ARURLArray);
+      locationName = poisData.map((item) => item.name);
+      console.log(locationName);
+      // const locationDes = poisData.map((item) => item.description);
+      // console.log(locationDes);
    }
 
    const initializeMap = () => {
@@ -127,8 +131,8 @@ const BiyalikMap = (props) => {
             poisLngData[0]
          );
          const destination = new window.google.maps.LatLng(
-            poisLatData[poisLatData.length-1],
-            poisLngData[poisLatData.length-1]
+            poisLatData[poisLatData.length - 1],
+            poisLngData[poisLatData.length - 1]
          );
 
          const request = {
@@ -170,12 +174,11 @@ const BiyalikMap = (props) => {
             //    const infoWindow = new window.google.maps.InfoWindow({
             //      content: location.name, // set the content of the info window
             //    });
-     
 
             const infoWindow = new window.google.maps.InfoWindow({
                content: location.name, // set the content of the info window
             });
-            
+
             marker.addListener('click', () => {
                infoWindow.open(map, marker); // open the info window when the marker is clicked
             });
@@ -183,8 +186,8 @@ const BiyalikMap = (props) => {
 
          poisCoordinatesData.forEach((poi, index) => {
             const marker = new window.google.maps.Marker({
-              position: { lat: poi.lat, lng: poi.lng },
-              map: map,
+               position: { lat: poi.lat, lng: poi.lng },
+               map: map,
             });
 
             const infoWindow = new window.google.maps.InfoWindow({
@@ -197,12 +200,12 @@ const BiyalikMap = (props) => {
                                        </a>
                                     </div>
                         </div>`,
-             });
-     
-             marker.addListener("click", () => {
+            });
+
+            marker.addListener('click', () => {
                infoWindow.open(map, marker);
-             });
-           });
+            });
+         });
 
          // Create a Marker object for the current user location
          if (navigator.geolocation) {
@@ -253,4 +256,4 @@ const BiyalikMap = (props) => {
    );
 };
 
-export default BiyalikMap;
+export default MapProducer;
