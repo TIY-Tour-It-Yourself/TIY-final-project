@@ -7,6 +7,7 @@ import {
 } from '@react-google-maps/api';
 import axios from 'axios';
 import arIcon from './images/ar_icon1.png';
+import ranking from './images/star.png';
 import { useLocation } from 'react-router-dom';
 
 const BiyalikMap = (props) => {
@@ -192,22 +193,59 @@ const BiyalikMap = (props) => {
               map: map,
             });
 
-             const infoWindow = new window.google.maps.InfoWindow({
+            const infoWindow = new window.google.maps.InfoWindow({
                content: `<div style="display: flex; justify-content: center; flex-direction: column;">
-                                         <div style="margin-left: 10px;"><h4>${locationName[index]}</h4></div>
-                             
-                                         <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
-                                             <a href="${ARURLArray[index]}" target="_blank">
-                                            <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
-                                            </a>
-                                         </div>
-                             </div>`,
-             });
-     
-             marker.addListener("click", () => {
-               infoWindow.open(map, marker);
-             });
-           });
+                                    <div style="margin-left: 10px;"><h4>${locationName[index]}</h4></div>
+                                  <div style="display: flex; justify-content: center; flex-direction: row; margin-left: 5px;">
+                                    <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
+                                        <a href="${ARURLArray[index]}" target="_blank">
+                                       <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
+                                       </a>
+                                    </div>
+                                    <div>
+                                    <a href="#" style="text-decoration: none;">
+                                       <img src=${ranking} style="padding: 7px;" width='25px' height='25px' alt='rankPoi'/>
+                                       </a>
+                                    </div>
+                                    </div>
+                        </div>`,
+            });
+            marker.addListener('click', () => {
+               infoWindow.open(map, marker); // open the info window when the marker is clicked
+            });
+         });
+
+      let userLocationMarker;
+
+      // if (navigator.geolocation) {
+      //   navigator.geolocation.getCurrentPosition((position) => {
+      //     if (userLocationMarker) {
+      //       // If the userLocationMarker already exists, update its position
+      //       userLocationMarker.setPosition({
+      //         lat: position.coords.latitude,
+      //         lng: position.coords.longitude,
+      //       });
+      //     } else {
+      //       // If the userLocationMarker doesn't exist yet, create it
+      //       userLocationMarker = new window.google.maps.Marker({
+      //         position: {
+      //           lat: position.coords.latitude,
+      //           lng: position.coords.longitude,
+      //         },
+      //         map,
+      //         icon: {
+      //           path: window.google.maps.SymbolPath.CIRCLE,
+      //           fillColor: "#0088FF",
+      //           fillOpacity: 0.6,
+      //           strokeColor: "#FFFFFF",
+      //           strokeWeight: 2,
+      //           scale: 10,
+      //         },
+      //       });
+      //     }
+      //     map.setCenter(userLocationMarker.getPosition());
+      //   });
+      // }
 
          // Create a Marker object for the current user location
          if (navigator.geolocation) {

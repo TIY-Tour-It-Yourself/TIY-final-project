@@ -10,7 +10,6 @@ import DashboardPage from './Pages/DashboardPage';
 import FormConsumerPage from './Pages/FormConsumerPage';
 import TourCarousel from './Components/SuggestionsPage/TourCarousel';
 import TourPage from './Components/SuggestionsPage/TourPage';
-// import BiyalikMap from './Components/MapPage/BiyalikMap';
 import NotFound from './Components/NotFoundPage/NotFound';
 import InteractiveMapPage from './Pages/InteractiveMapPage';
 import MapProducerPage from './Pages/MapProducerPage';
