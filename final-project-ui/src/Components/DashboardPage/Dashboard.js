@@ -11,8 +11,6 @@ import CardMedia from '@mui/material/CardMedia';
 import Container from '@mui/material/Container';
 import bursa from './card_images/bursa.jpg';
 import map from '../Additionals/Assets/map_cropped.jpg';
-// import park from './card_images/national_park.jpg';
-// import { display } from '@mui/system';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useNavigate } from 'react-router-dom';
@@ -25,24 +23,23 @@ const Dashboard = () => {
    return (
       <>
          <NavBar />
-         <Typography
+         <Typography component='div'
             className={styles.title}
             sx={ !isSmallScreen ? {
                display: 'flex',
                flexDirection: 'row',
                justifyContent: 'center',
                mt: '5%',
-               textAlign: 'left',
-            } : {}}
+               textAlign: 'center',
+            } : { textAlign: 'center'}}
          >
             <h1>What Would You Like To Do?</h1>
          </Typography>
          <Container sx={{ display: 'flex', flexWrap: 'wrap', mt: 2, justifyContent: 'space-evenly'}}>
             <Card className={styles.card} sx={{ width: 240 }}>
-               <CardMedia sx={isSmallScreen ? {}: {}}
+               <CardMedia
                   component="img"
                   height='100'
-                  center
                   image={bursa}
                   alt="National Park"
                />
@@ -58,10 +55,9 @@ const Dashboard = () => {
                </CardActions>
             </Card>
             <Card className={styles.card} sx={{ width: 240 }}>
-            <CardMedia sx={isSmallScreen ? {}: {}}
+            <CardMedia
                component="img"
                height='100'
-               center
                image={map}
                alt="National Park"
                />

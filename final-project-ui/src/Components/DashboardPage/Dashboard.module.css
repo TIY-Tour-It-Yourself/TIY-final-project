@@ -1,11 +1,5 @@
-/* .title > div {
-    padding-left: 1%;
-} */
 .title {
    color: rgb(58, 81, 123);
-}
-h1 {
-   /* color: rgb(58, 81, 123); */
 }
 
 @media (max-width: 600px) {

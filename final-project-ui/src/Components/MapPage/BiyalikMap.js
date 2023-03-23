@@ -13,6 +13,7 @@ const BiyalikMap = (props) => {
    const [isMapLoaded, setIsMapLoaded] = useState(false);
    const [isLocationsLoaded, setIsLocationsLoaded] = useState(false);
    const [poisData, setPoisData] = useState([]);
+   const [isPoisDataLoaded, setIsPoisDataLoaded] = useState('');
    const [poisLatData, setPoisLatData] = useState([]);
    const [poisLngData, setPoisLngData] = useState([]);
    const [themeSelectedId, setThemeSelectedId] = useState('');
@@ -31,7 +32,6 @@ const BiyalikMap = (props) => {
       const fetchRoute = async () => {
          try {
             const response = await axios.get(
-               // `https://tiys.herokuapp.com/api/routes/${routeChosen}`
                `https://tiys.herokuapp.com/api/routes`
                );
                
@@ -88,6 +88,7 @@ const BiyalikMap = (props) => {
                'https://tiys.herokuapp.com/api/pois'
             );
             setPoisData(response.data);
+            setIsPoisDataLoaded(true);
          } catch (error) {
             console.log(error);
          }
@@ -98,10 +99,14 @@ const BiyalikMap = (props) => {
    let locations, ARURLArray, locationName;
 
    
-   if(isLocationsLoaded) { 
+   if(isLocationsLoaded) {
+      console.log(poisData); 
          locations = poisData.map((item) => item.coordinates);
+         console.log(locations);
          ARURLArray = poisData.map((item) => item.arid.url);
+         console.log(ARURLArray);
          locationName = poisData.map((item) => item.name);
+         console.log(locationName);
          // const locationDes = poisData.map((item) => item.description);
          // console.log(locationDes);
    }
