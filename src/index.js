@@ -16,7 +16,7 @@ import InteractiveMapPage from "./Pages/InteractiveMapPage";
 import MapProducerPage from "./Pages/MapProducerPage";
 import FormProducerPage from "./Pages/FormProducerPage";
 import BialikMapPage from "./Pages/BialikMapPage";
-
+import { Evaluations } from "./Components/EvaluationPage/Evaluations";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <GoogleOAuthProvider
@@ -25,7 +25,6 @@ root.render(
     <React.StrictMode>
       <BrowserRouter>
         <Routes>
-          {" "}
           <Route path="/" element={<LoginPage />} />{" "}
           <Route path="/login" element={<LoginPage />} />{" "}
           <Route path="/register" element={<RegisterPage />} />{" "}
@@ -35,6 +34,7 @@ root.render(
           <Route path="/map_producer" element={<MapProducerPage />} />{" "}
           <Route path="/interactive_map" element={<InteractiveMapPage />} />{" "}
           {/* <Route path='/bialik' element={<BialikMap />} /> */}{" "}
+          <Route path="/evaluations" element={<Evaluations />} />{" "}
           <Route path="/bialikmap" element={<BialikMapPage />} />{" "}
           <Route path="/interactive_map" element={<InteractiveMapPage />} />{" "}
           <Route path="/suggestions" element={<TourCarousel />} />{" "}

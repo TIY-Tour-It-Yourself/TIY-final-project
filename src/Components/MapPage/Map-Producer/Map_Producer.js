@@ -7,6 +7,7 @@ import {
 } from "@react-google-maps/api";
 import axios from "axios";
 import arIcon from "./ar_icon1.png";
+import ranking from "./star.png";
 import { useLocation } from "react-router-dom";
 
 const Map_Producer = () => {
@@ -19,6 +20,10 @@ const Map_Producer = () => {
   const [poiDataArray, setPoiDataArray] = useState([]);
   const [locations, setLocations] = useState([]);
   const [names, setNames] = useState([]);
+  const [isNamesLoaded, setIsNamesLoaded] = useState(false);
+  const [ARElements, setARElements] = useState([]);
+  const [isARLoaded, setIsARLoaded] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -46,58 +51,35 @@ const Map_Producer = () => {
     fetchData();
   }, [location]);
 
-// get coordinates from pois
-useEffect(() => {
-  console.log(poiDataArray);
-  if (poiDataArray && poiDataArray.length > 0) {
-    const newLocations = poiDataArray.slice(0, 4).map((item) => item[0].coordinates);
-    console.log(newLocations);
-    setLocations(newLocations);
-    setIsLocationsLoaded(true); // set isLocationsLoaded to true
-  }
-}, [poiDataArray]);
-console.log(locations);
+  // get coordinates from pois
+  useEffect(() => {
+    console.log(poiDataArray);
+    if (poiDataArray && poiDataArray.length > 0) {
+      const newLocations = poiDataArray
+        .slice(0, 4)
+        .map((item) => item[0].coordinates);
+      console.log(newLocations);
+      setLocations(newLocations);
+      setIsLocationsLoaded(true); // set isLocationsLoaded to true
+    }
+  }, [poiDataArray]);
 
+  useEffect(() => {
+    if (poiDataArray && poiDataArray.length > 0) {
+      const newNames = poiDataArray.slice(0, 4).map((item) => item[0].name);
+      setNames(newNames);
+      setIsNamesLoaded(true);
+    }
+  }, [poiDataArray]);
 
-
-
-  //Get POIs from DB
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get("https://tiys.herokuapp.com/api/pois");
-  //       setDataArray(response.data);
-  //       // Set the state variable to true when data is loaded
-  //       setIsLocationsLoaded(true);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
-
-  // const locations = dataArray.map((item) => item.coordinates);
-  const aridArray = dataArray.map((item) => item.arid.url);
-  const locationName = dataArray.map((item) => item.name);
-  const locationDes = dataArray.map((item) => item.description);
-
-  //   useEffect(() => {
-  //     if (locations.length > 0) {
-  //       console.log(locations[0].lat);
-  //     }
-  //   }, [locations]);
-
-  // // Array of four locations
-  //   const locations = [
-  //     { lat: 32.079596752557755, lng: 34.823331062420216, name: "Location 1" },
-  //     { lat: 32.08380426675733, lng: 34.81488770244669, name: "Location 2" },
-  //     { lat: 32.084531024037936, lng: 34.813179804299615, name: "Location 3" },
-  //     { lat: 32.08632988098686, lng: 34.81831450580306, name: "Location 4" },
-  //   ];
-
-  //   const locations = dataArray.map((item) => item.coordinates);
-  //   console.log(locations);
-  //   console.log(locations[0].lat);
+  useEffect(() => {
+    if (poiDataArray && poiDataArray.length > 0) {
+      const newAR = poiDataArray.slice(0, 4).map((item) => item[0].arid.url);
+      setARElements(newAR);
+      setIsARLoaded(true);
+    }
+  }, [poiDataArray]);
+  console.log(ARElements);
 
   const initializeMap = () => {
     // Check if locations data is loaded and available
@@ -117,8 +99,8 @@ console.log(locations);
         locations[0].lng
       );
       const destination = new window.google.maps.LatLng(
-        locations[locations.length-1].lat,
-        locations[locations.length-1].lng
+        locations[locations.length - 1].lat,
+        locations[locations.length - 1].lng
       );
 
       const request = {
@@ -148,23 +130,6 @@ console.log(locations);
           directionsRenderer.setDirections(response);
         }
       });
-      // Create a Marker object for each location and add an info window
-      locations.forEach((location) => {
-        const marker = new window.google.maps.Marker({
-          position: { lat: location.lat, lng: location.lng },
-          map: map,
-        });
-
-        aridArray.forEach((arid) => {
-          const infoWindow = new window.google.maps.InfoWindow({
-            content: location.name, // set the content of the info window
-          });
-
-          marker.addListener("click", () => {
-            infoWindow.open(map, marker); // open the info window when the marker is clicked
-          });
-        });
-      });
 
       // Create a Marker object for each location and add an info window
       locations.forEach((location, index) => {
@@ -173,41 +138,71 @@ console.log(locations);
           map: map,
         });
 
-        const infoWindow = new window.google.maps.InfoWindow({
-          content: `<div>
-                               <h3>${locationName[index]}</h3>
-                               <a href="${aridArray[index]}" target="_blank">
-                                 <img src="${arIcon}" alt="AR Icon">
-                               </a>
-                             </div>`,
-        });
+        // const infoWindow = new window.google.maps.InfoWindow({
+        //   content: `<div style={{display: 'flex', justifyContent: 'center' , border: '2px solid black'}}>
+        //                             <h4>${names[index]}</h4>
 
+        //                             <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
+        //                                 <a href="${ARElements[index]}" target="_blank">
+        //                                <img src="${arIcon}" width='40px' height='40px' alt='${names[index]}'>
+        //                                </a>
+        //                             </div>
+        //                 </div>`,
+        // });
+        // marker.addListener("click", () => {
+        //   infoWindow.open(map, marker); // open the info window when the marker is clicked
+        // });
+        const infoWindow = new window.google.maps.InfoWindow({
+          content: `<div style="display: flex; justify-content: center; flex-direction: column;">
+                                    <div style="margin-left: 10px;"><h4>${names[index]}</h4></div>
+                        
+                                    <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
+                                        <a href="${ARElements[index]}" target="_blank">
+                                       <img src="${arIcon}" width='40px' height='40px' alt='${names[index]}'>
+                                       </a>
+                                       <a href="#" style="text-decoration:none;">
+                                       <img style="padding: 10px;"  width='40px' height='40px' src=${ranking}  />
+                                       </a>
+                                    </div>
+                        </div>`,
+        });
         marker.addListener("click", () => {
-          infoWindow.open(map, marker);
+          infoWindow.open(map, marker); // open the info window when the marker is clicked
         });
       });
+      
+      let userLocationMarker;
 
-      // Create a Marker object for the current user location
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          const userLocationMarker = new window.google.maps.Marker({
-            position: {
+        navigator.geolocation.watchPosition((position) => {
+          if (userLocationMarker) {
+            // If the userLocationMarker already exists, update its position
+            userLocationMarker.setPosition({
               lat: position.coords.latitude,
               lng: position.coords.longitude,
-            },
-            map,
-            icon: {
-              path: window.google.maps.SymbolPath.CIRCLE,
-              fillColor: "#0088FF",
-              fillOpacity: 0.6,
-              strokeColor: "#FFFFFF",
-              strokeWeight: 2,
-              scale: 10,
-            },
-          });
+            });
+          } else {
+            // If the userLocationMarker doesn't exist yet, create it
+            userLocationMarker = new window.google.maps.Marker({
+              position: {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+              },
+              map,
+              icon: {
+                path: window.google.maps.SymbolPath.CIRCLE,
+                fillColor: "#0088FF",
+                fillOpacity: 0.6,
+                strokeColor: "#FFFFFF",
+                strokeWeight: 2,
+                scale: 10,
+              },
+            });
+          }
           map.setCenter(userLocationMarker.getPosition());
         });
       }
+      
     }
   };
   //InitializeMap() is only called after the locations array has been populated with data
