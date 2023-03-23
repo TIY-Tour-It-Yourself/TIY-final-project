@@ -192,16 +192,16 @@ const BiyalikMap = (props) => {
               map: map,
             });
 
-            const infoWindow = new window.google.maps.InfoWindow({
-               content: `<div style={{display: 'flex', justifyContent: 'center' , border: '2px solid black'}}>
-                                    <h4>${locationName[index]}</h4>
-                        
-                                    <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
-                                       <a href="${ARURLArray[index]}" target="_blank">
-                                       <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
-                                       </a>
-                                    </div>
-                        </div>`,
+             const infoWindow = new window.google.maps.InfoWindow({
+               content: `<div style="display: flex; justify-content: center; flex-direction: column;">
+                                         <div style="margin-left: 10px;"><h4>${locationName[index]}</h4></div>
+                             
+                                         <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
+                                             <a href="${ARURLArray[index]}" target="_blank">
+                                            <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
+                                            </a>
+                                         </div>
+                             </div>`,
              });
      
              marker.addListener("click", () => {

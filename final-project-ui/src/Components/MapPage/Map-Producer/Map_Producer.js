@@ -39,7 +39,7 @@ const Map_Producer = () => {
           axios.get(`https://tiys.herokuapp.com/api/pois/${id}`)
         );
         const poiDataResults = await Promise.all(poiDataPromises);
-        console.log(poiDataResults);
+        // console.log(poiDataResults);
         const poiDataArray = poiDataResults.map((result) => result.data);
         setPoiDataArray(poiDataArray);
       } catch (error) {
@@ -51,12 +51,12 @@ const Map_Producer = () => {
 
   // get coordinates from pois
   useEffect(() => {
-    console.log(poiDataArray);
+    // console.log(poiDataArray);
     if (poiDataArray && poiDataArray.length > 0) {
       const newLocations = poiDataArray
         .slice(0, 4)
         .map((item) => item[0].coordinates);
-      console.log(newLocations);
+      // console.log(newLocations);
       setLocations(newLocations);
       setIsLocationsLoaded(true); // set isLocationsLoaded to true
     }
@@ -70,7 +70,7 @@ const Map_Producer = () => {
     }
   }, [poiDataArray]);
 
-  console.log(names); 
+  // console.log(names); 
   useEffect(() => {
     if (poiDataArray && poiDataArray.length > 0) {
       const newAR = poiDataArray.slice(0, 4).map((item) => item[0].arid.url);
@@ -78,9 +78,8 @@ const Map_Producer = () => {
       setIsARLoaded(true);
     }
   }, [poiDataArray]);
-  console.log(ARElements);
-
-  console.log(locations);
+  // console.log(ARElements);
+  // console.log(locations);
 
   const initializeMap = () => {
     // Check if locations data is loaded and available
@@ -140,8 +139,8 @@ const Map_Producer = () => {
         });
 
         const infoWindow = new window.google.maps.InfoWindow({
-          content: `<div style={{display: 'flex', justifyContent: 'center' , border: '2px solid black'}}>
-                                    <h4>${names[index]}</h4>
+          content: `<div style="display: flex; justify-content: center; flex-direction: column;">
+                                    <div style="margin-left: 10px;"><h4>${names[index]}</h4></div>
                         
                                     <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
                                         <a href="${ARElements[index]}" target="_blank">
