@@ -24,36 +24,36 @@ const BiyalikMap = (props) => {
    const [filteredData, setFilteredData] = useState([]);
 
    const location = useLocation();
-   
+
    useEffect(() => {
       const searchParams = new URLSearchParams(location.search);
       const routeChosen = searchParams.get('routeChosen');
-      
+
       //Get Route by ID
       const fetchRoute = async () => {
          try {
             const response = await axios.get(
                `https://tiys.herokuapp.com/api/routes`
-               );
-               
+            );
+
             //Get route pois
             const pois = response.data[0].pois;
-            
+
             //Get all pois' coordinates
             const coordinatesArray = pois.map((poi) => poi.coordinates);
             setPoisCoordinatesData(coordinatesArray);
-            
+
             let latArray = [];
             let lngArray = [];
-            
+
             pois.forEach((poi) => {
                latArray.push(poi.coordinates.lat);
                lngArray.push(poi.coordinates.lng);
             });
-            
+
             setPoisLatData(latArray);
             setPoisLngData(lngArray);
-            
+
             // Set the state variable to true when data is loaded
             setIsLocationsLoaded(true);
          } catch (error) {
@@ -62,24 +62,28 @@ const BiyalikMap = (props) => {
       };
       fetchRoute();
    }, [location.search]);
-   
+
    useEffect(() => {
-      if (poisLatData.length > 0 && poisLngData.length > 0 && poisCoordinatesData > 0) {
+      if (
+         poisLatData.length > 0 &&
+         poisLngData.length > 0 &&
+         poisCoordinatesData > 0
+      ) {
          console.log(poisLatData, poisLngData);
          console.log(poisCoordinatesData);
       }
    }, [poisLatData, poisLngData, poisCoordinatesData]);
 
    // Load the Google Maps API script
-   const loadGoogleMapsScript = () => {
-      const script = document.createElement('script');
-      // script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_API_KEY}&libraries=places`;
-      script.defer = true;
-      script.onload = () => {
-         initializeMap();
-      };
-      document.body.appendChild(script);
-   };
+   // const loadGoogleMapsScript = () => {
+   //    const script = document.createElement('script');
+   //    // script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_API_KEY}&libraries=places`;
+   //    script.defer = true;
+   //    script.onload = () => {
+   //       initializeMap();
+   //    };
+   //    document.body.appendChild(script);
+   // };
 
    //Get POIs from DB
    useEffect(() => {
@@ -99,22 +103,28 @@ const BiyalikMap = (props) => {
 
    let locations, ARURLArray, locationName;
 
-   
-   if(isLocationsLoaded) {
-      console.log(poisData); 
-         locations = poisData.map((item) => item.coordinates);
-         console.log(locations);
-         ARURLArray = poisData.map((item) => item.arid.url);
-         console.log(ARURLArray);
-         locationName = poisData.map((item) => item.name);
-         console.log(locationName);
-         // const locationDes = poisData.map((item) => item.description);
-         // console.log(locationDes);
+    //While data hasn't become an array yet- keep loading
+    if (!Array.isArray(poisData)) {
+      return <div>Loading...</div>;
    }
+   // if (Array.isArray(poisData) && poisData.length > 0) {
+      console.log(poisData);
+      locations = poisData.map((item) => item.coordinates);
+      console.log(locations);
+      ARURLArray = poisData.map((item) => item.arid.url);
+      console.log(ARURLArray);
+      locationName = poisData.map((item) => item.name);
+      console.log(locationName);
+      // const locationDes = poisData.map((item) => item.description);
+      // console.log(locationDes);
+   // } else {
+   //    return <div>Loading...</div>;
+   // } 
 
    const initializeMap = () => {
       // Check if locations data is loaded and available
-      if (isLocationsLoaded && poisCoordinatesData) {
+      if (isLocationsLoaded && poisCoordinatesData && poisData !== undefined) {
+         // console.log(isLocationsLoaded, JSON.stringify(poisCoordinatesData), JSON.stringify(poisData));
          // Create a map object and center it on the first location
          const map = new window.google.maps.Map(
             document.getElementById('map'),
@@ -133,8 +143,8 @@ const BiyalikMap = (props) => {
             poisLngData[0]
          );
          const destination = new window.google.maps.LatLng(
-            poisLatData[poisLatData.length-1],
-            poisLngData[poisLatData.length-1]
+            poisLatData[poisLatData.length - 1],
+            poisLngData[poisLatData.length - 1]
          );
 
          const request = {
@@ -166,48 +176,27 @@ const BiyalikMap = (props) => {
          });
 
          // Create a Marker object for each poi and add an info window
-         poisCoordinatesData.forEach((poi) => {
+         poisCoordinatesData.forEach((poi, index) => {
             const marker = new window.google.maps.Marker({
                position: { lat: poi.lat, lng: poi.lng },
                map: map,
             });
 
-            // ARURLArray.forEach((arUrl) => {
-            //    const infoWindow = new window.google.maps.InfoWindow({
-            //      content: location.name, // set the content of the info window
-            //    });
-     
-
-            const infoWindow = new window.google.maps.InfoWindow({
-               content: location.name, // set the content of the info window
-            });
-            
-            marker.addListener('click', () => {
-               infoWindow.open(map, marker); // open the info window when the marker is clicked
-            });
-         });
-
-         poisCoordinatesData.forEach((poi, index) => {
-            const marker = new window.google.maps.Marker({
-              position: { lat: poi.lat, lng: poi.lng },
-              map: map,
-            });
-
             const infoWindow = new window.google.maps.InfoWindow({
                content: `<div style="display: flex; justify-content: center; flex-direction: column;">
-                                    <div style="margin-left: 10px;"><h4>${locationName[index]}</h4></div>
-                                  <div style="display: flex; justify-content: center; flex-direction: row; margin-left: 5px;">
-                                    <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
-                                        <a href="${ARURLArray[index]}" target="_blank">
-                                       <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
-                                       </a>
-                                    </div>
-                                    <div>
-                                    <a href="#" style="text-decoration: none;">
-                                       <img src=${ranking} style="padding: 7px;" width='25px' height='25px' alt='rankPoi'/>
-                                       </a>
-                                    </div>
-                                    </div>
+                           <div style="margin-left: 10px;"><h4>${locationName[index]}</h4></div>
+                           <div style="display: flex; justify-content: center; flex-direction: row; margin-left: 5px;">
+                           <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
+                                 <a href="${ARURLArray[index]}" target="_blank">
+                              <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
+                              </a>
+                           </div>
+                           <div>
+                           <a href="#" style="text-decoration: none;">
+                              <img src=${ranking} style="padding: 7px;" width='25px' height='25px' alt='rankPoi'/>
+                              </a>
+                           </div>
+                           </div>
                         </div>`,
             });
             marker.addListener('click', () => {
@@ -215,37 +204,37 @@ const BiyalikMap = (props) => {
             });
          });
 
-      let userLocationMarker;
+         let userLocationMarker;
 
-      // if (navigator.geolocation) {
-      //   navigator.geolocation.getCurrentPosition((position) => {
-      //     if (userLocationMarker) {
-      //       // If the userLocationMarker already exists, update its position
-      //       userLocationMarker.setPosition({
-      //         lat: position.coords.latitude,
-      //         lng: position.coords.longitude,
-      //       });
-      //     } else {
-      //       // If the userLocationMarker doesn't exist yet, create it
-      //       userLocationMarker = new window.google.maps.Marker({
-      //         position: {
-      //           lat: position.coords.latitude,
-      //           lng: position.coords.longitude,
-      //         },
-      //         map,
-      //         icon: {
-      //           path: window.google.maps.SymbolPath.CIRCLE,
-      //           fillColor: "#0088FF",
-      //           fillOpacity: 0.6,
-      //           strokeColor: "#FFFFFF",
-      //           strokeWeight: 2,
-      //           scale: 10,
-      //         },
-      //       });
-      //     }
-      //     map.setCenter(userLocationMarker.getPosition());
-      //   });
-      // }
+         // if (navigator.geolocation) {
+         //   navigator.geolocation.getCurrentPosition((position) => {
+         //     if (userLocationMarker) {
+         //       // If the userLocationMarker already exists, update its position
+         //       userLocationMarker.setPosition({
+         //         lat: position.coords.latitude,
+         //         lng: position.coords.longitude,
+         //       });
+         //     } else {
+         //       // If the userLocationMarker doesn't exist yet, create it
+         //       userLocationMarker = new window.google.maps.Marker({
+         //         position: {
+         //           lat: position.coords.latitude,
+         //           lng: position.coords.longitude,
+         //         },
+         //         map,
+         //         icon: {
+         //           path: window.google.maps.SymbolPath.CIRCLE,
+         //           fillColor: "#0088FF",
+         //           fillOpacity: 0.6,
+         //           strokeColor: "#FFFFFF",
+         //           strokeWeight: 2,
+         //           scale: 10,
+         //         },
+         //       });
+         //     }
+         //     map.setCenter(userLocationMarker.getPosition());
+         //   });
+         // }
 
          // Create a Marker object for the current user location
          if (navigator.geolocation) {
