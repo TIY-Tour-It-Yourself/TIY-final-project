@@ -1,11 +1,9 @@
 import React from 'react';
 import styles from './NotFound.module.css';
-import { Link, Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
 import error from './tourist_man_confused.png';
 
 const NotFound = () => {
-   const navigate = useNavigate();
 
    return (
       <>
@@ -17,7 +15,7 @@ const NotFound = () => {
             <div className={styles.error}>
                <img className={styles.img_err} src={error} alt="404" width='450' height='450'/>
             </div>
-            <Box component='div' style={{margin: '0 auto', maxWidth: 'max-content', cursor: 'pointer'}} ><Link style={{ textDecoration: 'none', cursor: 'pointer', margin: '0 auto'}} onClick={() => { navigate('/dashboard')}}>Go Home</Link></Box>
+            <Box component='div' style={{margin: '0 auto', maxWidth: 'max-content'}} ><a href="/dashboard" style={{ textDecoration: 'none', cursor: 'pointer', fontWeight: 'bold', margin: '0 auto'}}>Go Home</a></Box>
          </section>
       </>
    );
