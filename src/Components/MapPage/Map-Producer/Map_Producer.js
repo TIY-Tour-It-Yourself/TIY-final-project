@@ -6,9 +6,10 @@ import {
   DirectionsRenderer,
 } from "@react-google-maps/api";
 import axios from "axios";
-import arIcon from "./ar_icon1.png";
-import ranking from "./star.png";
+import arIcon from "./images/ar_icon1.png";
+import ranking from "./images/star.png";
 import { useLocation } from "react-router-dom";
+import NavBar from "../../Additionals/NavBar/NavBar";
 
 const Map_Producer = () => {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -170,39 +171,44 @@ const Map_Producer = () => {
           infoWindow.open(map, marker); // open the info window when the marker is clicked
         });
       });
-      
+
       let userLocationMarker;
 
       if (navigator.geolocation) {
-        navigator.geolocation.watchPosition((position) => {
-          if (userLocationMarker) {
-            // If the userLocationMarker already exists, update its position
-            userLocationMarker.setPosition({
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            });
-          } else {
-            // If the userLocationMarker doesn't exist yet, create it
-            userLocationMarker = new window.google.maps.Marker({
-              position: {
+        navigator.geolocation.watchPosition(
+          (position) => {
+            if (userLocationMarker) {
+              // If the userLocationMarker already exists, update its position
+              userLocationMarker.setPosition({
                 lat: position.coords.latitude,
                 lng: position.coords.longitude,
-              },
-              map,
-              icon: {
-                path: window.google.maps.SymbolPath.CIRCLE,
-                fillColor: "#0088FF",
-                fillOpacity: 0.6,
-                strokeColor: "#FFFFFF",
-                strokeWeight: 2,
-                scale: 10,
-              },
-            });
-          }
-          map.setCenter(userLocationMarker.getPosition());
-        });
+              });
+            } else {
+              // If the userLocationMarker doesn't exist yet, create it
+              userLocationMarker = new window.google.maps.Marker({
+                position: {
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude,
+                },
+                map,
+                icon: {
+                  path: window.google.maps.SymbolPath.CIRCLE,
+                  fillColor: "#0088FF",
+                  fillOpacity: 0.6,
+                  strokeColor: "#FFFFFF",
+                  strokeWeight: 2,
+                  scale: 10,
+                },
+              });
+            }
+            map.setCenter(userLocationMarker.getPosition());
+          },
+          (error) => {
+            console.log(error);
+          },
+          { enableHighAccuracy: true }
+        );
       }
-      
     }
   };
   //InitializeMap() is only called after the locations array has been populated with data
@@ -214,14 +220,16 @@ const Map_Producer = () => {
 
   return (
     <div id="map" style={{ height: "100vh", width: "100%" }}>
-      {/* {isMapLoaded && <LoadScript />} */}
+      {" "}
+      <NavBar />
+      {/* {isMapLoaded && <LoadScript />} */}{" "}
       {window.google === undefined ? (
         <LoadScript>
           <GoogleMap />
         </LoadScript>
       ) : (
         <GoogleMap />
-      )}
+      )}{" "}
     </div>
   );
 };
