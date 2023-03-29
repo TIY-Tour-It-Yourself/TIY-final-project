@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from './Dashboard.module.css';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -13,12 +13,18 @@ import bursa from './card_images/bursa.jpg';
 import map from '../Additionals/Assets/map_cropped.jpg';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Dashboard = () => {
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
    const navigate = useNavigate();
+   const location = useLocation();
+
+   useEffect(() => {
+      const searchParams = new URLSearchParams(location.search);
+      const isAccessible = searchParams.get('is_accessible'); 
+   })
 
    return (
       <>

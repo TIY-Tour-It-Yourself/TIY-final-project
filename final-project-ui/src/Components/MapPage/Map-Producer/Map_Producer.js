@@ -20,6 +20,7 @@ const Map_Producer = () => {
    const [poiDataArray, setPoiDataArray] = useState([]);
    const [locations, setLocations] = useState([]);
    const [names, setNames] = useState([]);
+   // const [locationName, setLocationName] = useState('');
    const [isNamesLoaded, setIsNamesLoaded] = useState(false);
    const [ARElements, setARElements] = useState([]);
    const [isARLoaded, setIsARLoaded] = useState(false);
@@ -81,6 +82,24 @@ const Map_Producer = () => {
    }, [poiDataArray]);
    // console.log(ARElements);
    // console.log(locations);
+
+      // useEffect(() => {
+   //    const names = poisData.map(item => item.name);
+   //    setLocationName(names);
+   //    setIsNamesLoaded(true);
+   // },[poisData, locationName]);
+
+   // useEffect(() => {
+   //    if(locationName !== undefined) {
+   //       initializeMap();
+   //    }
+   // }, [locationName]);
+
+   // useEffect(() => {
+   //    if(ARURL !== undefined) {
+   //       initializeMap();
+   //    }
+   // }, [ARURL]);
 
    const initializeMap = () => {
       // Check if locations data is loaded and available

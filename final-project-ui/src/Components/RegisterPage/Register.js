@@ -56,7 +56,7 @@ const Register = (props) => {
                console.log(response.data);
                setIsFormValid(true);
                if (response.status === 200) {
-                  navigate('/dashboard');
+                  navigate(`/dashboard?isAccessible=${is_accessible}`);
                } else {
                   console.log('Status is not 200');
                }

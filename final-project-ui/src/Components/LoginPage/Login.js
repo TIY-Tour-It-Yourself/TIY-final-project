@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import {
-   TextField,
-   Button,
-   FormControl,
-   Typography
-} from '@mui/material';
+import { TextField, Button, FormControl, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 // import FacebookLogin from 'react-facebook-login';
-import { 
-   googleLogout, 
-   useGoogleLogin, 
-   // GoogleLogin 
+import {
+   googleLogout,
+   useGoogleLogin,
+   // GoogleLogin
 } from '@react-oauth/google';
-import axios from 'axios';
+import axios, { isCancel } from 'axios';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Logo from '../Additionals/Logo/Logo';
 import Header from '../Additionals/Header/Header';
@@ -31,52 +26,55 @@ const Login = (props) => {
    const [isValid, setIsValid] = useState(false);
    const [isDirty, setIsDirty] = useState(false);
    const [isFormValid, setIsFormValid] = useState(false);
-
+   const [is_accessible, setIsAccessible] = useState('');
    const [logged, setIsLogged] = useState(false);
    const [data, setData] = useState({});
    const [picture, setPicture] = useState('');
-
    const navigate = useNavigate();
 
-   const handleSubmit = (e) => {
+   useEffect(() => {
+      if (is_accessible) {
+         // console.log(`${JSON.stringify(data)} , ${is_accessible}`);
+        navigate(`/dashboard?isAccessible=${is_accessible}`);
+      }
+    }, [is_accessible, data]);
+
+   const handleSubmit = async (e) => {
       e.preventDefault();
 
-      //Post request - need to post data to DB to check if specific user is already registered
-      if (email.trim().length !== 0 && password.trim().length !== 0) {
-         axios
-            .post(`https://tiys.herokuapp.com/api/auth`, {
-               email,
-               password,
-            })
-            .then((response) => {
-               console.log(response.data);
-               setIsFormValid(true);
-               setData(response.data);
-
-               if (response.status == 200) {
-                  navigate('/dashboard');
-               } else {
-                  console.log('Status is not 200');
+      try {
+         if (email.trim().length !== 0 && password.trim().length !== 0) {
+            // const { data } = await axios.post(`https://tiys.herokuapp.com/api/auth`, {
+            const response = await axios.post(
+               `https://tiys.herokuapp.com/api/auth`,
+               {
+                  email,
+                  password,
                }
-               // console.log(response.data.token);
-            })
-            .catch((err) => {
-               console.log(err.response.data.errors[0]);
-               if (
-                  err.response.data.errors[0].msg == 'Password is not correct'
-               ) {
-                  alert('Password is not correct.');
-               } else if (
-                  err.response.data.errors[0].msg == 'Email is not correct'
-               ) {
-                  alert('Email is not correct.');
-               } else {
-                  alert('Invalid Credentials.');
-               }
-            });
-      } else {
-         alert('All fields are required.');
-         setIsFormValid(false);
+            );
+            setData(response.data);
+            //Change to response.data.is_accessible once it's available on DB
+            setIsAccessible(response.data.age);
+            setIsFormValid(true);
+   
+            // if (response.status == 200) {
+            //    navigate(`/dashboard?isAccessible=${is_accessible}`);
+            // } else {
+            //    console.log('Status is not 200');
+            // }
+         } else {
+            alert('All fields are required.');
+            setIsFormValid(false);
+         }
+      } catch (err) {
+         console.log(err.response.data.errors[0]);
+         if (err.response.data.errors[0].msg == 'Password is not correct') {
+            alert('Password is not correct.');
+         } else if (err.response.data.errors[0].msg == 'Email is not correct') {
+            alert('Email is not correct.');
+         } else {
+            alert('Invalid Credentials.');
+         }
       }
    };
 

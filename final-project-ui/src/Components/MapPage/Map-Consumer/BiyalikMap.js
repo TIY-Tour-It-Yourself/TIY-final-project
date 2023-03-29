@@ -13,6 +13,7 @@ import { useLocation } from 'react-router-dom';
 const BiyalikMap = (props) => {
    const [isMapLoaded, setIsMapLoaded] = useState(false);
    const [isLocationsLoaded, setIsLocationsLoaded] = useState(false);
+   // const [locationName, setLocationName] = useState('');
    const [poisData, setPoisData] = useState([]);
    const [isPoisDataLoaded, setIsPoisDataLoaded] = useState('');
    const [poisLatData, setPoisLatData] = useState([]);
@@ -101,25 +102,36 @@ const BiyalikMap = (props) => {
       getPoisData();
    }, []);
 
-   let locations, ARURLArray, locationName;
-
-    //While data hasn't become an array yet- keep loading
-    if (!Array.isArray(poisData)) {
+   //While data hasn't become an array yet- keep loading
+   if (!Array.isArray(poisData)) {
       return <div>Loading...</div>;
    }
    // if (Array.isArray(poisData) && poisData.length > 0) {
-      console.log(poisData);
-      locations = poisData.map((item) => item.coordinates);
-      console.log(locations);
-      ARURLArray = poisData.map((item) => item.arid.url);
-      console.log(ARURLArray);
-      locationName = poisData.map((item) => item.name);
-      console.log(locationName);
-      // const locationDes = poisData.map((item) => item.description);
-      // console.log(locationDes);
-   // } else {
-   //    return <div>Loading...</div>;
-   // } 
+   console.log(poisData);
+   const locations = poisData.map(item => item.coordinates);
+   console.log(locations);
+   const ARURLArray = poisData.map(item => item.arid.url);
+   console.log(ARURLArray);
+   const names = poisData.map(item => item.name);
+   console.log(names);
+
+   // useEffect(() => {
+   //    const names = poisData.map(item => item.name);
+   //    setLocationName(names);
+   //    setIsNamesLoaded(true);
+   // },[poisData, locationName]);
+
+   // useEffect(() => {
+   //    if(locationName !== undefined) {
+   //       initializeMap();
+   //    }
+   // }, [locationName]);
+
+   // useEffect(() => {
+   //    if(ARURL !== undefined) {
+   //       initializeMap();
+   //    }
+   // }, [ARURL]);
 
    const initializeMap = () => {
       // Check if locations data is loaded and available
@@ -184,11 +196,11 @@ const BiyalikMap = (props) => {
 
             const infoWindow = new window.google.maps.InfoWindow({
                content: `<div style="display: flex; justify-content: center; flex-direction: column;">
-                           <div style="margin-left: 10px;"><h4>${locationName[index]}</h4></div>
+                           <div style="margin-left: 10px;"><h4>${names[index]}</h4></div>
                            <div style="display: flex; justify-content: center; flex-direction: row; margin-left: 5px;">
                            <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
                                  <a href="${ARURLArray[index]}" target="_blank">
-                              <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
+                              <img src="${arIcon}" width='40px' height='40px' alt='${names[index]}'>
                               </a>
                            </div>
                            <div>
