@@ -20,7 +20,6 @@ const Map_Producer = () => {
    const [poiDataArray, setPoiDataArray] = useState([]);
    const [locations, setLocations] = useState([]);
    const [names, setNames] = useState([]);
-   // const [locationName, setLocationName] = useState('');
    const [isNamesLoaded, setIsNamesLoaded] = useState(false);
    const [ARElements, setARElements] = useState([]);
    const [isARLoaded, setIsARLoaded] = useState(false);
@@ -29,7 +28,7 @@ const Map_Producer = () => {
       const params = new URLSearchParams(location.search);
       const newPoiids = [];
 
-      for (let i = 1; i <= 4; i++) {
+      for (let i = 1; i <= 3; i++) {
          const poiid = params.get(`poi${i}`);
          newPoiids.push(poiid);
       }
@@ -41,7 +40,6 @@ const Map_Producer = () => {
                axios.get(`https://tiys.herokuapp.com/api/pois/${id}`)
             );
             const poiDataResults = await Promise.all(poiDataPromises);
-            // console.log(poiDataResults);
             const poiDataArray = poiDataResults.map((result) => result.data);
             setPoiDataArray(poiDataArray);
          } catch (error) {
@@ -51,14 +49,11 @@ const Map_Producer = () => {
       fetchData();
    }, [location]);
 
-   // get coordinates from pois
+   //Get Coordinates from POIS
    useEffect(() => {
-      // console.log(poiDataArray);
       if (poiDataArray && poiDataArray.length > 0) {
          const newLocations = poiDataArray
-            .slice(0, 4)
             .map((item) => item[0].coordinates);
-         // console.log(newLocations);
          setLocations(newLocations);
          setIsLocationsLoaded(true); // set isLocationsLoaded to true
       }
@@ -66,40 +61,22 @@ const Map_Producer = () => {
 
    useEffect(() => {
       if (poiDataArray && poiDataArray.length > 0) {
-         const newNames = poiDataArray.slice(0, 4).map((item) => item[0].name);
+         const newNames = poiDataArray
+            .map((item) => item[0].name);
          setNames(newNames);
          setIsNamesLoaded(true);
       }
    }, [poiDataArray]);
 
-   // console.log(names);
    useEffect(() => {
       if (poiDataArray && poiDataArray.length > 0) {
-         const newAR = poiDataArray.slice(0, 4).map((item) => item[0].arid.url);
+         const newAR = poiDataArray
+            // .slice(0, 4)
+            .map((item) => item[0].arid.url);
          setARElements(newAR);
          setIsARLoaded(true);
       }
    }, [poiDataArray]);
-   // console.log(ARElements);
-   // console.log(locations);
-
-      // useEffect(() => {
-   //    const names = poisData.map(item => item.name);
-   //    setLocationName(names);
-   //    setIsNamesLoaded(true);
-   // },[poisData, locationName]);
-
-   // useEffect(() => {
-   //    if(locationName !== undefined) {
-   //       initializeMap();
-   //    }
-   // }, [locationName]);
-
-   // useEffect(() => {
-   //    if(ARURL !== undefined) {
-   //       initializeMap();
-   //    }
-   // }, [ARURL]);
 
    const initializeMap = () => {
       // Check if locations data is loaded and available
@@ -183,59 +160,43 @@ const Map_Producer = () => {
             });
          });
 
-         // Create a Marker object for the current user location
-         // if (navigator.geolocation) {
-         //    navigator.geolocation.getCurrentPosition((position) => {
-         //       const userLocationMarker = new window.google.maps.Marker({
-         //          position: {
-         //             lat: position.coords.latitude,
-         //             lng: position.coords.longitude,
-         //          },
-         //          map,
-         //          icon: {
-         //             path: window.google.maps.SymbolPath.CIRCLE,
-         //             fillColor: '#0088FF',
-         //             fillOpacity: 0.6,
-         //             strokeColor: '#FFFFFF',
-         //             strokeWeight: 2,
-         //             scale: 10,
-         //          },
-         //       });
-         //       map.setCenter(userLocationMarker.getPosition());
-         //    });
-         // }
+         let userLocationMarker;
 
-      let userLocationMarker;
-
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          if (userLocationMarker) {
-            // If the userLocationMarker already exists, update its position
-            userLocationMarker.setPosition({
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            });
-          } else {
-            // If the userLocationMarker doesn't exist yet, create it
-            userLocationMarker = new window.google.maps.Marker({
-              position: {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude,
-              },
-              map,
-              icon: {
-                path: window.google.maps.SymbolPath.CIRCLE,
-                fillColor: "#0088FF",
-                fillOpacity: 0.6,
-                strokeColor: "#FFFFFF",
-                strokeWeight: 2,
-                scale: 10,
-              },
-            });
-          }
-          map.setCenter(userLocationMarker.getPosition());
-        });
-      }
+         if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(
+               (position) => {
+                  if (userLocationMarker) {
+                     // If the userLocationMarker already exists, update its position
+                     userLocationMarker.setPosition({
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                     });
+                  } else {
+                     // If the userLocationMarker doesn't exist yet, create it
+                     userLocationMarker = new window.google.maps.Marker({
+                        position: {
+                           lat: position.coords.latitude,
+                           lng: position.coords.longitude,
+                        },
+                        map,
+                        icon: {
+                           path: window.google.maps.SymbolPath.CIRCLE,
+                           fillColor: '#0088FF',
+                           fillOpacity: 0.6,
+                           strokeColor: '#FFFFFF',
+                           strokeWeight: 2,
+                           scale: 10,
+                        },
+                     });
+                  }
+                  map.setCenter(userLocationMarker.getPosition());
+               },
+               (error) => {
+                  console.log(error);
+               },
+               { enableHighAccuracy: true }
+            );
+         }
       }
    };
    //InitializeMap() is only called after the locations array has been populated with data

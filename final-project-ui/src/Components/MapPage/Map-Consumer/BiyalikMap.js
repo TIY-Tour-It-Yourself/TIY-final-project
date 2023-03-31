@@ -13,35 +13,37 @@ import { useLocation } from 'react-router-dom';
 const BiyalikMap = (props) => {
    const [isMapLoaded, setIsMapLoaded] = useState(false);
    const [isLocationsLoaded, setIsLocationsLoaded] = useState(false);
-   // const [locationName, setLocationName] = useState('');
    const [poisData, setPoisData] = useState([]);
    const [isPoisDataLoaded, setIsPoisDataLoaded] = useState('');
    const [poisLatData, setPoisLatData] = useState([]);
    const [poisLngData, setPoisLngData] = useState([]);
-   const [themeSelectedId, setThemeSelectedId] = useState('');
-   const [selectedLevelId, setSelectedLevelId] = useState('');
    const [poisCoordinatesData, setPoisCoordinatesData] = useState([]);
-   const [filteredRoutes, setFilteredRoutes] = useState([]);
-   const [filteredData, setFilteredData] = useState([]);
+   const [isNamesLoaded, setIsNamesLoaded] = useState(false);
+   const [isURLsLoaded, setIsURLsLoaded] = useState(false);
+   const [locationName, setLocationName] = useState([]);
+   const [ARURLArray, setARURLArray] = useState([]);
+   const [poisNames, setPoisNames] = useState([]);
+   const [poisIdNums, setPoisIdNums] = useState([]);
 
    const location = useLocation();
 
    useEffect(() => {
       const searchParams = new URLSearchParams(location.search);
-      const routeChosen = searchParams.get('routeChosen');
+      const routeChosen = searchParams.get('routeId');
 
       //Get Route by ID
       const fetchRoute = async () => {
          try {
             const response = await axios.get(
-               `https://tiys.herokuapp.com/api/routes`
+               `https://tiys.herokuapp.com/api/routes/${routeChosen}`
             );
-
             //Get route pois
             const pois = response.data[0].pois;
+            const poisIds = pois.map(poi => poi.poiid);
 
             //Get all pois' coordinates
             const coordinatesArray = pois.map((poi) => poi.coordinates);
+            
             setPoisCoordinatesData(coordinatesArray);
 
             let latArray = [];
@@ -54,6 +56,8 @@ const BiyalikMap = (props) => {
 
             setPoisLatData(latArray);
             setPoisLngData(lngArray);
+            setPoisNames(pois);
+            setPoisIdNums(poisIds);
 
             // Set the state variable to true when data is loaded
             setIsLocationsLoaded(true);
@@ -75,17 +79,6 @@ const BiyalikMap = (props) => {
       }
    }, [poisLatData, poisLngData, poisCoordinatesData]);
 
-   // Load the Google Maps API script
-   // const loadGoogleMapsScript = () => {
-   //    const script = document.createElement('script');
-   //    // script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_API_KEY}&libraries=places`;
-   //    script.defer = true;
-   //    script.onload = () => {
-   //       initializeMap();
-   //    };
-   //    document.body.appendChild(script);
-   // };
-
    //Get POIs from DB
    useEffect(() => {
       const getPoisData = async () => {
@@ -102,42 +95,43 @@ const BiyalikMap = (props) => {
       getPoisData();
    }, []);
 
+   useEffect(() => {
+         //Get route pois' names
+         const names = poisNames.map((poi) => poi.name);
+         console.log(names);
+         setLocationName(names);
+         setIsNamesLoaded(true);
+   }, [poisNames, setLocationName]);
+
+   useEffect(() => {
+      if (locationName !== undefined) {
+         initializeMap();
+      }
+   }, [locationName]);
+
+   useEffect(() => {
+      //Get AR element
+      const routePois = poisData.filter((poi) => poisIdNums.includes(poi.poiid));
+      const arURLs = routePois.map((arElement) => arElement.arid.url);
+      // const ARURLs = poisData.map((item) => item.arid.url);
+      setARURLArray(arURLs);
+      setIsURLsLoaded(true);
+   }, [poisData, setARURLArray]);
+
+   useEffect(() => {
+      if (ARURLArray !== undefined) {
+         initializeMap();
+      }
+   }, [ARURLArray]);
+
    //While data hasn't become an array yet- keep loading
-   if (!Array.isArray(poisData)) {
+   if (!Array.isArray(poisNames) && (!Array.isArray(poisIdNums)) && (!Array.isArray(poisData))) {
       return <div>Loading...</div>;
    }
-   // if (Array.isArray(poisData) && poisData.length > 0) {
-   console.log(poisData);
-   const locations = poisData.map(item => item.coordinates);
-   console.log(locations);
-   const ARURLArray = poisData.map(item => item.arid.url);
-   console.log(ARURLArray);
-   const names = poisData.map(item => item.name);
-   console.log(names);
-
-   // useEffect(() => {
-   //    const names = poisData.map(item => item.name);
-   //    setLocationName(names);
-   //    setIsNamesLoaded(true);
-   // },[poisData, locationName]);
-
-   // useEffect(() => {
-   //    if(locationName !== undefined) {
-   //       initializeMap();
-   //    }
-   // }, [locationName]);
-
-   // useEffect(() => {
-   //    if(ARURL !== undefined) {
-   //       initializeMap();
-   //    }
-   // }, [ARURL]);
 
    const initializeMap = () => {
       // Check if locations data is loaded and available
       if (isLocationsLoaded && poisCoordinatesData && poisData !== undefined) {
-         // console.log(isLocationsLoaded, JSON.stringify(poisCoordinatesData), JSON.stringify(poisData));
-         // Create a map object and center it on the first location
          const map = new window.google.maps.Map(
             document.getElementById('map'),
             {
@@ -196,11 +190,11 @@ const BiyalikMap = (props) => {
 
             const infoWindow = new window.google.maps.InfoWindow({
                content: `<div style="display: flex; justify-content: center; flex-direction: column;">
-                           <div style="margin-left: 10px;"><h4>${names[index]}</h4></div>
+                           <div style="margin-left: 10px;"><h4>${locationName[index]}</h4></div>
                            <div style="display: flex; justify-content: center; flex-direction: row; margin-left: 5px;">
                            <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
                                  <a href="${ARURLArray[index]}" target="_blank">
-                              <img src="${arIcon}" width='40px' height='40px' alt='${names[index]}'>
+                              <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
                               </a>
                            </div>
                            <div>
@@ -218,56 +212,40 @@ const BiyalikMap = (props) => {
 
          let userLocationMarker;
 
-         // if (navigator.geolocation) {
-         //   navigator.geolocation.getCurrentPosition((position) => {
-         //     if (userLocationMarker) {
-         //       // If the userLocationMarker already exists, update its position
-         //       userLocationMarker.setPosition({
-         //         lat: position.coords.latitude,
-         //         lng: position.coords.longitude,
-         //       });
-         //     } else {
-         //       // If the userLocationMarker doesn't exist yet, create it
-         //       userLocationMarker = new window.google.maps.Marker({
-         //         position: {
-         //           lat: position.coords.latitude,
-         //           lng: position.coords.longitude,
-         //         },
-         //         map,
-         //         icon: {
-         //           path: window.google.maps.SymbolPath.CIRCLE,
-         //           fillColor: "#0088FF",
-         //           fillOpacity: 0.6,
-         //           strokeColor: "#FFFFFF",
-         //           strokeWeight: 2,
-         //           scale: 10,
-         //         },
-         //       });
-         //     }
-         //     map.setCenter(userLocationMarker.getPosition());
-         //   });
-         // }
-
-         // Create a Marker object for the current user location
          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
-               const userLocationMarker = new window.google.maps.Marker({
-                  position: {
-                     lat: position.coords.latitude,
-                     lng: position.coords.longitude,
-                  },
-                  map,
-                  icon: {
-                     path: window.google.maps.SymbolPath.CIRCLE,
-                     fillColor: '#0088FF',
-                     fillOpacity: 0.6,
-                     strokeColor: '#FFFFFF',
-                     strokeWeight: 2,
-                     scale: 10,
-                  },
-               });
-               map.setCenter(userLocationMarker.getPosition());
-            });
+            navigator.geolocation.watchPosition(
+               (position) => {
+                  if (userLocationMarker) {
+                     // If the userLocationMarker already exists, update its position
+                     userLocationMarker.setPosition({
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                     });
+                  } else {
+                     // If the userLocationMarker doesn't exist yet, create it
+                     userLocationMarker = new window.google.maps.Marker({
+                        position: {
+                           lat: position.coords.latitude,
+                           lng: position.coords.longitude,
+                        },
+                        map,
+                        icon: {
+                           path: window.google.maps.SymbolPath.CIRCLE,
+                           fillColor: '#0088FF',
+                           fillOpacity: 0.6,
+                           strokeColor: '#FFFFFF',
+                           strokeWeight: 2,
+                           scale: 10,
+                        },
+                     });
+                  }
+                  map.setCenter(userLocationMarker.getPosition());
+               },
+               (error) => {
+                  console.log(error);
+               },
+               { enableHighAccuracy: true }
+            );
          }
       }
    };

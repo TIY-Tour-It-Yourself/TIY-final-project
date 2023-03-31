@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import ARFirstLevel from './ar_imgs/boy_with_mobile_level_2.jpg';
 import ARSecondLevel from './ar_imgs/ar_img_1.jpg';
 import Bialik from './routes_imgs/tour_bialik.jpg';
+import Parks from './routes_imgs/yom_kipur_garden.jpg';
 import Culinary from './routes_imgs/baklava_pic.jpg';
 
 const arImgs = [
@@ -93,9 +94,6 @@ const Form_Consumer = () => {
          console.log(routeid);
          setRouteChosen(routeid);
          setIsFormValid(true);
-         //Navigate to interactive map
-         // navigate(`/biyalik_map?themeSelectedId=${themeSelectedId}&selectedLevelId=${selectedLevelId}`);
-         // navigate(`/biyalik_map?routeId=${routeChosen}`);
       } else {
          setIsFormValid(false);
       }
@@ -113,6 +111,19 @@ const Form_Consumer = () => {
       const handleARExperience = (arId) => {
          setSelectedLevelId(arId);
       };
+
+      // let imgSrc;
+      
+      // console.log(routes.map(route => route.routeid));
+      // if(routes.routeid === 1) {
+      //    imgSrc = Bialik;
+      // } else if(routes.routeid === 2) {
+      //    console.log(routes.routeid);
+      //    imgSrc = Parks;
+      // } else {
+      //    console.log(routes.routeid);
+      //    imgSrc = Culinary;
+      // }
 
    return (
       <>
