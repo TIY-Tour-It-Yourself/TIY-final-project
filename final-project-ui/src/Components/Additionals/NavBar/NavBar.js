@@ -49,7 +49,7 @@ const NavBar = () => {
    };
 
    return (
-      <AppBar position='fixed' style={{backgroundColor:'white'}} sx={isSmallScreen ? {top: 'auto', bottom: 0} : {}}>
+      <AppBar position='fixed' style={{backgroundColor:'white' }} sx={isSmallScreen ? {top: 'auto', bottom: 0} : {}}>
          <Container maxWidth='xl'>
             <Toolbar disableGutters>
           
@@ -65,10 +65,12 @@ const NavBar = () => {
                         key={link.id}
                         sx={{
                            my: 2,
+                           mx: 1,
                            color: '#00337C',
                            display: 'block',
-                           fontSize: '1rem',
+                           fontSize: '1.05rem',
                            fontWeight: 'bold',
+                           fontFamily: 'Rubik, sans-serif'
                         }}
                      >
                         {link.title}

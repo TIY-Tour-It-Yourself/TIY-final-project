@@ -54,6 +54,8 @@
    flex-direction: row;
    flex-wrap: wrap;
    justify-content: center;
+   width: max-content;
+   margin: 0 auto;
 }
 
 .poi_imgs > div {
@@ -82,7 +84,7 @@
    }
 
    .AR_exp_div {
-      margin-left: 20%;
+      margin-left: 0;
    }
 
    .theme_div {
@@ -93,9 +95,9 @@
    .ar_imgs {
       justify-content: center;
       flex-direction: column;
-      margin-bottom: -15px;
       margin-left: 12%;
       max-width: max-content;
+      margin: 0 auto;
    }
 
    .ar_imgs > div > img {
@@ -106,7 +108,7 @@
 
    .pois_title {
       margin-left: 15%;
-      margin-top: 7%;
+      margin-top: 6%;
    }
 
    .poi_imgs {

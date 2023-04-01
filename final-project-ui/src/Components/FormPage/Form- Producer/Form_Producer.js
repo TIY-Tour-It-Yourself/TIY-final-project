@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Form_Producer.module.css';
 import axios from 'axios';
-import { Button, Typography, Box, Grid } from '@mui/material';
-import NavBar from '../../Additionals/NavBar/NavBar';
+import { Button, Typography, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { useNavigate } from 'react-router-dom';
+import NavBar from '../../Additionals/NavBar/NavBar';
+import Grid from '../../Additionals/Grid/Grid';
+import LoadingBar from '../../Additionals/LoadingBar/LoadingBar';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import ARFirstLevel from './ar_imgs/boy_with_mobile_level_2.jpg';
 import ARSecondLevel from './ar_imgs/ar_img_1.jpg';
 import Bialik from './routes_imgs/tour_bialik.jpg';
@@ -24,6 +26,7 @@ const Form_Producer = () => {
    const [routeChosen, setRouteChosen] = useState('');
    const [routes, setRoutes] = useState('');
    const [filteredData, setFilteredData] = useState([]);
+   const [isLoading, setIsLoading] = useState(false);
 
    //POIs' states
    const [poi1, setPoi1] = useState('');
@@ -53,36 +56,29 @@ const Form_Producer = () => {
 
    //Get Themes from DB
    useEffect(() => {
+      setIsLoading(true);
       axios
          .get('https://tiys.herokuapp.com/api/themes')
          .then((response) => {
             setFormTheme(response.data);
-         })
-         .catch((err) => {
-            console.log(err);
-         });
-   }, []);
-
-   //Get all POIs
-   useEffect(() => {
-      axios
-         .get('https://tiys.herokuapp.com/api/pois')
-         .then((response) => {
-            setCoordinates(response.data);
+            setIsLoading(false);
          })
          .catch((error) => {
-            console.error('Error fetching POIs: ', error);
+            console.error('Error fetching Themes: ', error);
+            setIsLoading(false);
          });
    }, []);
 
    //Get POIS from DB
    useEffect(() => {
+      setIsLoading(true);
       const filterData = async () => {
          try {
             // Make an API request to fetch the routes data
             const response = await axios.get(
                'https://tiys.herokuapp.com/api/pois'
             );
+            setIsLoading(false);
             setCoordinates(response.data);
 
             // Check if both Theme and ARlevel have been selected
@@ -101,9 +97,11 @@ const Form_Producer = () => {
             } else {
                // If either theme or level is not selected, set filtered data to null
                setFilteredData(null);
+               setIsLoading(false);
             }
          } catch (error) {
             console.log(error);
+            setIsLoading(false);
          }
       };
 
@@ -112,7 +110,8 @@ const Form_Producer = () => {
 
    //While data hasn't become an array yet- keep loading
    if (!Array.isArray(formTheme) || !Array.isArray(coordinates)) {
-      return <div> Loading... </div>;
+      // return <div> Loading... </div>;
+      return <LoadingBar/>;
    }
 
    const handleBuildTour = (event) => {
@@ -134,18 +133,19 @@ const Form_Producer = () => {
          if (poiIndex === -1) {
             //POI not already selected- add to array
             setSelectedPOIs([...selectedPOIs, poi]);
-            console.log(`line 130: ${selectedPOIs}`);
+            setIsFormValid(true);
          } else {
-            console.log(`removed ${selectedPOIs}`);
             //POI already selected- remove from array
             const updatedPOIs = [...selectedPOIs];
             updatedPOIs.splice(poiIndex, 1);
             setSelectedPOIs(updatedPOIs);
          }
+      } else {
+         alert("Theme and AR Experience must be chosen.");
+         setIsFormValid(false);
       }
    };
    const poiid = selectedPOIs ? selectedPOIs.map((item) => item.poiid) : [];
-   console.log('line 146 :', poiid);
 
    // Convert poiid array to an object with numbered keys
    const poiidMap = poiid.reduce((accumulator, current, i) => {
@@ -153,23 +153,10 @@ const Form_Producer = () => {
       return accumulator;
    }, {});
 
-   // console.log("line 145 :", poiid[0]);
-
-   // let coordinate = [];
-   // if (selectedPOIs) {
-   //   for (let i = 0; i < selectedPOIs.length; i++) {
-   //     coordinate.push(selectedPOIs[i].coordinates);
-   //   }
-   // }
-
-   // for (let i = 0; i < coordinate.length; i++) {
-   //   console.log("POI " + (i + 1) + " latitude: " + coordinate[i].lat);
-   // }
-
    return (
       <>
          <NavBar />
-         <Typography component='div' className={styles.title}>
+        <Typography component='div' className={styles.title}>
             <h1 style={!isSmallScreen ? {} : { fontSize: '25px' }}>
                Build Your Tour{' '}
             </h1>{' '}
@@ -178,11 +165,11 @@ const Form_Producer = () => {
             <Typography
                sx={
                   isSmallScreen
-                     ? { fontSize: '1rem', marginLeft: '18%' }
+                     ? { fontSize: '1rem', ml: 10, mb: 1}
                      : { fontSize: '1.25rem' }
                }
             >
-               <b> Choose Tour Theme: </b>{' '}
+               <span><b> Choose Tour Theme: </b></span>{' '}
             </Typography>{' '}
             {/* Render themes through map */}{' '}
             <Box
@@ -200,11 +187,13 @@ const Form_Producer = () => {
                        }
                      : {
                           maxWidth: 'max-content',
+                          marginBottom: '25px',
                        }
                }
             >
                {' '}
-               {formTheme.map((theme) => (
+              
+             {isSmallScreen ? ( <Grid objArray={formTheme.map((theme) => (
                   <Button
                      key={theme.themeid}
                      onClick={() => setSelectedTheme(theme.themeid)}
@@ -233,18 +222,47 @@ const Form_Producer = () => {
                      {' '}
                      {theme.theme}{' '}
                   </Button>
-               ))}{' '}
+               ))}/> ): ( formTheme.map((theme) => (
+                  <Button
+                     key={theme.themeid}
+                     onClick={() => setSelectedTheme(theme.themeid)}
+                     value={theme}
+                     variant={
+                        themeSelectedId === theme.themeid
+                           ? 'contained'
+                           : 'outlined'
+                     }
+                     sx={
+                        !isSmallScreen
+                           ? {
+                                borderRadius: '20px',
+                                height: '30px',
+                                marginLeft: 1,
+                                marginTop: 2,
+                             }
+                           : {
+                                marginLeft: 1.5,
+                                marginBottom: 1,
+                                height: '30px',
+                                borderRadius: '20px',
+                             }
+                     }
+                  >
+                     {' '}
+                     {theme.theme}{' '}
+                  </Button>
+               )))} {' '}
             </Box>{' '}
          </Box>{' '}
          <Box component='div' className={styles.AR_exp_div}>
-            <Typography
+            <Typography component='div'
                sx={
                   isSmallScreen
-                     ? { fontSize: '1rem', ml: 1, mt: 2 }
+                     ? { fontSize: '1rem', ml: 12, mt: 2, mb: 1 }
                      : { fontSize: '1.25rem', mt: 2 }
                }
             >
-               <b> Choose AR Experience: </b>{' '}
+               <span><b> Choose AR Experience: </b></span>{' '}
             </Typography>{' '}
             <div className={styles.ar_imgs}>
                {' '}
@@ -272,20 +290,18 @@ const Form_Producer = () => {
             </div>{' '}
          </Box>{' '}
          {/* Routes List */}{' '}
-         <Box>
             <div className={styles.pois_title}>
                <Typography
-                  component='h3'
+                  component='div'
                   sx={
                      isSmallScreen
-                        ? { fontSize: '1rem' }
+                        ? { fontSize: '1rem', mb: 1 }
                         : { fontSize: '1.25rem' }
                   }
                >
-                  <b> Choose the POIs you want to visit: </b>{' '}
+                  <span><b> Choose the POIs you want to visit: </b></span>{' '}
                </Typography>{' '}
             </div>{' '}
-         </Box>{' '}
          {selectedPOIs.length >= 3 && (
             <div
                style={{

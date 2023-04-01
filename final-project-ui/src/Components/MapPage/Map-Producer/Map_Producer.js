@@ -14,7 +14,6 @@ const Map_Producer = () => {
    const [isMapLoaded, setIsMapLoaded] = useState(false);
    const [isLocationsLoaded, setIsLocationsLoaded] = useState(false);
    const [dataArray, setDataArray] = useState([]);
-   const location = useLocation();
    const [poiData, setPoiData] = useState([]);
    const [poiids, setPoiids] = useState([]);
    const [poiDataArray, setPoiDataArray] = useState([]);
@@ -23,12 +22,14 @@ const Map_Producer = () => {
    const [isNamesLoaded, setIsNamesLoaded] = useState(false);
    const [ARElements, setARElements] = useState([]);
    const [isARLoaded, setIsARLoaded] = useState(false);
+   const location = useLocation();
 
    useEffect(() => {
       const params = new URLSearchParams(location.search);
       const newPoiids = [];
-
-      for (let i = 1; i <= 3; i++) {
+      // const numOfPois = params.getAll('poi').length;
+      // console.log(numOfPois);
+      for (let i = 1; i < 4; i++) {
          const poiid = params.get(`poi${i}`);
          newPoiids.push(poiid);
       }
@@ -71,7 +72,6 @@ const Map_Producer = () => {
    useEffect(() => {
       if (poiDataArray && poiDataArray.length > 0) {
          const newAR = poiDataArray
-            // .slice(0, 4)
             .map((item) => item[0].arid.url);
          setARElements(newAR);
          setIsARLoaded(true);
