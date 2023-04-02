@@ -29,7 +29,7 @@ const Map_Producer = () => {
       const newPoiids = [];
       // const numOfPois = params.getAll('poi').length;
       // console.log(numOfPois);
-      for (let i = 1; i < 4; i++) {
+      for (let i = 1; i <= 4; i++) {
          const poiid = params.get(`poi${i}`);
          newPoiids.push(poiid);
       }
