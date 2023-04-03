@@ -143,7 +143,6 @@ const Form_Producer = () => {
     }
   };
   const poiid = selectedPOIs ? selectedPOIs.map((item) => item.poiid) : [];
-  console.log("line 146 :", poiid);
 
   // Convert poiid array to an object with numbered keys
   const poiidMap = poiid.reduce((accumulator, current, i) => {
@@ -278,7 +277,7 @@ const Form_Producer = () => {
           </Typography>{" "}
         </div>{" "}
       </Box>{" "}
-      {selectedPOIs.length >= 4 && (
+      {selectedPOIs.length >= 3 && (
         <div
           style={{ textAlign: "center", marginTop: "5px", marginRight: "6px" }}
         >

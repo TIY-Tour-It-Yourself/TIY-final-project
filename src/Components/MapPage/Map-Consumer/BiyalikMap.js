@@ -24,15 +24,18 @@ const BiyalikMap = (props) => {
   const [filteredRoutes, setFilteredRoutes] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [isNamesLoaded, setIsNamesLoaded] = useState(false);
+  const [isURLsLoaded, setIsURLsLoaded] = useState(false);
 
   const [locationName, setLocationName] = useState([]);
   const [ARURLArray, setARURLArray] = useState([]);
-
   const location = useLocation();
+  let locations;
 
   useEffect(() => {
+    console.log(location.search);
     const searchParams = new URLSearchParams(location.search);
-    const routeChosen = searchParams.get("routeChosen");
+    const routeChosen = searchParams.get("routeId");
+    console.log(routeChosen);
 
     //Get Route by ID
     const fetchRoute = async () => {
@@ -78,6 +81,7 @@ const BiyalikMap = (props) => {
       console.log(poisCoordinatesData);
     }
   }, [poisLatData, poisLngData, poisCoordinatesData]);
+
   //Get POIs from DB
   useEffect(() => {
     const getPoisData = async () => {
@@ -92,13 +96,12 @@ const BiyalikMap = (props) => {
     getPoisData();
   }, []);
 
-  let locations;
   //While data hasn't become an array yet- keep loading
   if (!Array.isArray(poisData)) {
     return <div> Loading... </div>;
   }
-  // getlocations
-  locations = poisData.map((item) => item.coordinates);
+  // // getlocations
+  // locations = poisData.map((item) => item.coordinates);
   // Get the location names
   useEffect(() => {
     const names = poisData.map((item) => item.name);
@@ -114,8 +117,9 @@ const BiyalikMap = (props) => {
 
   // getAREelement
   useEffect(() => {
-    const urls = poisData.map((item) => item.arid.url);
-    setARURLArray(urls);
+    const ARURLs = poisData.map((item) => item.arid.url);
+    setARURLArray(ARURLs);
+    setIsURLsLoaded(true);
   }, [poisData, setARURLArray]);
 
   useEffect(() => {

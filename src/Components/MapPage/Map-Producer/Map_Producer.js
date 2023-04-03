@@ -9,13 +9,13 @@ import axios from "axios";
 import arIcon from "./images/ar_icon1.png";
 import ranking from "./images/star.png";
 import { useLocation } from "react-router-dom";
-import NavBar from "../../Additionals/NavBar/NavBar";
+import { Modal } from "react-bootstrap";
+import Evaluations from "../../EvaluationPage/Evaluations";
 
 const Map_Producer = () => {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [isLocationsLoaded, setIsLocationsLoaded] = useState(false);
   const [dataArray, setDataArray] = useState([]);
-  const location = useLocation();
   const [poiData, setPoiData] = useState([]);
   const [poiids, setPoiids] = useState([]);
   const [poiDataArray, setPoiDataArray] = useState([]);
@@ -24,13 +24,18 @@ const Map_Producer = () => {
   const [isNamesLoaded, setIsNamesLoaded] = useState(false);
   const [ARElements, setARElements] = useState([]);
   const [isARLoaded, setIsARLoaded] = useState(false);
+  const location = useLocation();
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const newPoiids = [];
 
-    for (let i = 1; i <= 4; i++) {
+    const numOfPois = Array.from(params.keys()).filter((k) =>
+      k.startsWith("poi")
+    ).length;
+    console.log(numOfPois);
+    for (let i = 1; i <= numOfPois; i++) {
       const poiid = params.get(`poi${i}`);
       newPoiids.push(poiid);
     }
@@ -42,7 +47,6 @@ const Map_Producer = () => {
           axios.get(`https://tiys.herokuapp.com/api/pois/${id}`)
         );
         const poiDataResults = await Promise.all(poiDataPromises);
-        console.log(poiDataResults);
         const poiDataArray = poiDataResults.map((result) => result.data);
         setPoiDataArray(poiDataArray);
       } catch (error) {
@@ -52,14 +56,10 @@ const Map_Producer = () => {
     fetchData();
   }, [location]);
 
-  // get coordinates from pois
+  //Get Coordinates from POIS
   useEffect(() => {
-    console.log(poiDataArray);
     if (poiDataArray && poiDataArray.length > 0) {
-      const newLocations = poiDataArray
-        .slice(0, 4)
-        .map((item) => item[0].coordinates);
-      console.log(newLocations);
+      const newLocations = poiDataArray.map((item) => item[0].coordinates);
       setLocations(newLocations);
       setIsLocationsLoaded(true); // set isLocationsLoaded to true
     }
@@ -67,7 +67,7 @@ const Map_Producer = () => {
 
   useEffect(() => {
     if (poiDataArray && poiDataArray.length > 0) {
-      const newNames = poiDataArray.slice(0, 4).map((item) => item[0].name);
+      const newNames = poiDataArray.map((item) => item[0].name);
       setNames(newNames);
       setIsNamesLoaded(true);
     }
@@ -75,13 +75,11 @@ const Map_Producer = () => {
 
   useEffect(() => {
     if (poiDataArray && poiDataArray.length > 0) {
-      const newAR = poiDataArray.slice(0, 4).map((item) => item[0].arid.url);
+      const newAR = poiDataArray.map((item) => item[0].arid.url);
       setARElements(newAR);
       setIsARLoaded(true);
     }
   }, [poiDataArray]);
-  console.log(ARElements);
-
   const initializeMap = () => {
     // Check if locations data is loaded and available
     if (isLocationsLoaded && locations.length > 0) {
@@ -104,25 +102,21 @@ const Map_Producer = () => {
         locations[locations.length - 1].lng
       );
 
+      const waypoints = [];
+      for (let i = 1; i < locations.length - 1; i++) {
+        waypoints.push({
+          location: new window.google.maps.LatLng(
+            locations[i].lat,
+            locations[i].lng
+          ),
+          stopover: true,
+        });
+      }
+
       const request = {
         origin: origin,
         destination: destination,
-        waypoints: [
-          {
-            location: new window.google.maps.LatLng(
-              locations[1].lat,
-              locations[1].lng
-            ),
-            stopover: true,
-          },
-          {
-            location: new window.google.maps.LatLng(
-              locations[2].lat,
-              locations[2].lng
-            ),
-            stopover: true,
-          },
-        ],
+        waypoints: waypoints,
         travelMode: window.google.maps.TravelMode.WALKING,
       };
 
@@ -139,33 +133,22 @@ const Map_Producer = () => {
           map: map,
         });
 
-        // const infoWindow = new window.google.maps.InfoWindow({
-        //   content: `<div style={{display: 'flex', justifyContent: 'center' , border: '2px solid black'}}>
-        //                             <h4>${names[index]}</h4>
-
-        //                             <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
-        //                                 <a href="${ARElements[index]}" target="_blank">
-        //                                <img src="${arIcon}" width='40px' height='40px' alt='${names[index]}'>
-        //                                </a>
-        //                             </div>
-        //                 </div>`,
-        // });
-        // marker.addListener("click", () => {
-        //   infoWindow.open(map, marker); // open the info window when the marker is clicked
-        // });
         const infoWindow = new window.google.maps.InfoWindow({
           content: `<div style="display: flex; justify-content: center; flex-direction: column;">
-                                    <div style="margin-left: 10px;"><h4>${names[index]}</h4></div>
-                        
-                                    <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
-                                        <a href="${ARElements[index]}" target="_blank">
-                                       <img src="${arIcon}" width='40px' height='40px' alt='${names[index]}'>
-                                       </a>
-                                       <a href="#" style="text-decoration:none;">
-                                       <img style="padding: 10px;"  width='40px' height='40px' src=${ranking}  />
-                                       </a>
-                                    </div>
-                        </div>`,
+                      <div style="margin-left: 10px;"><h4>${names[index]}</h4></div>
+                        <div style="display: flex; justify-content: center; flex-direction: row; margin-left: 5px;">
+                          <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
+                            <a href="${ARElements[index]}" target="_blank">
+                              <img src="${arIcon}" width='40px' height='40px' alt='${names[index]}'>
+                            </a>
+                          </div>
+                          <div>
+                          <a href="Evaluations" style="text-decoration: none;">
+                          <img src=${ranking} style="padding: 7px;" width='25px' height='25px' alt='rankPoi'/>
+                      </a>
+                          </div>
+                        </div>
+                      </div>`,
         });
         marker.addListener("click", () => {
           infoWindow.open(map, marker); // open the info window when the marker is clicked
@@ -221,7 +204,6 @@ const Map_Producer = () => {
   return (
     <div id="map" style={{ height: "100vh", width: "100%" }}>
       {" "}
-      <NavBar />
       {/* {isMapLoaded && <LoadScript />} */}{" "}
       {window.google === undefined ? (
         <LoadScript>
