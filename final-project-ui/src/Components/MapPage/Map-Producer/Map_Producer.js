@@ -27,9 +27,12 @@ const Map_Producer = () => {
    useEffect(() => {
       const params = new URLSearchParams(location.search);
       const newPoiids = [];
-      // const numOfPois = params.getAll('poi').length;
-      // console.log(numOfPois);
-      for (let i = 1; i <= 4; i++) {
+
+      const numOfPois = Array.from(params.keys()).filter((k) =>
+         k.startsWith('poi')
+      ).length;
+
+      for (let i = 1; i <= numOfPois; i++) {
          const poiid = params.get(`poi${i}`);
          newPoiids.push(poiid);
       }
@@ -53,8 +56,7 @@ const Map_Producer = () => {
    //Get Coordinates from POIS
    useEffect(() => {
       if (poiDataArray && poiDataArray.length > 0) {
-         const newLocations = poiDataArray
-            .map((item) => item[0].coordinates);
+         const newLocations = poiDataArray.map((item) => item[0].coordinates);
          setLocations(newLocations);
          setIsLocationsLoaded(true); // set isLocationsLoaded to true
       }
@@ -62,8 +64,7 @@ const Map_Producer = () => {
 
    useEffect(() => {
       if (poiDataArray && poiDataArray.length > 0) {
-         const newNames = poiDataArray
-            .map((item) => item[0].name);
+         const newNames = poiDataArray.map((item) => item[0].name);
          setNames(newNames);
          setIsNamesLoaded(true);
       }
@@ -71,8 +72,7 @@ const Map_Producer = () => {
 
    useEffect(() => {
       if (poiDataArray && poiDataArray.length > 0) {
-         const newAR = poiDataArray
-            .map((item) => item[0].arid.url);
+         const newAR = poiDataArray.map((item) => item[0].arid.url);
          setARElements(newAR);
          setIsARLoaded(true);
       }
@@ -103,25 +103,21 @@ const Map_Producer = () => {
             locations[locations.length - 1].lng
          );
 
+         const waypoints = [];
+         for (let i = 1; i < locations.length - 1; i++) {
+            waypoints.push({
+               location: new window.google.maps.LatLng(
+                  locations[i].lat,
+                  locations[i].lng
+               ),
+               stopover: true,
+            });
+         }
+
          const request = {
             origin: origin,
             destination: destination,
-            waypoints: [
-               {
-                  location: new window.google.maps.LatLng(
-                     locations[1].lat,
-                     locations[1].lng
-                  ),
-                  stopover: true,
-               },
-               {
-                  location: new window.google.maps.LatLng(
-                     locations[2].lat,
-                     locations[2].lng
-                  ),
-                  stopover: true,
-               },
-            ],
+            waypoints: waypoints,
             travelMode: window.google.maps.TravelMode.WALKING,
          };
 

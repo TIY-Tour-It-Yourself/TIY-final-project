@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './NavBar.module.css';
-import home from './nav_imgs/home.png';
-import user_settings from './nav_imgs/user-48.png';
-import wallet from './nav_imgs/wallet-48.png';
-import calendar from './nav_imgs/calendar-32.png';
+import home from './nav_imgs/home_origin.png';
+import user_settings from './nav_imgs/user_origin.png';
+import history from './nav_imgs/history_origin.png';
+import calendar from './nav_imgs/schedule_origin.png';
 import AppBar from '@mui/material/AppBar';
 // import Typography from '@mui/material/Typography';
 // import MoreIcon from '@mui/icons-material/MoreVert';
@@ -24,8 +24,8 @@ import user from './user.png';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-const links = [{id: 1, title: 'Settings', url:'/dashboard'}, {id: 2, title: 'Wallet', url: '/dashboard'}, {id: 3, title: 'Events', url: '/dashboard'}];
-const images = [{id: 1, title: "home", src:`${home}`, url: '/dashboard'},{id: 2, title: "settings", src:`${user_settings}`, url: '#'},{id: 3, title: "wallet", src:`${wallet}`, url: '#'},{id: 4, title: "events", src:`${calendar}`, url: '#'}];
+const links = [{id: 1, title: 'Settings', url:'/user_settings'}, {id: 2, title: 'history', url: '/dashboard'}, {id: 3, title: 'Events', url: '/dashboard'}];
+const images = [{id: 1, title: "home", src:`${home}`, url: '/dashboard'},{id: 2, title: "settings", src:`${user_settings}`, url: '#'},{id: 3, title: "history", src:`${history}`, url: '#'},{id: 4, title: "events", src:`${calendar}`, url: '#'}];
 
 const NavBar = () => {
    const [anchorElNav, setAnchorElNav] = useState('');
