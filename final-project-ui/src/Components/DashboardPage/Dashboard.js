@@ -25,8 +25,9 @@ const Dashboard = () => {
    const location = useLocation();
 
    useEffect(() => {
+      console.log(location.state.token.token);
       console.log(location.state.token);
-      if(!location.state.token) {
+      if(!location.state) {
          navigate('/');
       } else {
          setActiveImage(1);
@@ -38,23 +39,24 @@ const Dashboard = () => {
             },
          })
          .then((response) => {
+            console.log(response.data);   //user's data
             setToken(location.state.token.token);
-            // console.log(response.data);
          })
          .catch((error) => {
             console.error('Error fetching user: ', error);
          });
       }
-   }, [location.state.token]);
+   }, [location.state]);
    
-   console.log(token);
+   console.log(token);  //location.state.token.token
+   console.log(location.state.token.token);  //location.state.token.token
 
    const handleNavigateProducer = () => {
-      navigate('/form_producer', { state: { token: location.state.token }});
+      navigate('/form_producer', { state: { token: {value: location.state.token } }});
    }
    
    const handleNavigateConsumer = () => {
-      navigate('/form_consumer', { state: { token: location.state.token }});
+      navigate('/form_consumer', { state: { token: token }});
    }
 
    return (

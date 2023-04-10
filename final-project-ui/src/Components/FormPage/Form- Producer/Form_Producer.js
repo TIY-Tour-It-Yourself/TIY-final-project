@@ -29,6 +29,11 @@ const Form_Producer = () => {
    const [routes, setRoutes] = useState('');
    const [filteredData, setFilteredData] = useState([]);
    const [isLoading, setIsLoading] = useState(false);
+   const [token, setToken] = useState('');
+   // State for storing selected radius
+   const [selectedRadius, setSelectedRadius] = useState(0);
+   const [radius, setRadius] = useState(1); // initialize radius to 1 km
+   const [userLocation, setUserLocation] = useState(null);
 
    //POIs' states
    const [poi1, setPoi1] = useState('');
@@ -44,25 +49,27 @@ const Form_Producer = () => {
    const location = useLocation();
 
    useEffect(() => {
-         if(!location.state.token) {
-            navigate('/');
-         } else {
-      
-      axios
-         .get(`https://tiys.herokuapp.com/api/auth`, {
-            headers: {
-               'x-auth-token': location.state.token.token,
-               'Content-Type': 'application/json',
-            },
-         })
-         .then((response) => {
-            console.log(response.data);
-         })
-         .catch((error) => {
-            console.error('Error fetching user: ', error);
-         });
+      console.log(location.state.token.value.token);
+      if (!location.state) {
+         navigate('/');
+      } else {
+         axios
+            .get(`https://tiys.herokuapp.com/api/auth`, {
+               headers: {
+                  'x-auth-token': location.state.token.value.token,
+                  'Content-Type': 'application/json',
+               },
+            })
+            .then((response) => {
+               console.log(response.data);
+               setToken(location.state.token.value.token);
+            })
+            .catch((error) => {
+               console.error('Error fetching user: ', error);
+            });
       }
-   }, [location.state.token]);
+   }, [location.state]);
+   console.log(token);
 
    //Get Themes from DB
    useEffect(() => {
@@ -79,49 +86,142 @@ const Form_Producer = () => {
          });
    }, []);
 
-   //Get POIS from DB
+   // //Get POIS from DB
+   // useEffect(() => {
+   //    setIsLoading(true);
+   //    const filterData = async () => {
+   //       try {
+   //          // Make an API request to fetch the routes data
+   //          const response = await axios.get(
+   //             'https://tiys.herokuapp.com/api/pois'
+   //          );
+   //          setIsLoading(false);
+   //          setCoordinates(response.data);
+
+   //          // Check if both Theme and ARlevel have been selected
+   //          if (themeSelectedId && selectedLevelId) {
+   //             // Filter the data based on the selected values
+   //             const filtered = response.data.filter((coordinate) => {
+   //                return (
+   //                   coordinate.theme.themeid === themeSelectedId &&
+   //                   coordinate.arid.level === selectedLevelId
+   //                );
+   //             });
+
+   //             // Update the state with the filtered data
+   //             setFilteredData(filtered);
+   //             console.log(`filtered: ${filtered.length}`);
+   //          } else {
+   //             // If either theme or level is not selected, set filtered data to null
+   //             setFilteredData(null);
+   //             setIsLoading(false);
+   //          }
+   //       } catch (error) {
+   //          console.log(error);
+   //          setIsLoading(false);
+   //       }
+   //    };
+
+   //    filterData();
+   // }, [themeSelectedId, selectedLevelId]);
+
+   useEffect(() => {
+      if (navigator.geolocation) {
+         navigator.geolocation.getCurrentPosition(
+            (position) => {
+               const { latitude, longitude } = position.coords;
+               setUserLocation({ latitude, longitude });
+            },
+            (error) => {
+               console.error(error);
+            }
+         );
+      } else {
+         console.error('Geolocation is not supported by this browser.');
+      }
+   }, []);
+
    useEffect(() => {
       setIsLoading(true);
       const filterData = async () => {
          try {
-            // Make an API request to fetch the routes data
+            // Make an API request to fetch the POIs data
             const response = await axios.get(
                'https://tiys.herokuapp.com/api/pois'
             );
             setIsLoading(false);
             setCoordinates(response.data);
-
-            // Check if both Theme and ARlevel have been selected
-            if (themeSelectedId && selectedLevelId) {
-               // Filter the data based on the selected values
-               const filtered = response.data.filter((coordinate) => {
-                  return (
-                     coordinate.theme.themeid === themeSelectedId &&
-                     coordinate.arid.level === selectedLevelId
-                  );
-               });
-
-               // Update the state with the filtered data
-               setFilteredData(filtered);
-               console.log(`filtered: ${filtered.length}`);
-            } else {
-               // If either theme or level is not selected, set filtered data to null
-               setFilteredData(null);
-               setIsLoading(false);
-            }
          } catch (error) {
             console.log(error);
             setIsLoading(false);
          }
       };
-
       filterData();
-   }, [themeSelectedId, selectedLevelId]);
+   }, []);
+
+   useEffect(() => {
+      if (themeSelectedId && selectedLevelId) {
+         let filtered = coordinates.filter((coordinate) => {
+            return (
+               coordinate.theme.themeid === themeSelectedId &&
+               coordinate.arid.level === selectedLevelId
+            );
+         });
+         setFilteredData(filtered);
+      } else {
+         setFilteredData(null);
+      }
+   }, [themeSelectedId, selectedLevelId, coordinates]);
+
+   useEffect(() => {
+      if (selectedRadius && userLocation) {
+         const filtered = coordinates.filter((coordinate) => {
+            // Calculate the distance between user and POI using Haversine formula
+            const distance = calcDistance(
+               userLocation.latitude,
+               userLocation.longitude,
+               coordinate.coordinates.lat,
+               coordinate.coordinates.lng
+            );
+            return distance <= selectedRadius * 1000;
+         });
+         setFilteredData(filtered);
+         console.log(`filtered: ${filtered.length}`);
+      }
+   }, [selectedRadius, userLocation, coordinates]);
+
+   // -------------------------------------------------
+   // Function to calculate the distance between two points using Haversine formula
+   const calcDistance = (lat1, lon1, lat2, lon2) => {
+      const R = 6371 * 1000; // Radius of the earth in km
+      const dLat = deg2rad(lat2 - lat1); // deg2rad below
+      const dLon = deg2rad(lon2 - lon1);
+      const a =
+         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+         Math.cos(deg2rad(lat1)) *
+            Math.cos(deg2rad(lat2)) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const d = R * c; // Distance in km
+      return d;
+   };
+
+   const deg2rad = (deg) => {
+      return deg * (Math.PI / 180);
+   };
+
+   const handleRadiusChange = (event) => {
+      const value = Number(event.target.value);
+      console.log('Selected radius:', value);
+      setSelectedRadius(value);
+      setRadius(value);
+   };
 
    //While data hasn't become an array yet- keep loading
    if (!Array.isArray(formTheme) || !Array.isArray(coordinates)) {
       // return <div> Loading... </div>;
-      return <LoadingBar/>;
+      return <LoadingBar />;
    }
 
    const setSelectedTheme = (value) => {
@@ -164,7 +264,7 @@ const Form_Producer = () => {
             setSelectedPOIs(updatedPOIs);
          }
       } else {
-         alert("Theme and AR Experience must be chosen.");
+         alert('Theme and AR Experience must be chosen.');
          setIsFormValid(false);
       }
    };
@@ -180,14 +280,15 @@ const Form_Producer = () => {
       navigate(
          `/map_producer?${Object.entries(poiidMap)
             .map(([key, value]) => `${key}=${value}`)
-            .join('&')}`
-      , { state : {token: location.state.token}});
-   }
+            .join('&')}`,
+         { state: { token: location.state.token } }
+      );
+   };
 
    return (
       <>
-         <NavBar />
-        <Typography component='div' className={styles.title}>
+         <NavBar token={token} />
+         <Typography component='div' className={styles.title}>
             <h1 style={!isSmallScreen ? {} : { fontSize: '25px' }}>
                Build Your Tour{' '}
             </h1>{' '}
@@ -196,11 +297,13 @@ const Form_Producer = () => {
             <Typography
                sx={
                   isSmallScreen
-                     ? { fontSize: '1rem', ml: 10, mb: 1}
+                     ? { fontSize: '1rem', ml: 10, mb: 1 }
                      : { fontSize: '1.25rem' }
                }
             >
-               <span><b> Choose Tour Theme: </b></span>{' '}
+               <span>
+                  <b> Choose Tour Theme: </b>
+               </span>{' '}
             </Typography>{' '}
             {/* Render themes through map */}{' '}
             <Box
@@ -223,116 +326,174 @@ const Form_Producer = () => {
                }
             >
                {' '}
-              
-             {isSmallScreen ? ( <Grid objArray={formTheme.map((theme) => (
-                  <Button
-                     key={theme.themeid}
-                     onClick={() => setSelectedTheme(theme.themeid)}
-                     value={theme}
-                     variant={
-                        themeSelectedId === theme.themeid
-                           ? 'contained'
-                           : 'outlined'
-                     }
-                     sx={
-                        !isSmallScreen
-                           ? {
-                                borderRadius: '20px',
-                                height: '30px',
-                                marginLeft: 1,
-                                marginTop: 2,
-                             }
-                           : {
-                                marginLeft: 1.5,
-                                marginBottom: 1,
-                                height: '30px',
-                                borderRadius: '20px',
-                             }
-                     }
-                  >
-                     {' '}
-                     {theme.theme}{' '}
-                  </Button>
-               ))}/> ): ( formTheme.map((theme) => (
-                  <Button
-                     key={theme.themeid}
-                     onClick={() => setSelectedTheme(theme.themeid)}
-                     value={theme}
-                     variant={
-                        themeSelectedId === theme.themeid
-                           ? 'contained'
-                           : 'outlined'
-                     }
-                     sx={
-                        !isSmallScreen
-                           ? {
-                                borderRadius: '20px',
-                                height: '30px',
-                                marginLeft: 1,
-                                marginTop: 2,
-                             }
-                           : {
-                                marginLeft: 1.5,
-                                marginBottom: 1,
-                                height: '30px',
-                                borderRadius: '20px',
-                             }
-                     }
-                  >
-                     {' '}
-                     {theme.theme}{' '}
-                  </Button>
-               )))} {' '}
-            </Box>{' '}
-         </Box>{' '}
-         <Box component='div' className={styles.AR_exp_div}>
-            <Typography component='div'
-               sx={
-                  isSmallScreen
-                     ? { fontSize: '1rem', ml: 12, mt: 2, mb: 1 }
-                     : { fontSize: '1.25rem', mt: 2 }
-               }
-            >
-               <span><b> Choose AR Experience: </b></span>{' '}
-            </Typography>{' '}
-            <div className={styles.ar_imgs}>
-               {' '}
-               {arImgs.map((arImg) => (
-                  <div key={arImg.id}>
-                     <img
-                        value={arImg}
-                        src={arImg.src}
-                        style={{
-                           border:
-                              selectedLevelId === arImg.id
-                                 ? '2px solid rgb(83, 125, 203)'
-                                 : '1px dashed rgb(83, 125, 203)',
-                        }}
-                        onClick={() => handleARExperience(arImg.id)}
-                        alt={arImg.name}
-                        width='150'
-                        height='150'
-                     />
-                     <div className={styles.arlevel_name}>
-                        <span> {arImg.name} </span>{' '}
-                     </div>{' '}
-                  </div>
-               ))}{' '}
-            </div>{' '}
-         </Box>{' '}
-         {/* Routes List */}{' '}
-            <div className={styles.pois_title}>
+               {isSmallScreen ? (
+                  <Grid
+                     objArray={formTheme.map((theme) => (
+                        <Button
+                           key={theme.themeid}
+                           onClick={() => setSelectedTheme(theme.themeid)}
+                           value={theme}
+                           variant={
+                              themeSelectedId === theme.themeid
+                                 ? 'contained'
+                                 : 'outlined'
+                           }
+                           sx={
+                              !isSmallScreen
+                                 ? {
+                                      borderRadius: '20px',
+                                      height: '30px',
+                                      marginLeft: 1,
+                                      marginTop: 2,
+                                   }
+                                 : {
+                                      marginLeft: 1.5,
+                                      marginBottom: 1,
+                                      height: '30px',
+                                      borderRadius: '20px',
+                                   }
+                           }
+                        >
+                           {' '}
+                           {theme.theme}{' '}
+                        </Button>
+                     ))}
+                  />
+               ) : (
+                  formTheme.map((theme) => (
+                     <Button
+                        key={theme.themeid}
+                        onClick={() => setSelectedTheme(theme.themeid)}
+                        value={theme}
+                        variant={
+                           themeSelectedId === theme.themeid
+                              ? 'contained'
+                              : 'outlined'
+                        }
+                        sx={
+                           !isSmallScreen
+                              ? {
+                                   borderRadius: '20px',
+                                   height: '30px',
+                                   marginLeft: 1,
+                                   marginTop: 2,
+                                }
+                              : {
+                                   marginLeft: 1.5,
+                                   marginBottom: 1,
+                                   height: '30px',
+                                   borderRadius: '20px',
+                                }
+                        }
+                     >
+                        {' '}
+                        {theme.theme}{' '}
+                     </Button>
+                  ))
+               )}
+            </Box>
+         </Box>
+         <div className={styles.components}>
+            <div className={styles.ar_div}>
                <Typography
-                  component='div'
+                  component='span'
                   sx={
                      isSmallScreen
-                        ? { fontSize: '1rem', mb: 1 }
-                        : { fontSize: '1.25rem' }
+                        ? { fontSize: '1rem', ml: 2, mt: 2, mb: 1 }
+                        : { fontSize: '1.25rem', mt: 2 }
                   }
                >
-                  <span><b> Choose the POIs you want to visit: </b></span>{' '}
-               </Typography>{' '}
-            </div>{' '}
+                  <b>Choose AR Experience: </b>
+               </Typography>
+               <div className={styles.ar_imgs}>
+                  {arImgs.map((arImg) => (
+                     <div key={arImg.id}>
+                        <img
+                           value={arImg}
+                           src={arImg.src}
+                           style={{
+                              border:
+                                 selectedLevelId === arImg.id
+                                    ? '2px solid rgb(83, 125, 203)'
+                                    : '1px dashed rgb(83, 125, 203)',
+                           }}
+                           onClick={() => handleARExperience(arImg.id)}
+                           alt={arImg.name}
+                           width='150'
+                           height='150'
+                        />
+                        <div className={styles.arlevel_name}>
+                           <span> {arImg.name} </span>
+                        </div>
+                     </div>
+                  ))}
+               </div>
+            </div>
+            <Box component='div' className={styles.radius_filter}>
+               <Typography
+                  component='span'
+                  sx={
+                     isSmallScreen
+                        ? {
+                             fontSize: '1rem',
+                             ml: 0,
+                             mt: 2,
+                             mb: 1,
+                             textAlign: 'center',
+                             margin: '0 auto',
+                          }
+                        : { fontSize: '1.25rem', mt: 2 }
+                  }
+               >
+                  <b>Choose Distance: {selectedRadius} km</b>
+               </Typography>
+               {/* Add a range input to display a ruler with values from 1 to 6 km */}
+               <div
+                  style={{
+                     marginTop: '1rem',
+                     display: 'flex',
+                     alignItems: 'center',
+                  }}
+               >
+                  <div
+                     style={{
+                        width: 'max-content',
+                        textAlign: 'right',
+                        marginRight: '0.5rem',
+                     }}
+                  >
+                     1 km
+                  </div>
+                  <input
+                     type='range'
+                     min='1'
+                     max='20'
+                     step='1'
+                     style={{ width: '20rem', marginRight: '0.5rem' }}
+                     value={selectedRadius}
+                     onChange={handleRadiusChange}
+                  />
+                  <div style={{ width: '5rem', textAlign: 'left' }}>
+                     20 km
+                  </div>
+               </div> 
+            </Box>
+         </div>
+         {/* Routes List */}
+         <div className={styles.pois_title}>
+            <Typography
+               component='div'
+               sx={
+                  isSmallScreen
+                     ? { fontSize: '1rem', mb: 1 }
+                     : { fontSize: '1.25rem' }
+               }
+            >
+               <span>
+                  <b> Choose the POIs you want to visit: </b>
+               </span>{' '}
+            </Typography>{' '}
+         </div>{' '}
          {selectedPOIs.length >= 3 && (
             <div
                style={{
@@ -362,7 +523,8 @@ const Form_Producer = () => {
                              fontSize: '0.75rem',
                           }
                   }
-                  onClick={ handleNavigate
+                  onClick={
+                     handleNavigate
                      // () =>
                      // navigate(
                      //    `/map_producer?${Object.entries(poiidMap)

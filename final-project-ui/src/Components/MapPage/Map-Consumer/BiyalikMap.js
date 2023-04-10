@@ -29,22 +29,22 @@ const BiyalikMap = (props) => {
    const navigate = useNavigate();
 
    useEffect(() => {
-      if(!location.state) {
+      if (!location.state) {
          navigate('/');
       } else {
          axios
-         .get(`https://tiys.herokuapp.com/api/auth`, {
-            headers: {
-               'x-auth-token': location.state.token.token,
-               'Content-Type': 'application/json',
-            },
-         })
-         .then((response) => {
-            console.log(response.data);
-         })
-         .catch((error) => {
-            console.error('Error fetching user: ', error);
-         });
+            .get(`https://tiys.herokuapp.com/api/auth`, {
+               headers: {
+                  'x-auth-token': location.state.token.token,
+                  'Content-Type': 'application/json',
+               },
+            })
+            .then((response) => {
+               console.log(response.data);
+            })
+            .catch((error) => {
+               console.error('Error fetching user: ', error);
+            });
       }
    }, [location.state.token]);
 
@@ -60,11 +60,11 @@ const BiyalikMap = (props) => {
             );
             //Get route pois
             const pois = response.data[0].pois;
-            const poisIds = pois.map(poi => poi.poiid);
+            const poisIds = pois.map((poi) => poi.poiid);
 
             //Get all pois' coordinates
             const coordinatesArray = pois.map((poi) => poi.coordinates);
-            
+
             setPoisCoordinatesData(coordinatesArray);
 
             let latArray = [];
@@ -117,10 +117,10 @@ const BiyalikMap = (props) => {
    }, []);
 
    useEffect(() => {
-         //Get route pois' names
-         const names = poisNames.map((poi) => poi.name);
-         setLocationName(names);
-         setIsNamesLoaded(true);
+      //Get route pois' names
+      const names = poisNames.map((poi) => poi.name);
+      setLocationName(names);
+      setIsNamesLoaded(true);
    }, [poisNames, setLocationName]);
 
    useEffect(() => {
@@ -131,7 +131,9 @@ const BiyalikMap = (props) => {
 
    useEffect(() => {
       //Get AR element
-      const routePois = poisData.filter((poi) => poisIdNums.includes(poi.poiid));
+      const routePois = poisData.filter((poi) =>
+         poisIdNums.includes(poi.poiid)
+      );
       const arURLs = routePois.map((arElement) => arElement.arid.url);
       // const ARURLs = poisData.map((item) => item.arid.url);
       setARURLArray(arURLs);
@@ -145,7 +147,11 @@ const BiyalikMap = (props) => {
    }, [ARURLArray]);
 
    //While data hasn't become an array yet- keep loading
-   if (!Array.isArray(poisNames) && (!Array.isArray(poisIdNums)) && (!Array.isArray(poisData))) {
+   if (
+      !Array.isArray(poisNames) &&
+      !Array.isArray(poisIdNums) &&
+      !Array.isArray(poisData)
+   ) {
       return <div>Loading...</div>;
    }
 
@@ -159,47 +165,235 @@ const BiyalikMap = (props) => {
                zoom: 12,
             }
          );
+         // Create the start navigation button
+         const startNavigationButton = document.createElement('button');
+         startNavigationButton.textContent = 'Start';
+         startNavigationButton.style.backgroundColor = '#007aff';
+         startNavigationButton.style.color = 'white';
+         startNavigationButton.style.padding = '10px';
+         startNavigationButton.style.borderRadius = '25px'; // change from "50%" to "25px"
+         startNavigationButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.3)';
+         startNavigationButton.style.fontSize = '16px';
+         startNavigationButton.style.lineHeight = '1';
+         startNavigationButton.style.border = 'none';
+         startNavigationButton.style.cursor = 'pointer';
+         startNavigationButton.style.marginLeft = '60px';
+
+         // Create the stop navigation button
+         const stopNavigationButton = document.createElement('button');
+         stopNavigationButton.textContent = 'Stop';
+         stopNavigationButton.style.backgroundColor = '#007aff';
+         stopNavigationButton.style.color = 'white';
+         stopNavigationButton.style.padding = '10px';
+         stopNavigationButton.style.borderRadius = '25px'; // change from "50%" to "25px"
+         stopNavigationButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.3)';
+         stopNavigationButton.style.fontSize = '16px';
+         stopNavigationButton.style.lineHeight = '1';
+         stopNavigationButton.style.border = 'none';
+         stopNavigationButton.style.cursor = 'pointer';
+
+         // Create the timer element with white background
+         const timerDiv = document.createElement('div');
+         timerDiv.innerHTML = '00:00';
+         timerDiv.style.backgroundColor = 'white';
+         timerDiv.style.padding = '5px';
+         timerDiv.style.borderRadius = '5px';
+         timerDiv.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.3)';
+         timerDiv.style.fontSize = '16px';
+         timerDiv.style.marginBottom = '30px';
+
+         // Add the timer element to the map controls
+         map.controls[window.google.maps.ControlPosition.TOP_CENTER].push(
+            timerDiv
+         );
+
+         // Add media query to update marginTop if screen width is greater than 400px
+         const mediaQuery = window.matchMedia('(min-width: 600px)');
+
+         function handleMediaQuery(mediaQuery) {
+            if (mediaQuery.matches) {
+               timerDiv.style.marginTop = '100px';
+            } else {
+               timerDiv.style.marginTop = '10px';
+            }
+         }
+
+         // Call the function once to set the initial marginTop
+         handleMediaQuery(mediaQuery);
+
+         // Listen for changes in the media query and update marginTop accordingly
+         mediaQuery.addEventListener('change', handleMediaQuery);
+
+         let hours = 0;
+         let seconds = 0;
+         let minutes = 0;
+         let timerInterval;
+         let totalTime;
+
+         // Add event listener to the stop navigation button
+         stopNavigationButton.addEventListener('click', function() {
+            // Stop the timer
+            clearInterval(timerInterval);
+            totalTime = `${hours}:${minutes}:${seconds}`;
+            console.log('Total time:', totalTime);
+
+            // Disable the button
+            stopNavigationButton.disabled = true;
+            stopNavigationButton.style.backgroundColor = '#EEEEEE';
+            stopNavigationButton.style.color = 'grey';
+            stopNavigationButton.style.cursor = 'default';
+
+            // Show the alert message
+            alert('Hope you enjoyed your tour!');
+         });
+
+         let savedRoute;
+         let isNavigationStarted = false;
+
+         // Add an event listener to the button to start navigation and the timer
+         startNavigationButton.addEventListener('click', function() {
+            if (savedRoute) {
+               directionsRenderer.setDirections(savedRoute);
+            } else {
+               directionsService.route(request, function(response, status) {
+                  if (status == window.google.maps.DirectionsStatus.OK) {
+                     savedRoute = response;
+                     directionsRenderer.setDirections(response);
+                  }
+               });
+            }
+
+            // Start the timer
+            timerInterval = setInterval(function() {
+               seconds++;
+               if (seconds === 60) {
+                  seconds = 0;
+                  minutes++;
+               }
+               if (minutes === 60) {
+                  minutes = 0;
+                  hours++;
+               }
+               timerDiv.innerHTML = `${hours < 10 ? '0' + hours : hours}:${
+                  minutes < 10 ? '0' + minutes : minutes
+               }:${seconds < 10 ? '0' + seconds : seconds}`;
+            }, 1000);
+
+            // Disable the button
+            startNavigationButton.disabled = true;
+            startNavigationButton.style.backgroundColor = '#EEEEEE';
+            startNavigationButton.style.color = 'grey';
+            startNavigationButton.style.cursor = 'default';
+            isNavigationStarted = true;
+         });
+
          const directionsService = new window.google.maps.DirectionsService();
          const directionsRenderer = new window.google.maps.DirectionsRenderer({
-            map: map,
-            suppressMarkers: true, // add this line to suppress markers
+           map: map,
+           draggable: true,
+           suppressMarkers: true, // add this line to suppress markers
          });
          const origin = new window.google.maps.LatLng(
-            poisLatData[0],
-            poisLngData[0]
+           poisLatData[0],
+           poisLngData[0]
          );
          const destination = new window.google.maps.LatLng(
-            poisLatData[poisLatData.length - 1],
-            poisLngData[poisLatData.length - 1]
+           poisLatData[poisLatData.length - 1],
+           poisLngData[poisLatData.length - 1]
          );
-
+   
          const request = {
-            origin: origin,
-            destination: destination,
-            waypoints: [
-               {
-                  location: new window.google.maps.LatLng(
-                     poisLatData[1],
-                     poisLngData[1]
-                  ),
-                  stopover: true,
-               },
-               {
-                  location: new window.google.maps.LatLng(
-                     poisLatData[2],
-                     poisLngData[2]
-                  ),
-                  stopover: true,
-               },
-            ],
-            travelMode: window.google.maps.TravelMode.WALKING,
+           origin: origin,
+           destination: destination,
+           waypoints: [
+             {
+               location: new window.google.maps.LatLng(
+                 poisLatData[1],
+                 poisLngData[1]
+               ),
+               stopover: true,
+             },
+             {
+               location: new window.google.maps.LatLng(
+                 poisLatData[2],
+                 poisLngData[2]
+               ),
+               stopover: true,
+             },
+           ],
+           travelMode: window.google.maps.TravelMode.WALKING,
          };
-
-         directionsService.route(request, function(response, status) {
-            if (status == window.google.maps.DirectionsStatus.OK) {
-               directionsRenderer.setDirections(response);
-            }
+         // Create the duration element with white background
+         const durationDiv = document.createElement("div");
+         durationDiv.style.backgroundColor = "white";
+         durationDiv.style.padding = "5px";
+         durationDiv.style.borderRadius = "5px";
+         durationDiv.style.boxShadow = "0 0 5px rgba(0, 0, 0, 0.3)";
+         durationDiv.style.fontSize = "16px";
+         durationDiv.style.marginBottom = "60px";
+   
+         // Add the duration element to the map controls
+         map.controls[window.google.maps.ControlPosition.BOTTOM_CENTER].push(
+           durationDiv
+         );
+   
+         function updateDurationDiv() {
+           const response = directionsRenderer.getDirections();
+           const durationInSeconds = response.routes[0].legs.reduce(
+             (total, leg) => total + leg.duration.value,
+             0
+           );
+   
+           let durationString = "";
+   
+           const durationInMinutes = Math.round(durationInSeconds / 60);
+           if (durationInMinutes >= 60) {
+             const hours = Math.floor(durationInMinutes / 60);
+             const remainingMinutes = durationInMinutes % 60;
+             durationString = `${hours}h`;
+   
+             if (remainingMinutes > 0) {
+               durationString += ` ${remainingMinutes}m`;
+             }
+           } else {
+             durationString = `${durationInMinutes}m`;
+           }
+   
+           const eta = new Date(Date.now() + durationInSeconds * 1000);
+   
+           const distanceInMeters = response.routes[0].legs.reduce(
+             (total, leg) => total + leg.distance.value,
+             0
+           );
+           const distanceInKilometers = (distanceInMeters / 1000).toFixed(1);
+   
+           // Append the buttons to the durationDiv
+           durationDiv.innerHTML = `<b>Walking duration:</b> ${durationString}<br><b>Distance:</b> ${distanceInKilometers} km<br><b>ETA:</b> ${eta.toLocaleTimeString(
+             [],
+             {
+               hour: "numeric",
+               minute: "numeric",
+             }
+           )}`;
+           durationDiv.appendChild(startNavigationButton);
+           durationDiv.appendChild(stopNavigationButton);
+         }
+   
+         directionsService.route(request, function (response, status) {
+           if (status == window.google.maps.DirectionsStatus.OK) {
+             directionsRenderer.setDirections(response);
+             updateDurationDiv();
+           }
          });
+   
+         window.google.maps.event.addListener(
+           directionsRenderer,
+           "directions_changed",
+           function () {
+             savedRoute = directionsRenderer.getDirections();
+             updateDurationDiv();
+           }
+         );
 
          // Create a Marker object for each poi and add an info window
          poisCoordinatesData.forEach((poi, index) => {

@@ -153,6 +153,23 @@ const Map_Producer = () => {
             timerDiv
          );
 
+         // Add media query to update marginTop if screen width is greater than 400px
+         const mediaQuery = window.matchMedia('(min-width: 600px)');
+
+         function handleMediaQuery(mediaQuery) {
+            if (mediaQuery.matches) {
+               timerDiv.style.marginTop = '100px';
+            } else {
+               timerDiv.style.marginTop = '52px';
+            }
+         }
+
+         // Call the function once to set the initial marginTop
+         handleMediaQuery(mediaQuery);
+
+         // Listen for changes in the media query and update marginTop accordingly
+         mediaQuery.addEventListener('change', handleMediaQuery);
+
          let hours = 0;
          let seconds = 0;
          let minutes = 0;
@@ -166,41 +183,55 @@ const Map_Producer = () => {
             totalTime = `${hours}:${minutes}:${seconds}`;
             console.log('Total time:', totalTime);
 
+            // Disable the button
+            stopNavigationButton.disabled = true;
+            stopNavigationButton.style.backgroundColor = '#EEEEEE';
+            stopNavigationButton.style.color = 'grey';
+            stopNavigationButton.style.cursor = 'default';
+            
             // Show the alert message
             alert('Hope you enjoyed your tour!');
          });
 
          let savedRoute;
+         let isNavigationStarted = false;
 
-      // Add an event listener to the button to start navigation and the timer
-      startNavigationButton.addEventListener("click", function () {
-         if (savedRoute) {
-           directionsRenderer.setDirections(savedRoute);
-         } else {
-           directionsService.route(request, function (response, status) {
-             if (status == window.google.maps.DirectionsStatus.OK) {
-               savedRoute = response;
-               directionsRenderer.setDirections(response);
-             }
-           });
-         }
- 
-         // Start the timer
-         timerInterval = setInterval(function () {
-           seconds++;
-           if (seconds === 60) {
-             seconds = 0;
-             minutes++;
-           }
-           if (minutes === 60) {
-             minutes = 0;
-             hours++;
-           }
-           timerDiv.innerHTML = `${hours < 10 ? "0" + hours : hours}:${
-             minutes < 10 ? "0" + minutes : minutes
-           }:${seconds < 10 ? "0" + seconds : seconds}`;
-         }, 1000);
-       });
+         // Add an event listener to the button to start navigation and the timer
+         startNavigationButton.addEventListener('click', function() {
+            if (savedRoute) {
+               directionsRenderer.setDirections(savedRoute);
+            } else {
+               directionsService.route(request, function(response, status) {
+                  if (status == window.google.maps.DirectionsStatus.OK) {
+                     savedRoute = response;
+                     directionsRenderer.setDirections(response);
+                  }
+               });
+            }
+
+            // Start the timer
+            timerInterval = setInterval(function() {
+               seconds++;
+               if (seconds === 60) {
+                  seconds = 0;
+                  minutes++;
+               }
+               if (minutes === 60) {
+                  minutes = 0;
+                  hours++;
+               }
+               timerDiv.innerHTML = `${hours < 10 ? '0' + hours : hours}:${
+                  minutes < 10 ? '0' + minutes : minutes
+               }:${seconds < 10 ? '0' + seconds : seconds}`;
+            }, 1000);
+
+            //disable button
+            startNavigationButton.disabled = true;
+            startNavigationButton.style.backgroundColor = '#EEEEEE';
+            startNavigationButton.style.color = 'grey';
+            startNavigationButton.style.cursor = 'default';
+            isNavigationStarted = true;
+         });
 
          const directionsService = new window.google.maps.DirectionsService();
          const directionsRenderer = new window.google.maps.DirectionsRenderer({
@@ -256,7 +287,21 @@ const Map_Producer = () => {
                (total, leg) => total + leg.duration.value,
                0
             );
+
+            let durationString = "";
+
             const durationInMinutes = Math.round(durationInSeconds / 60);
+            if (durationInMinutes >= 60) {
+               const hours = Math.floor(durationInMinutes / 60);
+               const remainingMinutes = durationInMinutes % 60;
+               durationString = `${hours}h`;
+
+               if (remainingMinutes > 0) {
+                  durationString += ` ${remainingMinutes}m`;
+               }
+            } else {
+               durationString = `${durationInMinutes}m`;
+            }
             const eta = new Date(Date.now() + durationInSeconds * 1000);
 
             const distanceInMeters = response.routes[0].legs.reduce(
@@ -266,7 +311,7 @@ const Map_Producer = () => {
             const distanceInKilometers = (distanceInMeters / 1000).toFixed(1);
 
             // Append the buttons to the durationDiv
-            durationDiv.innerHTML = `<b>Walking duration:</b> ${durationInMinutes} minutes<br><b>Distance:</b> ${distanceInKilometers} km<br><b>ETA:</b> ${eta.toLocaleTimeString(
+            durationDiv.innerHTML = `<b>Walking duration:</b> ${durationString}<br><b>Distance:</b> ${distanceInKilometers} km<br><b>ETA:</b> ${eta.toLocaleTimeString(
                [],
                {
                   hour: 'numeric',

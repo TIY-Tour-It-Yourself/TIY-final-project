@@ -38,7 +38,6 @@ const NavBar = ({ token, activeImage, activeLink }) => {
    ]);
    
    const [updatedToken, setUpdatedToken] = useState('');
-   const [navBarState, setNavBarState] = useState('false');
    const [anchorElNav, setAnchorElNav] = useState('');
    const [anchorElUser, setAnchorElUser] = useState('');
 
@@ -61,7 +60,7 @@ const NavBar = ({ token, activeImage, activeLink }) => {
                },
             })
             .then((response) => {
-               // console.log(response.data);
+               console.log(response.data);
             })
             .catch((error) => {
                console.error('Error fetching user: ', error);
@@ -91,10 +90,6 @@ const NavBar = ({ token, activeImage, activeLink }) => {
 
    const handleCloseNavMenu = () => {
       setAnchorElNav(null);
-   };
-
-   const handleNavBarStateUpdate = (newState) => {
-      setNavBarState(newState);
    };
 
    const handleButtonClick = () => {

@@ -32,6 +32,7 @@ const Form_Consumer = () => {
    const [routes, setRoutes] = useState('');
    const [filteredData, setFilteredData] = useState([]);
    const [isLoading, setIsLoading] = useState(false);
+   const [token, setToken] = useState('');
 
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -52,14 +53,15 @@ const Form_Consumer = () => {
          })
          .then((response) => {
             console.log(response.data);
-            // setDisplayPage(true);
+            setToken(location.state.token.token);
          })
          .catch((error) => {
             console.error('Error fetching user: ', error);
          });
       }
-   }, [location.state.token]);
+   }, [location.state]);
 
+   console.log(token);
    useEffect(() => {
       if (routeChosen) {
         navigate(`/biyalik_map?routeId=${routeChosen}`, { state : { token: location.state.token}});
@@ -151,7 +153,7 @@ const Form_Consumer = () => {
 
    return (
       <>
-         <NavBar/>
+         <NavBar token={token}/>
          <Typography component='div' className={styles.title}>
             <h1 style={!isSmallScreen ? {} : { fontSize: '25px' }}>
                Choose Your Tour
