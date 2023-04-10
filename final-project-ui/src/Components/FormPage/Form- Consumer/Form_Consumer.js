@@ -3,13 +3,14 @@ import styles from './Form_Consumer.module.css';
 import axios from 'axios';
 import { Button, Typography, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Grid from '../../Additionals/Grid/Grid';
 import NavBar from '../../Additionals/NavBar/NavBar';
 import LoadingBar from '../../Additionals/LoadingBar/LoadingBar';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import ARFirstLevel from './ar_imgs/boy_with_mobile_level_2.jpg';
 import ARSecondLevel from './ar_imgs/ar_img_1.jpg';
+import ARThirdLevel from './ar_imgs/ar_level_3_elephant.png';
 import Bialik from './routes_imgs/tour_bialik.jpg';
 import Parks from './routes_imgs/yom_kipur_garden.jpg';
 import Culinary from './routes_imgs/baklava_pic.jpg';
@@ -17,10 +18,13 @@ import Culinary from './routes_imgs/baklava_pic.jpg';
 const arImgs = [
    { id: 1, name: 'Intermediate', src: ARFirstLevel },
    { id: 2, name: 'Advanced', src: ARSecondLevel },
+   { id: 3, name: 'Professional', src: ARThirdLevel }
 ];
 
 const Form_Consumer = () => {
    const [formTheme, setFormTheme] = useState('');
+   // const [token, setToken] = useState('');
+   // const [displayPage, setDisplayPage] = useState(false);
    const [themeSelectedId, setThemeSelectedId] = useState('');
    const [selectedLevelId, setSelectedLevelId] = useState('');
    const [isFormValid, setIsFormValid] = useState(false);
@@ -31,12 +35,34 @@ const Form_Consumer = () => {
 
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-   
    const navigate = useNavigate();
+   const location = useLocation();
+
+   useEffect(() => {
+      console.log(location.state.token);
+      if(!location.state) {
+         navigate('/');
+      } else {
+         axios
+         .get(`https://tiys.herokuapp.com/api/auth`, {
+            headers: {
+               'x-auth-token': location.state.token.token,
+               'Content-Type': 'application/json',
+            },
+         })
+         .then((response) => {
+            console.log(response.data);
+            // setDisplayPage(true);
+         })
+         .catch((error) => {
+            console.error('Error fetching user: ', error);
+         });
+      }
+   }, [location.state.token]);
 
    useEffect(() => {
       if (routeChosen) {
-        navigate(`/biyalik_map?routeId=${routeChosen}`);
+        navigate(`/biyalik_map?routeId=${routeChosen}`, { state : { token: location.state.token}});
       }
     }, [routeChosen, navigate]);
 
@@ -125,7 +151,7 @@ const Form_Consumer = () => {
 
    return (
       <>
-         <NavBar />
+         <NavBar/>
          <Typography component='div' className={styles.title}>
             <h1 style={!isSmallScreen ? {} : { fontSize: '25px' }}>
                Choose Your Tour

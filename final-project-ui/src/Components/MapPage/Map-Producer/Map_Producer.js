@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import arIcon from './images/ar_icon1.png';
 import ranking from './images/star.png';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Map_Producer = () => {
    const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -23,6 +23,7 @@ const Map_Producer = () => {
    const [ARElements, setARElements] = useState([]);
    const [isARLoaded, setIsARLoaded] = useState(false);
    const location = useLocation();
+   const navigate = useNavigate();
 
    useEffect(() => {
       const params = new URLSearchParams(location.search);
@@ -52,6 +53,26 @@ const Map_Producer = () => {
       };
       fetchData();
    }, [location]);
+
+   useEffect(() => {
+      if (!location.state.token) {
+         navigate('/');
+      } else {
+         axios
+            .get(`https://tiys.herokuapp.com/api/auth`, {
+               headers: {
+                  'x-auth-token': location.state.token.token,
+                  'Content-Type': 'application/json',
+               },
+            })
+            .then((response) => {
+               console.log(response.data);
+            })
+            .catch((error) => {
+               console.error('Error fetching user: ', error);
+            });
+      }
+   }, [location.state.token]);
 
    //Get Coordinates from POIS
    useEffect(() => {
@@ -89,11 +110,105 @@ const Map_Producer = () => {
                zoom: 12,
             }
          );
+
+         // Create the start navigation button
+         const startNavigationButton = document.createElement('button');
+         startNavigationButton.textContent = 'Start';
+         startNavigationButton.style.backgroundColor = '#007aff';
+         startNavigationButton.style.color = 'white';
+         startNavigationButton.style.padding = '10px';
+         startNavigationButton.style.borderRadius = '25px'; // change from "50%" to "25px"
+         startNavigationButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.3)';
+         startNavigationButton.style.fontSize = '16px';
+         startNavigationButton.style.lineHeight = '1';
+         startNavigationButton.style.border = 'none';
+         startNavigationButton.style.cursor = 'pointer';
+         startNavigationButton.style.marginLeft = '60px';
+
+         // Create the stop navigation button
+         const stopNavigationButton = document.createElement('button');
+         stopNavigationButton.textContent = 'Stop';
+         stopNavigationButton.style.backgroundColor = '#007aff';
+         stopNavigationButton.style.color = 'white';
+         stopNavigationButton.style.padding = '10px';
+         stopNavigationButton.style.borderRadius = '25px'; // change from "50%" to "25px"
+         stopNavigationButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.3)';
+         stopNavigationButton.style.fontSize = '16px';
+         stopNavigationButton.style.lineHeight = '1';
+         stopNavigationButton.style.border = 'none';
+         stopNavigationButton.style.cursor = 'pointer';
+
+         // Create the timer element with white background
+         const timerDiv = document.createElement('div');
+         timerDiv.innerHTML = '00:00';
+         timerDiv.style.backgroundColor = 'white';
+         timerDiv.style.padding = '5px';
+         timerDiv.style.borderRadius = '5px';
+         timerDiv.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.3)';
+         timerDiv.style.fontSize = '16px';
+         timerDiv.style.marginBottom = '30px';
+
+         //Add the timer element to the map controls
+         map.controls[window.google.maps.ControlPosition.TOP_CENTER].push(
+            timerDiv
+         );
+
+         let hours = 0;
+         let seconds = 0;
+         let minutes = 0;
+         let timerInterval;
+         let totalTime;
+
+         // Add event listener to the stop navigation button
+         stopNavigationButton.addEventListener('click', function() {
+            // Stop the timer
+            clearInterval(timerInterval);
+            totalTime = `${hours}:${minutes}:${seconds}`;
+            console.log('Total time:', totalTime);
+
+            // Show the alert message
+            alert('Hope you enjoyed your tour!');
+         });
+
+         let savedRoute;
+
+      // Add an event listener to the button to start navigation and the timer
+      startNavigationButton.addEventListener("click", function () {
+         if (savedRoute) {
+           directionsRenderer.setDirections(savedRoute);
+         } else {
+           directionsService.route(request, function (response, status) {
+             if (status == window.google.maps.DirectionsStatus.OK) {
+               savedRoute = response;
+               directionsRenderer.setDirections(response);
+             }
+           });
+         }
+ 
+         // Start the timer
+         timerInterval = setInterval(function () {
+           seconds++;
+           if (seconds === 60) {
+             seconds = 0;
+             minutes++;
+           }
+           if (minutes === 60) {
+             minutes = 0;
+             hours++;
+           }
+           timerDiv.innerHTML = `${hours < 10 ? "0" + hours : hours}:${
+             minutes < 10 ? "0" + minutes : minutes
+           }:${seconds < 10 ? "0" + seconds : seconds}`;
+         }, 1000);
+       });
+
          const directionsService = new window.google.maps.DirectionsService();
          const directionsRenderer = new window.google.maps.DirectionsRenderer({
             map: map,
+            draggable: true,
             suppressMarkers: true, // add this line to suppress markers
          });
+
          const origin = new window.google.maps.LatLng(
             locations[0].lat,
             locations[0].lng
@@ -121,11 +236,62 @@ const Map_Producer = () => {
             travelMode: window.google.maps.TravelMode.WALKING,
          };
 
+         // Create the duration element with white background
+         const durationDiv = document.createElement('div');
+         durationDiv.style.backgroundColor = 'white';
+         durationDiv.style.padding = '5px';
+         durationDiv.style.borderRadius = '5px';
+         durationDiv.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.3)';
+         durationDiv.style.fontSize = '16px';
+         durationDiv.style.marginBottom = '60px';
+
+         // Add the duration element to the map controls
+         map.controls[window.google.maps.ControlPosition.BOTTOM_CENTER].push(
+            durationDiv
+         );
+
+         function updateDurationDiv() {
+            const response = directionsRenderer.getDirections();
+            const durationInSeconds = response.routes[0].legs.reduce(
+               (total, leg) => total + leg.duration.value,
+               0
+            );
+            const durationInMinutes = Math.round(durationInSeconds / 60);
+            const eta = new Date(Date.now() + durationInSeconds * 1000);
+
+            const distanceInMeters = response.routes[0].legs.reduce(
+               (total, leg) => total + leg.distance.value,
+               0
+            );
+            const distanceInKilometers = (distanceInMeters / 1000).toFixed(1);
+
+            // Append the buttons to the durationDiv
+            durationDiv.innerHTML = `<b>Walking duration:</b> ${durationInMinutes} minutes<br><b>Distance:</b> ${distanceInKilometers} km<br><b>ETA:</b> ${eta.toLocaleTimeString(
+               [],
+               {
+                  hour: 'numeric',
+                  minute: 'numeric',
+               }
+            )}`;
+            durationDiv.appendChild(startNavigationButton);
+            durationDiv.appendChild(stopNavigationButton);
+         }
+
          directionsService.route(request, function(response, status) {
             if (status == window.google.maps.DirectionsStatus.OK) {
                directionsRenderer.setDirections(response);
+               updateDurationDiv();
             }
          });
+
+         window.google.maps.event.addListener(
+            directionsRenderer,
+            'directions_changed',
+            function() {
+               savedRoute = directionsRenderer.getDirections();
+               updateDurationDiv();
+            }
+         );
 
          // Create a Marker object for each location and add an info window
          locations.forEach((location, index) => {

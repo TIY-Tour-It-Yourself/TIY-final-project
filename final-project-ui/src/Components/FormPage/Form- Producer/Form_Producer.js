@@ -3,19 +3,21 @@ import styles from './Form_Producer.module.css';
 import axios from 'axios';
 import { Button, Typography, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import NavBar from '../../Additionals/NavBar/NavBar';
 import Grid from '../../Additionals/Grid/Grid';
 import LoadingBar from '../../Additionals/LoadingBar/LoadingBar';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import ARFirstLevel from './ar_imgs/boy_with_mobile_level_2.jpg';
 import ARSecondLevel from './ar_imgs/ar_img_1.jpg';
+import ARThirdLevel from './ar_imgs/ar_level_3_elephant.png';
 import Bialik from './routes_imgs/tour_bialik.jpg';
 import Location from './routes_imgs/pin_red.png';
 
 const arImgs = [
    { id: 1, name: 'Intermediate', src: ARFirstLevel },
    { id: 2, name: 'Advanced', src: ARSecondLevel },
+   { id: 3, name: 'Professional', src: ARThirdLevel },
 ];
 
 const Form_Producer = () => {
@@ -38,21 +40,29 @@ const Form_Producer = () => {
 
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
    const navigate = useNavigate();
+   const location = useLocation();
 
-   const setSelectedTheme = (value) => {
-      if (themeSelectedId !== '') {
-         setThemeSelectedId(value);
-         // themeSelected.backgroundColor = '#BAD7E9';
-      } else {
-         setThemeSelectedId(value);
+   useEffect(() => {
+         if(!location.state.token) {
+            navigate('/');
+         } else {
+      
+      axios
+         .get(`https://tiys.herokuapp.com/api/auth`, {
+            headers: {
+               'x-auth-token': location.state.token.token,
+               'Content-Type': 'application/json',
+            },
+         })
+         .then((response) => {
+            console.log(response.data);
+         })
+         .catch((error) => {
+            console.error('Error fetching user: ', error);
+         });
       }
-   };
-
-   const handleARExperience = (arId) => {
-      setSelectedLevelId(arId);
-   };
+   }, [location.state.token]);
 
    //Get Themes from DB
    useEffect(() => {
@@ -114,6 +124,19 @@ const Form_Producer = () => {
       return <LoadingBar/>;
    }
 
+   const setSelectedTheme = (value) => {
+      if (themeSelectedId !== '') {
+         setThemeSelectedId(value);
+         // themeSelected.backgroundColor = '#BAD7E9';
+      } else {
+         setThemeSelectedId(value);
+      }
+   };
+
+   const handleARExperience = (arId) => {
+      setSelectedLevelId(arId);
+   };
+
    const handleBuildTour = (event) => {
       event.preventDefault();
       const selectedValues = {
@@ -152,6 +175,14 @@ const Form_Producer = () => {
       accumulator[`poi${i + 1}`] = current;
       return accumulator;
    }, {});
+
+   const handleNavigate = () => {
+      navigate(
+         `/map_producer?${Object.entries(poiidMap)
+            .map(([key, value]) => `${key}=${value}`)
+            .join('&')}`
+      , { state : {token: location.state.token}});
+   }
 
    return (
       <>
@@ -331,12 +362,13 @@ const Form_Producer = () => {
                              fontSize: '0.75rem',
                           }
                   }
-                  onClick={() =>
-                     navigate(
-                        `/map_producer?${Object.entries(poiidMap)
-                           .map(([key, value]) => `${key}=${value}`)
-                           .join('&')}`
-                     )
+                  onClick={ handleNavigate
+                     // () =>
+                     // navigate(
+                     //    `/map_producer?${Object.entries(poiidMap)
+                     //       .map(([key, value]) => `${key}=${value}`)
+                     //       .join('&')}`
+                     // )
                   }
                >
                   Build Tour{' '}

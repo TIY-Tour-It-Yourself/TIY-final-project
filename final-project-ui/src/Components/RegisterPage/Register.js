@@ -54,9 +54,10 @@ const Register = (props) => {
             })
             .then((response) => {
                console.log(response.data);
+               const token = response.data;
                setIsFormValid(true);
                if (response.status === 200) {
-                  navigate(`/dashboard?isAccessible=${is_accessible}`);
+                  navigate(`/dashboard`, { state: { token }});
                } else {
                   console.log('Status is not 200');
                }

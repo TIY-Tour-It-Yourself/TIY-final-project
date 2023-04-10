@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Dashboard.module.css';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -12,24 +12,54 @@ import Container from '@mui/material/Container';
 import bursa from './card_images/bursa.jpg';
 import map from '../Additionals/Assets/map_cropped.jpg';
 import { useTheme } from '@mui/material/styles';
+import axios from 'axios';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const Dashboard = () => {
-
+   const [token, setToken] = useState('');
+   const [activeImage, setActiveImage] = useState(null);
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
    const navigate = useNavigate();
    const location = useLocation();
 
    useEffect(() => {
-      const searchParams = new URLSearchParams(location.search);
-      const isAccessible = searchParams.get('is_accessible');
-   });
+      console.log(location.state.token);
+      if(!location.state.token) {
+         navigate('/');
+      } else {
+         setActiveImage(1);
+         axios
+         .get(`https://tiys.herokuapp.com/api/auth`, {
+            headers: {
+               'x-auth-token': location.state.token.token,
+               'Content-Type': 'application/json',
+            },
+         })
+         .then((response) => {
+            setToken(location.state.token.token);
+            // console.log(response.data);
+         })
+         .catch((error) => {
+            console.error('Error fetching user: ', error);
+         });
+      }
+   }, [location.state.token]);
+   
+   console.log(token);
+
+   const handleNavigateProducer = () => {
+      navigate('/form_producer', { state: { token: location.state.token }});
+   }
+   
+   const handleNavigateConsumer = () => {
+      navigate('/form_consumer', { state: { token: location.state.token }});
+   }
 
    return (
       <>
-         <NavBar />
+         <NavBar token={token} activeImage={activeImage} />
          <Typography
             component='div'
             className={styles.title}
@@ -72,7 +102,7 @@ const Dashboard = () => {
                <CardActions>
                   <Box sx={{ m: '0 auto' }}>
                      <Button
-                        onClick={() => navigate('/form_consumer')}
+                        onClick={handleNavigateConsumer}
                         size='small'
                         style={
                            isSmallScreen
@@ -102,7 +132,7 @@ const Dashboard = () => {
                <CardActions>
                   <Box sx={{ m: '0 auto' }}>
                      <Button
-                        onClick={() => navigate('/form_producer')}
+                        onClick={handleNavigateProducer}
                         size='small'
                         style={
                            isSmallScreen

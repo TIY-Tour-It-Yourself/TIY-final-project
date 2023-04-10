@@ -32,13 +32,6 @@ const Login = (props) => {
    const [picture, setPicture] = useState('');
    const navigate = useNavigate();
 
-   useEffect(() => {
-      if (is_accessible) {
-         // console.log(`${JSON.stringify(data)} , ${is_accessible}`);
-         navigate(`/dashboard?isAccessible=${is_accessible}`);
-      }
-   }, [is_accessible, data]);
-
    const handleSubmit = async (e) => {
       e.preventDefault();
 
@@ -50,23 +43,15 @@ const Login = (props) => {
                   email,
                   password,
                },
-               // {
-               //    headers: {
-               //       'Authorization': `Bearer ${yourTokenHere}`,
-               //    },
-               // }
             );
-            console.log(response.data);
-            setData(response.data);
-            //Change to response.data.is_accessible once it's available on DB
-            setIsAccessible(response.data.age);
+            const token = response.data;
             setIsFormValid(true);
 
-            // if (response.status == 200) {
-            //    navigate(`/dashboard?isAccessible=${is_accessible}`);
-            // } else {
-            //    console.log('Status is not 200');
-            // }
+            if (response.status == 200) {
+               navigate(`/dashboard`, { state: { token }});
+            } else {
+               console.log('Status is not 200');
+            }
          } else {
             alert('All fields are required.');
             setIsFormValid(false);

@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import arIcon from './images/ar_icon1.png';
 import ranking from './images/star.png';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const BiyalikMap = (props) => {
    const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -26,6 +26,27 @@ const BiyalikMap = (props) => {
    const [poisIdNums, setPoisIdNums] = useState([]);
 
    const location = useLocation();
+   const navigate = useNavigate();
+
+   useEffect(() => {
+      if(!location.state) {
+         navigate('/');
+      } else {
+         axios
+         .get(`https://tiys.herokuapp.com/api/auth`, {
+            headers: {
+               'x-auth-token': location.state.token.token,
+               'Content-Type': 'application/json',
+            },
+         })
+         .then((response) => {
+            console.log(response.data);
+         })
+         .catch((error) => {
+            console.error('Error fetching user: ', error);
+         });
+      }
+   }, [location.state.token]);
 
    useEffect(() => {
       const searchParams = new URLSearchParams(location.search);
@@ -98,7 +119,6 @@ const BiyalikMap = (props) => {
    useEffect(() => {
          //Get route pois' names
          const names = poisNames.map((poi) => poi.name);
-         console.log(names);
          setLocationName(names);
          setIsNamesLoaded(true);
    }, [poisNames, setLocationName]);

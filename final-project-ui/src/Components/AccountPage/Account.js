@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Account.module.css';
+import { useNavigate, useLocation } from 'react-router-dom';
 import NavBar from '../Additionals/NavBar/NavBar';
 import PageContainer from '../Additionals/Container/PageContainer';
 import { TextField, Button, FormControl, Typography } from '@mui/material';
@@ -8,30 +9,59 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
 
 const Account = () => {
+   const [activeImage, setActiveImage] = useState(null);
+   const [activeLink, setActiveLink] = useState(null);
    const [isUpdated, setIsUpdated] = useState(false);
    const [username, setUsername] = useState('');
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
-
+   const [token, setToken] = useState('');
+   const navigate = useNavigate();
+   const location = useLocation();
 
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
    useEffect(() => {
+      console.log(location);
+      if (!location.state) {
+         navigate('/');
+      } else {
+         setActiveImage(2);
+         setActiveLink(1);
+         axios
+            .get(`https://tiys.herokuapp.com/api/auth`, {
+               headers: {
+                  'x-auth-token': location.state.token.token,
+                  'Content-Type': 'application/json',
+               },
+            })
+            .then((response) => {
+               console.log(response.data);
+               setToken(location.state.token);
+            })
+            .catch((error) => {
+               console.error('Error fetching user: ', error);
+            });
+      }
+   }, [location.state]);
+
+   /*useEffect(() => {
       //Get users' data from DB
       axios
-         .get('https://tiys.herokuapp.com/api/auth')
-         .then((response) => {
-            const { username, email, password } = response.data;
-            setUsername(username);
-            setEmail(email);
-            setPassword(password);
-         })
-         .catch((error) => {
-            console.log(error);
-         });
-   }, []);
-
+      .get('https://tiys.herokuapp.com/api/auth')
+      .then((response) => {
+         const { username, email, password } = response.data;
+         setUsername(username);
+         setEmail(email);
+         setPassword(password);
+      })
+      .catch((error) => {
+         console.log(error);
+      });
+   }, []);*/
+   
+   console.log(token);
    //    const handleUpdate = async (e) => {
    const handleUpdate = (e) => {
       e.preventDefault();
@@ -53,7 +83,7 @@ const Account = () => {
 
    return (
       <>
-         <NavBar />
+         <NavBar token={token} activeImage={activeImage} activeLink={activeLink}/>
          <PageContainer>
          <Typography
             component='div'
@@ -65,12 +95,13 @@ const Account = () => {
                        flexDirection: 'row',
                        justifyContent: 'center',
                        mt: '5%',
+                       mb: '3%',
                        textAlign: 'center',
                     }
-                  : { textAlign: 'center', mt: '10%' }
+                  : { textAlign: 'center', mt: '1%', mb: '9%' }
             }
          >
-            <h1>Settings</h1>
+            <h1>Update Account</h1>
          </Typography>
          <form onSubmit={handleUpdate}>
             <FormControl
@@ -82,16 +113,6 @@ const Account = () => {
                   type='text'
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  margin='dense'
-                  variant='outlined'
-                  required
-               />
-               <TextField
-                  className={styles.input}
-                  label='Email'
-                  type='email'
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
                   margin='dense'
                   variant='outlined'
                   required
@@ -114,7 +135,7 @@ const Account = () => {
                   color='primary'
                   sx={
                      isSmallScreen
-                        ? { mt: 2, ml: 2, mb: 3, width: '80%' }
+                        ? { mt: 2, ml: 6, mb: 3, width: '60%' }
                         : { mt: 3, ml: 12, mb: 3, width: '50%' }
                   }
                   style={{
