@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -16,11 +16,13 @@ import MapProducerPage from './Pages/MapProducerPage';
 import FormProducerPage from './Pages/FormProducerPage';
 import BiyalikMapPage from "./Pages/BiyalikMapPage";
 import Account from "./Components/AccountPage/Account";
+import AuthContext from './Components/Additionals/AuthContext/AuthContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
    <GoogleOAuthProvider
-      clientId={`${process.env.REACT_APP_GOOGLE_CLIENT_ID}.apps.googleusercontent.com`}
+   clientId={`${process.env.REACT_APP_GOOGLE_CLIENT_ID}.apps.googleusercontent.com`}
    >
       <React.StrictMode>
          <BrowserRouter>
@@ -42,6 +44,6 @@ root.render(
                <Route path="*" element={<NotFound />} />
             </Routes>
          </BrowserRouter>
-      </React.StrictMode>
+         </React.StrictMode>
    </GoogleOAuthProvider>
 );

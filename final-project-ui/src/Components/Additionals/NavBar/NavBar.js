@@ -29,7 +29,7 @@ import user from './user.png';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-const NavBar = ({ token, activeImage, activeLink }) => {
+const NavBar = ({ activeImage, activeLink }) => {
    const [images, setImages] = useState([
       { id: 1, title: 'home', src: home, src_clicked: home_clicked, url: '/dashboard' },
       { id: 2, title: 'settings', src: user_settings, src_clicked: user_settings_clicked, url: '/user_settings' },
@@ -46,29 +46,27 @@ const NavBar = ({ token, activeImage, activeLink }) => {
 
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-   console.log(token);
 
    useEffect(() => {
+      console.log(location);
       if (!location.state) {
          navigate('/');
       } else {
          axios
             .get(`https://tiys.herokuapp.com/api/auth`, {
                headers: {
-                  'x-auth-token': location.state.token.token,
+                  'x-auth-token': location.state.token,
                   'Content-Type': 'application/json',
                },
             })
             .then((response) => {
-               console.log(response.data);
+               // console.log(response.data);
             })
             .catch((error) => {
                console.error('Error fetching user: ', error);
             });
       }
    }, [location.state]);
-
-   console.log(activeLink);
    
    const links = [
       { id: 1, title: 'Settings', url: `/user_settings` },
@@ -77,7 +75,7 @@ const NavBar = ({ token, activeImage, activeLink }) => {
    ];
 
    const handleImageClick = (imageUrl) => {
-      navigate(imageUrl, { state: { token: token }});
+      navigate(imageUrl, { state: { token: location.state.token } });
     }
 
    const handleOpenUserMenu = (event) => {
@@ -94,11 +92,11 @@ const NavBar = ({ token, activeImage, activeLink }) => {
 
    const handleButtonClick = () => {
       if (links.filter((link) => link.url === 'user_settings')) {
-         navigate('/user_settings', { state: { token: token } });
+         navigate('/user_settings', { state: { token: location.state.token } });
       } else if (links.filter((link) => link.url === 'tours_history')) {
-         navigate('/tours_history', { state: { token: token } });
+         navigate('/tours_history', { state: { token: location.state.token } });
       } else if (links.filter((link) => link.url === 'events')) {
-         navigate('/events', { state: { token: token } });
+         navigate('/events', { state: { token: location.state.token } });
       }
    };
 
@@ -109,8 +107,8 @@ const NavBar = ({ token, activeImage, activeLink }) => {
    return (
       <AppBar
          position='fixed'
-         style={{ backgroundColor: 'white' }}
-         sx={isSmallScreen ? { top: 'auto', bottom: 0 } : {}}
+         // style={{ backgroundColor: 'white' }}
+         sx={isSmallScreen ? { top: 'auto', bottom: 0, backgroundColor: 'white' } : { backgroundColor: 'white' }}
       >
          <Container maxWidth='xl'>
             <Toolbar disableGutters>

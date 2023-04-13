@@ -15,7 +15,6 @@ const Account = () => {
    const [username, setUsername] = useState('');
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
-   const [token, setToken] = useState('');
    const navigate = useNavigate();
    const location = useLocation();
 
@@ -32,13 +31,12 @@ const Account = () => {
          axios
             .get(`https://tiys.herokuapp.com/api/auth`, {
                headers: {
-                  'x-auth-token': location.state.token.token,
+                  'x-auth-token': location.state.token,
                   'Content-Type': 'application/json',
                },
             })
             .then((response) => {
-               console.log(response.data);
-               setToken(location.state.token);
+               // console.log(response.data);
             })
             .catch((error) => {
                console.error('Error fetching user: ', error);
@@ -60,9 +58,12 @@ const Account = () => {
          console.log(error);
       });
    }, []);*/
-   
-   console.log(token);
-   //    const handleUpdate = async (e) => {
+   // useEffect(() =>{
+   //    if (token !== undefined) 
+   //       console.log(token);
+   // }, [token]);
+
+   //const handleUpdate = async (e) => {
    const handleUpdate = (e) => {
       e.preventDefault();
       //POST request to update the data in DB
@@ -83,7 +84,7 @@ const Account = () => {
 
    return (
       <>
-         <NavBar token={token} activeImage={activeImage} activeLink={activeLink}/>
+         <NavBar activeImage={activeImage} activeLink={activeLink}/>
          <PageContainer>
          <Typography
             component='div'

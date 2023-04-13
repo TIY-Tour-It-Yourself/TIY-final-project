@@ -2,14 +2,17 @@
    color: rgb(58, 81, 123);
 }
 
+.card {
+   border: 1px solid rgba(198, 213, 244, 0.751);
+}
+
 @media (max-width: 600px) {
    .title {
       font-size: 1.25rem;
    }
 
    .card {
-      margin-bottom: 5%;
-      max-width: 220px;
-      max-height: 200px;
+      border-radius: 25px;
+      margin: 15px;
    }
 }

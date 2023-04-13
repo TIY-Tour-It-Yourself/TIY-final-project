@@ -49,27 +49,25 @@ const Form_Producer = () => {
    const location = useLocation();
 
    useEffect(() => {
-      console.log(location.state.token.value.token);
+      console.log(location);
       if (!location.state) {
          navigate('/');
       } else {
          axios
             .get(`https://tiys.herokuapp.com/api/auth`, {
                headers: {
-                  'x-auth-token': location.state.token.value.token,
+                  'x-auth-token': location.state.token,
                   'Content-Type': 'application/json',
                },
             })
             .then((response) => {
-               console.log(response.data);
-               setToken(location.state.token.value.token);
+               // console.log(response.data);
             })
             .catch((error) => {
                console.error('Error fetching user: ', error);
             });
       }
    }, [location.state]);
-   console.log(token);
 
    //Get Themes from DB
    useEffect(() => {
@@ -141,6 +139,7 @@ const Form_Producer = () => {
       }
    }, []);
 
+   //Get POIS from DB
    useEffect(() => {
       setIsLoading(true);
       const filterData = async () => {
@@ -287,12 +286,12 @@ const Form_Producer = () => {
 
    return (
       <>
-         <NavBar token={token} />
+         <NavBar/>
          <Typography component='div' className={styles.title}>
             <h1 style={!isSmallScreen ? {} : { fontSize: '25px' }}>
-               Build Your Tour{' '}
-            </h1>{' '}
-         </Typography>{' '}
+               Build Your Tour
+            </h1>
+         </Typography>
          <Box component='div' className={styles.theme_div}>
             <Typography
                sx={
@@ -303,9 +302,9 @@ const Form_Producer = () => {
             >
                <span>
                   <b> Choose Tour Theme: </b>
-               </span>{' '}
-            </Typography>{' '}
-            {/* Render themes through map */}{' '}
+               </span>
+            </Typography>
+            {/* Render themes through map */}
             <Box
                component='div'
                className={styles.themes}
@@ -325,7 +324,6 @@ const Form_Producer = () => {
                        }
                }
             >
-               {' '}
                {isSmallScreen ? (
                   <Grid
                      objArray={formTheme.map((theme) => (
@@ -354,8 +352,7 @@ const Form_Producer = () => {
                                    }
                            }
                         >
-                           {' '}
-                           {theme.theme}{' '}
+                           {theme.theme}
                         </Button>
                      ))}
                   />
@@ -386,8 +383,7 @@ const Form_Producer = () => {
                                 }
                         }
                      >
-                        {' '}
-                        {theme.theme}{' '}
+                        {theme.theme}
                      </Button>
                   ))
                )}

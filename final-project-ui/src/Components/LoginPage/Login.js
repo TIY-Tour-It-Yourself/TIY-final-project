@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import AuthContext from '../Additionals/AuthContext/AuthContext';
 import { TextField, Button, FormControl, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 // import FacebookLogin from 'react-facebook-login';
@@ -18,7 +19,7 @@ import { Link, useNavigate } from 'react-router-dom';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { faFacebookF } from '@fortawesome/free-brands-svg-icons';
 
-const Login = (props) => {
+const Login = () => {
    const [user, setUser] = useState([]);
    const [profile, setProfile] = useState(false);
    const [email, setEmail] = useState('');
@@ -44,7 +45,7 @@ const Login = (props) => {
                   password,
                },
             );
-            const token = response.data;
+            const token = response.data.token;
             setIsFormValid(true);
 
             if (response.status == 200) {

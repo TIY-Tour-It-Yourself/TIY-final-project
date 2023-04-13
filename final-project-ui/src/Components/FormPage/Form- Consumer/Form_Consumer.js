@@ -23,7 +23,6 @@ const arImgs = [
 
 const Form_Consumer = () => {
    const [formTheme, setFormTheme] = useState('');
-   // const [token, setToken] = useState('');
    // const [displayPage, setDisplayPage] = useState(false);
    const [themeSelectedId, setThemeSelectedId] = useState('');
    const [selectedLevelId, setSelectedLevelId] = useState('');
@@ -40,20 +39,19 @@ const Form_Consumer = () => {
    const location = useLocation();
 
    useEffect(() => {
-      console.log(location.state.token);
+      console.log(location);
       if(!location.state) {
          navigate('/');
       } else {
          axios
          .get(`https://tiys.herokuapp.com/api/auth`, {
             headers: {
-               'x-auth-token': location.state.token.token,
+               'x-auth-token': location.state.token,
                'Content-Type': 'application/json',
             },
          })
          .then((response) => {
-            console.log(response.data);
-            setToken(location.state.token.token);
+            // console.log(response.data);
          })
          .catch((error) => {
             console.error('Error fetching user: ', error);
@@ -61,7 +59,6 @@ const Form_Consumer = () => {
       }
    }, [location.state]);
 
-   console.log(token);
    useEffect(() => {
       if (routeChosen) {
         navigate(`/biyalik_map?routeId=${routeChosen}`, { state : { token: location.state.token}});
@@ -153,7 +150,7 @@ const Form_Consumer = () => {
 
    return (
       <>
-         <NavBar token={token}/>
+         <NavBar/>
          <Typography component='div' className={styles.title}>
             <h1 style={!isSmallScreen ? {} : { fontSize: '25px' }}>
                Choose Your Tour
