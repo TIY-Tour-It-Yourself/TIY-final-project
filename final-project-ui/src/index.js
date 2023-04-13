@@ -16,7 +16,6 @@ import MapProducerPage from './Pages/MapProducerPage';
 import FormProducerPage from './Pages/FormProducerPage';
 import BiyalikMapPage from "./Pages/BiyalikMapPage";
 import Account from "./Components/AccountPage/Account";
-import AuthContext from './Components/Additionals/AuthContext/AuthContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
