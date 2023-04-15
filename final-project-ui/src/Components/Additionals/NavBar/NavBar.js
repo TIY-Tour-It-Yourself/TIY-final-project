@@ -82,15 +82,12 @@ const NavBar = ({ activeImage, activeLink }) => {
       setAnchorElUser(event.currentTarget);
    };
 
-   // const handleOpenNavMenu = (event) => {
-   //    setAnchorElNav(event.currentTarget);
-   // };
-
    const handleCloseNavMenu = () => {
       setAnchorElNav(null);
    };
 
-   const handleButtonClick = () => {
+   const handleButtonClick = (title) => {
+      console.log(title);
       if (links.filter((link) => link.url === 'user_settings')) {
          navigate('/user_settings', { state: { token: location.state.token } });
       } else if (links.filter((link) => link.url === 'tours_history')) {
@@ -143,7 +140,7 @@ const NavBar = ({ activeImage, activeLink }) => {
                   {links.map((link) => (
                      <Button disableRipple
                         key={link.id}
-                        onClick={handleButtonClick}
+                        onClick={() => handleButtonClick(link.title)}
                         sx={{
                            my: 2,
                            mx: 1,

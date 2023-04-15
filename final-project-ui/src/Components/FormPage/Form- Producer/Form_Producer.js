@@ -30,19 +30,12 @@ const Form_Producer = () => {
    const [routes, setRoutes] = useState('');
    const [filteredData, setFilteredData] = useState([]);
    const [isLoading, setIsLoading] = useState(false);
-   const [token, setToken] = useState('');
+   const [selectedPOIs, setSelectedPOIs] = useState([]);
    // State for storing selected radius
    const [selectedRadius, setSelectedRadius] = useState(0);
    const [radius, setRadius] = useState(1); // initialize radius to 1 km
    const [userLocation, setUserLocation] = useState(null);
-
-   //POIs' states
-   const [poi1, setPoi1] = useState('');
-   const [poi2, setPoi2] = useState('');
-   const [poi3, setPoi3] = useState('');
-   const [poi4, setPoi4] = useState('');
    const [coordinates, setCoordinates] = useState([]);
-   const [selectedPOIs, setSelectedPOIs] = useState('');
 
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -67,13 +60,13 @@ const Form_Producer = () => {
             .catch((error) => {
                console.error('Error fetching user: ', error);
             });
-         }
-      }, [location.state]);
-      
-      //Get Themes from DB
-      useEffect(() => {
-         setIsLoading(true);
-         axios
+      }
+   }, [location.state]);
+
+   //Get Themes from DB
+   useEffect(() => {
+      setIsLoading(true);
+      axios
          .get('https://tiys.herokuapp.com/api/themes')
          .then((response) => {
             setFormTheme(response.data);
@@ -83,7 +76,7 @@ const Form_Producer = () => {
             console.error('Error fetching Themes: ', error);
             setIsLoading(false);
          });
-      }, []);
+   }, []);
 
    useEffect(() => {
       if (navigator.geolocation) {
@@ -95,12 +88,12 @@ const Form_Producer = () => {
             (error) => {
                console.error(error);
             }
-            );
+         );
       } else {
          console.error('Geolocation is not supported by this browser.');
       }
    }, []);
-   
+
    //Get POIS from DB
    useEffect(() => {
       setIsLoading(true);
@@ -109,18 +102,19 @@ const Form_Producer = () => {
             // Make an API request to fetch the POIs data
             const response = await axios.get(
                'https://tiys.herokuapp.com/api/pois'
-               );
-               console.log(response.data);
-               setIsLoading(false);
-               setCoordinates(response.data);
-            } catch (error) {
-               console.log(error);
+            );
+            console.log(response.data);
+            setIsLoading(false);
+            setCoordinates(response.data);
+         } catch (error) {
+            console.log(error);
             setIsLoading(false);
          }
       };
       filterData();
    }, []);
 
+   //Display unfiltered POIs
    useEffect(() => {
       if (themeSelectedId && selectedLevelId) {
          let filtered = coordinates.filter((coordinate) => {
@@ -136,7 +130,8 @@ const Form_Producer = () => {
    }, [themeSelectedId, selectedLevelId, coordinates]);
 
    useEffect(() => {
-      if (selectedRadius && userLocation) {
+      // if (selectedRadius && userLocation) {
+         if (themeSelectedId && selectedLevelId && selectedRadius && userLocation) {
          const filtered = coordinates.filter((coordinate) => {
             // Calculate the distance between user and POI using Haversine formula
             const distance = calcDistance(
@@ -145,18 +140,22 @@ const Form_Producer = () => {
                coordinate.coordinates.lat,
                coordinate.coordinates.lng
             );
-            return distance <= selectedRadius * 1000;
+            return (
+               distance <= selectedRadius * 1000 &&
+               coordinate.theme.themeid === themeSelectedId &&
+               coordinate.arid.level === selectedLevelId
+            );
          });
          setFilteredData(filtered);
          console.log(`filtered: ${filtered.length}`);
       }
-   }, [selectedRadius, userLocation, coordinates]);
+   }, [themeSelectedId, selectedLevelId, selectedRadius, userLocation, coordinates]);
 
    // -------------------------------------------------
    // Function to calculate the distance between two points using Haversine formula
    const calcDistance = (lat1, lon1, lat2, lon2) => {
       const R = 6371 * 1000; // Radius of the earth in km
-      const dLat = deg2rad(lat2 - lat1); // deg2rad below
+      const dLat = deg2rad(lat2 - lat1); 
       const dLon = deg2rad(lon2 - lon1);
       const a =
          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
@@ -199,37 +198,27 @@ const Form_Producer = () => {
       setSelectedLevelId(arId);
    };
 
-   const handleBuildTour = (event) => {
-      event.preventDefault();
-      const selectedValues = {
-         poi1: JSON.parse(poi1),
-         poi2: JSON.parse(poi2),
-         poi3: JSON.parse(poi3),
-         poi4: JSON.parse(poi4),
-      };
-      navigate('/map_producer', { state: { selectedValues, coordinates } });
-   };
-
    //Update array according to filter and selection
    const handlePOISelection = (poi) => {
       if (themeSelectedId && selectedLevelId) {
-         //Check if POI is already selected
-         const poiIndex = selectedPOIs.indexOf(poi);
-         if (poiIndex === -1) {
-            //POI not already selected- add to array
-            setSelectedPOIs([...selectedPOIs, poi]);
-            setIsFormValid(true);
-         } else {
-            //POI already selected- remove from array
-            const updatedPOIs = [...selectedPOIs];
-            updatedPOIs.splice(poiIndex, 1);
-            setSelectedPOIs(updatedPOIs);
-         }
+        // Check if POI is already selected
+        const poiIndex = selectedPOIs.indexOf(poi);
+        if (poiIndex === -1) {
+          // POI not already selected - add to array
+          setSelectedPOIs([...selectedPOIs, poi]);
+        } else {
+          // POI already selected - remove from array
+          const updatedPOIs = [...selectedPOIs];
+          updatedPOIs.splice(poiIndex, 1);
+          setSelectedPOIs(updatedPOIs);
+          setIsFormValid(true);
+        }
       } else {
-         alert('Theme and AR Experience must be chosen.');
-         setIsFormValid(false);
+        alert('Theme and AR Experience must be chosen.');
+        setIsFormValid(false);
       }
-   };
+    };
+
    const poiid = selectedPOIs ? selectedPOIs.map((item) => item.poiid) : [];
 
    // Convert poiid array to an object with numbered keys
@@ -247,13 +236,12 @@ const Form_Producer = () => {
       );
    };
 
-   // console.log(coordinates.map((coor) => {
-   //    coor.grade;
-   // }));
+   //POIs Grades array
+   // const grades = coordinates.map((coord) => coord.grade);
 
    return (
       <>
-         <NavBar/>
+         <NavBar />
          <Typography component='div' className={styles.title}>
             <h1 style={!isSmallScreen ? {} : { fontSize: '25px' }}>
                Build Your Tour
@@ -408,9 +396,9 @@ const Form_Producer = () => {
                         : { fontSize: '1.25rem', mt: 2 }
                   }
                >
-                  <b>Choose Distance: {selectedRadius} km</b>
+                  <b>Choose Distance: {selectedRadius}km</b>
                </Typography>
-               {/* Add a range input to display a ruler with values from 1 to 6 km */}
+               {/* Add a range input to display a ruler with values from 1km to 8km */}
                <div
                   style={{
                      marginTop: '1rem',
@@ -425,24 +413,22 @@ const Form_Producer = () => {
                         marginRight: '0.5rem',
                      }}
                   >
-                     1 km
+                     1km
                   </div>
                   <input
                      type='range'
                      min='1'
-                     max='20'
+                     max='8'
                      step='1'
                      style={{ width: '20rem', marginRight: '0.5rem' }}
                      value={selectedRadius}
                      onChange={handleRadiusChange}
                   />
-                  <div style={{ width: '5rem', textAlign: 'left' }}>
-                     20 km
-                  </div>
-               </div> 
+                  <div style={{ width: '5rem', textAlign: 'left' }}>8km</div>
+               </div>
             </Box>
          </div>
-         {/* Routes List */}
+         {/* POIs List */}
          <div className={styles.pois_title}>
             <Typography
                component='div'
@@ -486,20 +472,12 @@ const Form_Producer = () => {
                              fontSize: '0.75rem',
                           }
                   }
-                  onClick={
-                     handleNavigate
-                     // () =>
-                     // navigate(
-                     //    `/map_producer?${Object.entries(poiidMap)
-                     //       .map(([key, value]) => `${key}=${value}`)
-                     //       .join('&')}`
-                     // )
-                  }
+                  onClick={handleNavigate}
                >
                   Build Tour
                </Button>
             </div>
-         )}{' '}
+         )}
          {!filteredData ? (
             <div className={styles.poi_imgs}>
                {coordinates.map((poi) => (
@@ -508,7 +486,11 @@ const Form_Producer = () => {
                      key={poi.poiid}
                      value={JSON.stringify(poi.coordinates)}
                      onClick={() => handlePOISelection(poi)}
-                  >  <div className={styles.star}><img src={Star} alt='rank'/></div>
+                  >
+                     <div className={styles.star}>
+                        <img src={Star} alt='rank' />
+                        <span>{poi.grade}</span>
+                     </div>
                      <img src={Location} alt={poi.name} />
                      <Typography
                         component='p'
@@ -522,23 +504,27 @@ const Form_Producer = () => {
                               : { fontSize: '0.8rem', fontStyle: 'italic' }
                         }
                      >
-                        {' '}
-                        {poi.name}{' '}
-                     </Typography>{' '}
+                        {poi.name}
+                     </Typography>
                   </div>
-               ))}{' '}
+               ))}
             </div>
          ) : (
             <div className={styles.poi_imgs}>
-               {' '}
-               {filteredData.map((poi) => (
-                  <div
+               {filteredData.map((poi) => {
+                  const isSelected = selectedPOIs.includes(poi);
+                  return (
+                  <div className={isSelected ? styles.border : ''}
                      style={{ cursor: 'pointer', position: 'relative' }}
                      key={poi.poiid}
                      value={JSON.stringify(poi.coordinates)}
                      onClick={() => handlePOISelection(poi)}
                   >
-                     <img src={Location} alt={poi.name} />{' '}
+                     <div className={styles.star}>
+                        <img src={Star} alt='rank' />
+                        <span>{poi.grade}</span>
+                     </div>
+                     <img src={Location} alt={poi.name} />
                      <Typography
                         component='p'
                         sx={
@@ -551,12 +537,13 @@ const Form_Producer = () => {
                               : { fontSize: '0.8rem', fontStyle: 'italic' }
                         }
                      >
-                        {poi.name}{' '}
-                     </Typography>{' '}
+                        {poi.name}
+                     </Typography>
                   </div>
-               ))}{' '}
+                  );
+               })}
             </div>
-         )}{' '}
+         )}
       </>
    );
 };

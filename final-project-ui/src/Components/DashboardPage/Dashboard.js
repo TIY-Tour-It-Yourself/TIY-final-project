@@ -20,7 +20,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const cards = [
    { id: 1, title: 'Choose Your Tour', src: bursa, url: '/form_consumer' },
    { id: 2, title: 'Build Your Tour', src: map, url: '/form_producer' },
-   { id: 3, title: 'Tours History', src: '', url: '/tours_history' },
+   { id: 3, title: 'My Tours', src: '', url: '/tours_history' },
 ];
 
 const Dashboard = () => {

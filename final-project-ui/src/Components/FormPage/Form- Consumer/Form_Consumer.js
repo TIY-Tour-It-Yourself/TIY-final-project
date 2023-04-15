@@ -14,11 +14,12 @@ import ARThirdLevel from './ar_imgs/ar_level_3_elephant.png';
 import Bialik from './routes_imgs/tour_bialik.jpg';
 import Parks from './routes_imgs/yom_kipur_garden.jpg';
 import Culinary from './routes_imgs/baklava_pic.jpg';
+import Star from './routes_imgs/star_32.png';
 
 const arImgs = [
    { id: 1, name: 'Intermediate', src: ARFirstLevel },
    { id: 2, name: 'Advanced', src: ARSecondLevel },
-   { id: 3, name: 'Professional', src: ARThirdLevel }
+   { id: 3, name: 'Professional', src: ARThirdLevel },
 ];
 
 const Form_Consumer = () => {
@@ -40,30 +41,32 @@ const Form_Consumer = () => {
 
    useEffect(() => {
       console.log(location);
-      if(!location.state) {
+      if (!location.state) {
          navigate('/');
       } else {
          axios
-         .get(`https://tiys.herokuapp.com/api/auth`, {
-            headers: {
-               'x-auth-token': location.state.token,
-               'Content-Type': 'application/json',
-            },
-         })
-         .then((response) => {
-            // console.log(response.data);
-         })
-         .catch((error) => {
-            console.error('Error fetching user: ', error);
-         });
+            .get(`https://tiys.herokuapp.com/api/auth`, {
+               headers: {
+                  'x-auth-token': location.state.token,
+                  'Content-Type': 'application/json',
+               },
+            })
+            .then((response) => {
+               // console.log(response.data);
+            })
+            .catch((error) => {
+               console.error('Error fetching user: ', error);
+            });
       }
    }, [location.state]);
 
    useEffect(() => {
       if (routeChosen) {
-        navigate(`/biyalik_map?routeId=${routeChosen}`, { state : { token: location.state.token}});
+         navigate(`/biyalik_map?routeId=${routeChosen}`, {
+            state: { token: location.state.token },
+         });
       }
-    }, [routeChosen, navigate]);
+   }, [routeChosen, navigate]);
 
    //Get Themes from DB
    useEffect(() => {
@@ -99,7 +102,7 @@ const Form_Consumer = () => {
                   return (
                      route.theme.themeid === themeSelectedId &&
                      route.experience_level === selectedLevelId
-                     );
+                  );
                });
                // Update the state with the filtered data
                setFilteredData(filtered);
@@ -117,12 +120,12 @@ const Form_Consumer = () => {
 
       filterData();
    }, [themeSelectedId, selectedLevelId]);
-   
+
    //While data hasn't become an array yet- keep loading
    if (!Array.isArray(formTheme) || !Array.isArray(routes)) {
-      return <LoadingBar/>;
+      return <LoadingBar />;
    }
-   
+
    //Redirect to chosen route on the map
    const chooseRoute = (routeid) => {
       if (selectedLevelId && themeSelectedId) {
@@ -130,27 +133,27 @@ const Form_Consumer = () => {
          setRouteChosen(routeid);
          setIsFormValid(true);
       } else {
-         alert("Theme and AR Experience must be chosen.");
+         alert('Theme and AR Experience must be chosen.');
          setIsFormValid(false);
       }
    };
 
    const setSelectedTheme = (value) => {
       if (themeSelectedId !== '') {
-            setThemeSelectedId(value);
-            // themeSelected.backgroundColor = '#BAD7E9';
-         } else {
-            setThemeSelectedId(value);
-         }
-      };
-   
-      const handleARExperience = (arId) => {
-         setSelectedLevelId(arId);
-      };
+         setThemeSelectedId(value);
+         // themeSelected.backgroundColor = '#BAD7E9';
+      } else {
+         setThemeSelectedId(value);
+      }
+   };
+
+   const handleARExperience = (arId) => {
+      setSelectedLevelId(arId);
+   };
 
    return (
       <>
-         <NavBar/>
+         <NavBar />
          <Typography component='div' className={styles.title}>
             <h1 style={!isSmallScreen ? {} : { fontSize: '25px' }}>
                Choose Your Tour
@@ -164,7 +167,9 @@ const Form_Consumer = () => {
                      : { fontSize: '1.25rem' }
                }
             >
-               <span><b>Choose Tour Theme:</b></span>
+               <span>
+                  <b>Choose Tour Theme:</b>
+               </span>
             </Typography>
 
             {/* Render themes through map */}
@@ -186,66 +191,71 @@ const Form_Consumer = () => {
                        }
                }
             >
-            {isSmallScreen ? ( 
-            <Grid objArray={formTheme.map((theme) => (
+               {isSmallScreen ? (
+                  <Grid
+                     objArray={formTheme.map((theme) => (
+                        <Button
+                           key={theme.themeid}
+                           onClick={() => setSelectedTheme(theme.themeid)}
+                           value={theme}
+                           variant={
+                              themeSelectedId === theme.themeid
+                                 ? 'contained'
+                                 : 'outlined'
+                           }
+                           sx={
+                              !isSmallScreen
+                                 ? {
+                                      borderRadius: '20px',
+                                      height: '30px',
+                                      marginLeft: 1,
+                                      marginTop: 2,
+                                      marginBottom: 1,
+                                   }
+                                 : {
+                                      marginLeft: 1.5,
+                                      marginBottom: 1,
+                                      height: '30px',
+                                      borderRadius: '20px',
+                                   }
+                           }
+                        >
+                           {theme.theme}
+                        </Button>
+                     ))}
+                  />
+               ) : (
+                  formTheme.map((theme) => (
                      <Button
-                     key={theme.themeid}
-                     onClick={() => setSelectedTheme(theme.themeid)}
-                     value={theme}
-                     variant={
-                        themeSelectedId === theme.themeid
-                           ? 'contained'
-                           : 'outlined'
-                     }
-                     sx={
-                        !isSmallScreen
-                           ? {
-                                borderRadius: '20px',
-                                height: '30px',
-                                marginLeft: 1,
-                                marginTop: 2,
-                                marginBottom: 1
-                             }
-                           : {
-                                marginLeft: 1.5,
-                                marginBottom: 1,
-                                height: '30px',
-                                borderRadius: '20px',
-                             }
-                     }
-                  >
-                     {theme.theme}
-                  </Button>
-               ))}/>
-                ) : (formTheme.map((theme) => (
-                  <Button
-                  key={theme.themeid}
-                  onClick={() => setSelectedTheme(theme.themeid)}
-                  value={theme}
-                  variant={
-                     themeSelectedId === theme.themeid
-                        ? 'contained'
-                        : 'outlined'
-                  }
-                  sx={
-                     !isSmallScreen
-                        ? {
-                             borderRadius: '20px',
-                             height: '30px',
-                             marginLeft: 1,
-                             marginTop: 2,
-                             marginBottom: 1
-                          }
-                        : {
-                             marginLeft: 1.5,
-                             marginBottom: 1,
-                             height: '30px',
-                             borderRadius: '20px',
-                          }
-                  }
-               >
-                  {theme.theme}
-               </Button>)))} 
+                        key={theme.themeid}
+                        onClick={() => setSelectedTheme(theme.themeid)}
+                        value={theme}
+                        variant={
+                           themeSelectedId === theme.themeid
+                              ? 'contained'
+                              : 'outlined'
+                        }
+                        sx={
+                           !isSmallScreen
+                              ? {
+                                   borderRadius: '20px',
+                                   height: '30px',
+                                   marginLeft: 1,
+                                   marginTop: 2,
+                                   marginBottom: 1,
+                                }
+                              : {
+                                   marginLeft: 1.5,
+                                   marginBottom: 1,
+                                   height: '30px',
+                                   borderRadius: '20px',
+                                }
+                        }
+                     >
+                        {theme.theme}
+                     </Button>
+                  ))
+               )}
             </Box>
          </Box>
          <Box component='div' className={styles.AR_exp_div}>
@@ -256,7 +266,9 @@ const Form_Consumer = () => {
                      : { fontSize: '1.25rem', mt: 2 }
                }
             >
-               <span><b>Choose AR Experience:</b></span>
+               <span>
+                  <b>Choose AR Experience:</b>
+               </span>
             </Typography>
             <div className={styles.ar_imgs}>
                {arImgs.map((arImg) => (
@@ -275,8 +287,7 @@ const Form_Consumer = () => {
                         width='150'
                         height='150'
                      />
-                     <div className={styles.arlevel_name}
-                     >
+                     <div className={styles.arlevel_name}>
                         <span>{arImg.name}</span>
                      </div>
                   </div>
@@ -290,11 +301,18 @@ const Form_Consumer = () => {
                   component='div'
                   sx={
                      isSmallScreen
-                        ? { fontSize: '1.05rem', ml: 1, mt: 4, maxWidth: 'max-content' }
+                        ? {
+                             fontSize: '1.05rem',
+                             ml: 1,
+                             mt: 4,
+                             maxWidth: 'max-content',
+                          }
                         : { fontSize: '1.25rem' }
                   }
                >
-                  <span><b>Available Routes:</b></span>
+                  <span>
+                     <b>Available Routes:</b>
+                  </span>
                </Typography>
             </div>
          </Box>
@@ -302,10 +320,14 @@ const Form_Consumer = () => {
             <div className={styles.routes_imgs}>
                {routes.map((route) => (
                   <div
-                     style={{ cursor: 'pointer'}}
+                     style={{ cursor: 'pointer' }}
                      key={route.routeid}
                      onClick={() => chooseRoute(route.routeid)}
                   >
+                     <div className={styles.star}>
+                        <img src={Star} alt='rank' />
+                        <span>{route.evaluation_grade}</span>
+                     </div>
                      <img src={route.imgurl} alt={route.description} />
                      <Typography
                         component='p'

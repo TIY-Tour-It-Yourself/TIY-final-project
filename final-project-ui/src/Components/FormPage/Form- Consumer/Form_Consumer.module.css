@@ -37,6 +37,11 @@
    cursor: pointer;
 }
 
+.star{
+   max-width: max-content;
+   margin-left: 150px;
+}
+
 .form {
    display: flex;
    max-width: 80%;
@@ -124,6 +129,10 @@
    .routes_imgs > div > img {
       max-width: max-content;
       margin-left: 3px;
+   }
+
+   .star{
+      margin-left: 130px;
    }
 
    .arlevel_name {
