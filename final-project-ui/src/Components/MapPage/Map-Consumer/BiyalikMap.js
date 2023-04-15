@@ -29,24 +29,25 @@ const BiyalikMap = (props) => {
    const navigate = useNavigate();
 
    useEffect(() => {
+      console.log(location);
       if (!location.state) {
          navigate('/');
       } else {
          axios
             .get(`https://tiys.herokuapp.com/api/auth`, {
                headers: {
-                  'x-auth-token': location.state.token.token,
+                  'x-auth-token': location.state.token,
                   'Content-Type': 'application/json',
                },
             })
             .then((response) => {
-               console.log(response.data);
+               // console.log(response.data);
             })
             .catch((error) => {
                console.error('Error fetching user: ', error);
             });
       }
-   }, [location.state.token]);
+   }, [location.state]);
 
    useEffect(() => {
       const searchParams = new URLSearchParams(location.search);

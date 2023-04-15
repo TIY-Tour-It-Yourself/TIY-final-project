@@ -9,6 +9,8 @@ import axios from 'axios';
 import arIcon from './images/ar_icon1.png';
 import ranking from './images/star.png';
 import { useLocation, useNavigate } from 'react-router-dom';
+import ReviewForm from '../ReviewFormPage/ReviewForm';
+import styles from './Map_Producer.module.css';
 
 const Map_Producer = () => {
    const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -22,6 +24,10 @@ const Map_Producer = () => {
    const [isNamesLoaded, setIsNamesLoaded] = useState(false);
    const [ARElements, setARElements] = useState([]);
    const [isARLoaded, setIsARLoaded] = useState(false);
+   const [showForm, setShowForm] = useState(false);
+   const [poiValues, setPoiValues] = useState([]);
+   const [poiValuesLoaded, setIsPoiValuesLoaded] = useState(false);
+   const [selectedPoi, setSelectedPoi] = useState(null);
    const location = useLocation();
    const navigate = useNavigate();
 
@@ -55,24 +61,24 @@ const Map_Producer = () => {
    }, [location]);
 
    useEffect(() => {
-      if (!location.state.token) {
+      if (!location.state) {
          navigate('/');
       } else {
          axios
             .get(`https://tiys.herokuapp.com/api/auth`, {
                headers: {
-                  'x-auth-token': location.state.token.token,
+                  'x-auth-token': location.state.token,
                   'Content-Type': 'application/json',
                },
             })
             .then((response) => {
-               console.log(response.data);
+               // console.log(response.data);
             })
             .catch((error) => {
                console.error('Error fetching user: ', error);
             });
       }
-   }, [location.state.token]);
+   }, [location.state]);
 
    //Get Coordinates from POIS
    useEffect(() => {
@@ -98,6 +104,20 @@ const Map_Producer = () => {
          setIsARLoaded(true);
       }
    }, [poiDataArray]);
+
+   // extract POI values from poiDataArray and store them in the state
+    useEffect(() => {
+      if (poiDataArray && poiDataArray.length > 0) {
+         const newPoiValues = poiDataArray.map((item) => item[0].poiid);
+         setPoiValues(newPoiValues);
+         setIsPoiValuesLoaded(true); // set isPoiValuesLoaded to true
+      }
+   }, [poiDataArray]);
+
+   function handleAddReview(index) {
+      setShowForm(true);
+      setSelectedPoi(poiValues[index]);
+    }
 
    const initializeMap = () => {
       // Check if locations data is loaded and available
@@ -347,21 +367,29 @@ const Map_Producer = () => {
 
             const infoWindow = new window.google.maps.InfoWindow({
                content: `<div style="display: flex; justify-content: center; flex-direction: column;">
-                                    <div style="margin-left: 10px;"><h4>${names[index]}</h4></div>
-                                  <div style="display: flex; justify-content: center; flex-direction: row; margin-left: 5px;">
-                                    <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
-                                        <a href="${ARElements[index]}" target="_blank">
-                                       <img src="${arIcon}" width='40px' height='40px' alt='${names[index]}'>
-                                       </a>
-                                    </div>
-                                    <div>
-                                    <a href="#" style="text-decoration: none;">
-                                       <img src=${ranking} style="padding: 7px;" width='25px' height='25px' alt='rankPoi'/>
-                                       </a>
-                                    </div>
-                                    </div>
+                           <div style="margin-left: 10px;"><h4>${names[index]}</h4></div>
+                           <div style="display: flex; justify-content: center; flex-direction: row; margin-left: 5px;">
+                           <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
+                                 <a href="${ARElements[index]}" target="_blank">
+                              <img src="${arIcon}" width='40px' height='40px' alt='${names[index]}'>
+                              </a>
+                           </div>
+                           <div>
+                           <button id="add-review-button">
+                              <img src=${ranking} width='25px' height='25px' alt="Add Review" />
+                           </button>            
+                           </div>
+                           </div>
                         </div>`,
             });
+
+             infoWindow.addListener("domready", () => {
+               const addButton = document.querySelector("#add-review-button");
+               addButton.addEventListener("click", () => {
+                 handleAddReview(index);
+               });
+             });
+             
             marker.addListener('click', () => {
                infoWindow.open(map, marker); // open the info window when the marker is clicked
             });
@@ -423,6 +451,17 @@ const Map_Producer = () => {
          ) : (
             <GoogleMap />
          )}
+         {showForm && (
+        <div className={styles.lightbox}>
+          <div className={styles.lightbox_content}>
+            <ReviewForm
+              showForm={showForm}
+            //onCancel={handleCancel}
+              poiValues={selectedPoi}
+            />
+          </div>
+        </div>
+      )}
       </div>
    );
 };

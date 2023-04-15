@@ -489,7 +489,7 @@ const Form_Producer = () => {
                   >
                      <div className={styles.star}>
                         <img src={Star} alt='rank' />
-                        <span>{poi.grade}</span>
+                        <span>{poi.grade.toFixed(1)}</span>
                      </div>
                      <img src={Location} alt={poi.name} />
                      <Typography
@@ -522,7 +522,7 @@ const Form_Producer = () => {
                   >
                      <div className={styles.star}>
                         <img src={Star} alt='rank' />
-                        <span>{poi.grade}</span>
+                        <span>{poi.grade.toFixed(1)}</span>
                      </div>
                      <img src={Location} alt={poi.name} />
                      <Typography

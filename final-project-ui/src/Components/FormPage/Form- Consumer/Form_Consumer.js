@@ -324,10 +324,6 @@ const Form_Consumer = () => {
                      key={route.routeid}
                      onClick={() => chooseRoute(route.routeid)}
                   >
-                     <div className={styles.star}>
-                        <img src={Star} alt='rank' />
-                        <span>{route.evaluation_grade}</span>
-                     </div>
                      <img src={route.imgurl} alt={route.description} />
                      <Typography
                         component='p'
@@ -343,6 +339,10 @@ const Form_Consumer = () => {
                      >
                         {route.description}
                      </Typography>
+                     <div className={styles.star}>
+                        <img src={Star} alt='rank' />
+                        <span>{route.evaluation_grade}</span>
+                     </div>
                   </div>
                ))}
             </div>
@@ -354,7 +354,7 @@ const Form_Consumer = () => {
                      key={route.routeid}
                      onClick={(e) => chooseRoute(route.routeid)}
                   >
-                     <img src={Bialik} alt={route.description} />
+                     <img src={route.imgurl} alt={route.description} />
                      <Typography
                         component='p'
                         sx={
@@ -369,6 +369,10 @@ const Form_Consumer = () => {
                      >
                         {route.description}
                      </Typography>
+                     <div className={styles.star}>
+                        <img src={Star} alt='rank' />
+                        <span>{route.evaluation_grade}</span>
+                     </div>
                   </div>
                ))}
             </div>
