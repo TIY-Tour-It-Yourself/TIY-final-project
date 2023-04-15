@@ -96,6 +96,12 @@
    height: 50px;
 }
 
+.star{
+   border: 2px solid black;
+   max-width: max-content;
+   margin-left: 75px;
+}
+
 .ar_div{
    margin-left: 2.25%;
 }

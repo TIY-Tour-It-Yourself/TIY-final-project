@@ -13,6 +13,7 @@ import ARSecondLevel from './ar_imgs/ar_img_1.jpg';
 import ARThirdLevel from './ar_imgs/ar_level_3_elephant.png';
 import Bialik from './routes_imgs/tour_bialik.jpg';
 import Location from './routes_imgs/pin_red.png';
+import Star from './pois_imgs/star_32.png';
 
 const arImgs = [
    { id: 1, name: 'Intermediate', src: ARFirstLevel },
@@ -66,13 +67,13 @@ const Form_Producer = () => {
             .catch((error) => {
                console.error('Error fetching user: ', error);
             });
-      }
-   }, [location.state]);
-
-   //Get Themes from DB
-   useEffect(() => {
-      setIsLoading(true);
-      axios
+         }
+      }, [location.state]);
+      
+      //Get Themes from DB
+      useEffect(() => {
+         setIsLoading(true);
+         axios
          .get('https://tiys.herokuapp.com/api/themes')
          .then((response) => {
             setFormTheme(response.data);
@@ -82,46 +83,7 @@ const Form_Producer = () => {
             console.error('Error fetching Themes: ', error);
             setIsLoading(false);
          });
-   }, []);
-
-   // //Get POIS from DB
-   // useEffect(() => {
-   //    setIsLoading(true);
-   //    const filterData = async () => {
-   //       try {
-   //          // Make an API request to fetch the routes data
-   //          const response = await axios.get(
-   //             'https://tiys.herokuapp.com/api/pois'
-   //          );
-   //          setIsLoading(false);
-   //          setCoordinates(response.data);
-
-   //          // Check if both Theme and ARlevel have been selected
-   //          if (themeSelectedId && selectedLevelId) {
-   //             // Filter the data based on the selected values
-   //             const filtered = response.data.filter((coordinate) => {
-   //                return (
-   //                   coordinate.theme.themeid === themeSelectedId &&
-   //                   coordinate.arid.level === selectedLevelId
-   //                );
-   //             });
-
-   //             // Update the state with the filtered data
-   //             setFilteredData(filtered);
-   //             console.log(`filtered: ${filtered.length}`);
-   //          } else {
-   //             // If either theme or level is not selected, set filtered data to null
-   //             setFilteredData(null);
-   //             setIsLoading(false);
-   //          }
-   //       } catch (error) {
-   //          console.log(error);
-   //          setIsLoading(false);
-   //       }
-   //    };
-
-   //    filterData();
-   // }, [themeSelectedId, selectedLevelId]);
+      }, []);
 
    useEffect(() => {
       if (navigator.geolocation) {
@@ -133,12 +95,12 @@ const Form_Producer = () => {
             (error) => {
                console.error(error);
             }
-         );
+            );
       } else {
          console.error('Geolocation is not supported by this browser.');
       }
    }, []);
-
+   
    //Get POIS from DB
    useEffect(() => {
       setIsLoading(true);
@@ -147,11 +109,12 @@ const Form_Producer = () => {
             // Make an API request to fetch the POIs data
             const response = await axios.get(
                'https://tiys.herokuapp.com/api/pois'
-            );
-            setIsLoading(false);
-            setCoordinates(response.data);
-         } catch (error) {
-            console.log(error);
+               );
+               console.log(response.data);
+               setIsLoading(false);
+               setCoordinates(response.data);
+            } catch (error) {
+               console.log(error);
             setIsLoading(false);
          }
       };
@@ -283,6 +246,10 @@ const Form_Producer = () => {
          { state: { token: location.state.token } }
       );
    };
+
+   // console.log(coordinates.map((coor) => {
+   //    coor.grade;
+   // }));
 
    return (
       <>
@@ -487,9 +454,9 @@ const Form_Producer = () => {
             >
                <span>
                   <b> Choose the POIs you want to visit: </b>
-               </span>{' '}
-            </Typography>{' '}
-         </div>{' '}
+               </span>
+            </Typography>
+         </div>
          {selectedPOIs.length >= 3 && (
             <div
                style={{
@@ -529,8 +496,8 @@ const Form_Producer = () => {
                      // )
                   }
                >
-                  Build Tour{' '}
-               </Button>{' '}
+                  Build Tour
+               </Button>
             </div>
          )}{' '}
          {!filteredData ? (
@@ -541,8 +508,8 @@ const Form_Producer = () => {
                      key={poi.poiid}
                      value={JSON.stringify(poi.coordinates)}
                      onClick={() => handlePOISelection(poi)}
-                  >
-                     <img src={Location} alt={poi.name} />{' '}
+                  >  <div className={styles.star}><img src={Star} alt='rank'/></div>
+                     <img src={Location} alt={poi.name} />
                      <Typography
                         component='p'
                         sx={

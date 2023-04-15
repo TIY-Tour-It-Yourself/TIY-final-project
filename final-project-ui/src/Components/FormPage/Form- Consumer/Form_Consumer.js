@@ -186,7 +186,8 @@ const Form_Consumer = () => {
                        }
                }
             >
-            {isSmallScreen ? ( <Grid objArray={formTheme.map((theme) => (
+            {isSmallScreen ? ( 
+            <Grid objArray={formTheme.map((theme) => (
                      <Button
                      key={theme.themeid}
                      onClick={() => setSelectedTheme(theme.themeid)}
@@ -215,7 +216,8 @@ const Form_Consumer = () => {
                   >
                      {theme.theme}
                   </Button>
-               ))}/> ) : (formTheme.map((theme) => (
+               ))}/>
+                ) : (formTheme.map((theme) => (
                   <Button
                   key={theme.themeid}
                   onClick={() => setSelectedTheme(theme.themeid)}
@@ -300,11 +302,11 @@ const Form_Consumer = () => {
             <div className={styles.routes_imgs}>
                {routes.map((route) => (
                   <div
-                     style={{ cursor: 'pointer' }}
+                     style={{ cursor: 'pointer'}}
                      key={route.routeid}
                      onClick={() => chooseRoute(route.routeid)}
                   >
-                     <img src={Bialik} alt={route.description} />
+                     <img src={route.imgurl} alt={route.description} />
                      <Typography
                         component='p'
                         sx={

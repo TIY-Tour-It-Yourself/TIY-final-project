@@ -53,22 +53,14 @@ const Dashboard = () => {
       }
    }, [location.state]);
 
-   const handleNavigateProducer = () => {
-      navigate('/form_producer', { state: { token: location.state.token } });
+   const handleNavigation = (title) => {
+      if(title === 'Choose Your Tour')
+         navigate('/form_consumer', { state: { token: location.state.token } });
+      if(title === 'Build Your Tour')
+         navigate('/form_producer', { state: { token: location.state.token } });
+      if(title === 'Tours History')
+         navigate('/tours_history', { state: { token: location.state.token } });
    };
-
-   const handleNavigateConsumer = () => {
-      navigate('/form_consumer', { state: { token: location.state.token } });
-   };
-
-   // const handleNavigate = (cardId) => {
-   //    if(cardId === 1)
-   //       navigate('/form_consumer', { state: { token: location.state.token } });
-   //    if(cardId === 2)
-   //       navigate('/form_producer', { state: { token: location.state.token } });
-   //    if(cardId === 3)
-   //       navigate('/tours_history', { state: { token: location.state.token } });
-   // };
 
    return (
       <>
@@ -121,18 +113,8 @@ const Dashboard = () => {
                   </CardContent>
                   <CardActions>
                      <Box sx={{ m: '0 auto' }}>
-                        {/* <Button
-                           component={Link} // Use the Link component from react-router-dom
-                           to={handleNavigate(card.id)}
-                           size='small'
-                           style={
-                              isSmallScreen
-                                 ? { fontWeight: 'bold' }
-                                 : { fontWeight: 'bold', fontSize: '1rem' }
-                           }
-                        > */}
                         <Button
-                           onClick={handleNavigateConsumer}
+                           onClick={() => handleNavigation(card.title)}
                            size='small'
                            style={
                               isSmallScreen

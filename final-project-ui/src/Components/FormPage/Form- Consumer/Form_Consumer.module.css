@@ -58,12 +58,13 @@
 
 .routes_imgs > div {
    padding: 1%;
+   text-align: center;
 }
 
 .routes_imgs > div > img {
    border: 1px solid gray;
    border-radius: 30px;
-   margin-left: 14%;
+   width: 180px;
    height: 230px;
 }
 
