@@ -10,9 +10,6 @@
 @media (max-width: 600px) {
    .images {
       display: flex;
-   }
-
-   .imgs {
-      margin-left: 42px;
+      justify-content: space-between;
    }
 }

@@ -12,13 +12,8 @@ import calendar from './nav_imgs/schedule_origin.png';
 import calendar_clicked from './nav_imgs/schedule_clicked.png';
 import logo from '../Assets/logo_nav_no_sub.png';
 import AppBar from '@mui/material/AppBar';
-// import Typography from '@mui/material/Typography';
-// import MoreIcon from '@mui/icons-material/MoreVert';
-// import MenuIcon from '@mui/icons-material/Menu';
 import Tooltip from '@mui/material/Tooltip';
-// import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-// import AddIcon from '@mui/icons-material/Add';
 import Toolbar from '@mui/material/Toolbar';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
@@ -166,13 +161,11 @@ const NavBar = ({ activeImage, activeLink }) => {
                   ))}
                </Box>
                {isSmallScreen && (
-                  <Box className={styles.images}>
+                  <Box component='div'>
                      {images.map((img) => (
-                        <div
-                           className={styles.imgs}
+                        <Button component='div' sx={{ marginLeft: '15px' }}
                            key={img.id}
-                           >
-                           <a href={img.url}> 
+                           > 
                               <img 
                                  onClick={() => handleImageClick(img.url)}
                                  src={activeImage === img.id ? img.src_clicked : img.src}
@@ -180,8 +173,7 @@ const NavBar = ({ activeImage, activeLink }) => {
                                  height='33'
                                  width='33'
                               />
-                           </a>
-                        </div>
+                        </Button>
                      ))}
                   </Box>
                )}

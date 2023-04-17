@@ -15,7 +15,7 @@ const NotFound = () => {
             <div className={styles.error}>
                <img className={styles.img_err} src={error} alt="404" width='450' height='450'/>
             </div>
-            <Box component='div' style={{margin: '0 auto', maxWidth: 'max-content'}} ><a href="/dashboard" style={{ textDecoration: 'none', cursor: 'pointer', fontWeight: 'bold', margin: '0 auto'}}>Go Home</a></Box>
+            <Box component='div' style={{margin: '0 auto', maxWidth: 'max-content'}} ><a href="/" style={{ textDecoration: 'none', cursor: 'pointer', fontWeight: 'bold', margin: '0 auto'}}>Go Home</a></Box>
          </section>
       </>
    );
