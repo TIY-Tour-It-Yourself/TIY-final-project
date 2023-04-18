@@ -1,10 +1,26 @@
 import React from 'react';
-import React from 'react';
 import 'aframe';
 import 'aframe-look-at-component';
 import 'aframe-ar-nft';
+import { useLocation } from 'react-router-dom';
 
-const AR = () => {
+const AR = ({children}) => {
+
+   //Get AR element from DB - TBD: need to filter with poi id which arrives from the map component
+   useEffect(() => {
+      const getPoisData = async () => {
+         try {
+            const response = await axios.get(
+               'https://tiys.herokuapp.com/api/pois'
+            );
+         } catch (error) {
+            console.log(error);
+         }
+      };
+      getPoisData();
+   }, []);
+
+
    return (
       <a-scene
          vr-mode-ui='enabled: false'

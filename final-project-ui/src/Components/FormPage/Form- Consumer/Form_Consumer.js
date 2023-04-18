@@ -341,7 +341,7 @@ const Form_Consumer = () => {
                      </Typography>
                      <div className={styles.star}>
                         <img src={Star} alt='rank' />
-                        <span>{route.evaluation_grade}</span>
+                        <span>{route.evaluation_grade.toFixed(1)}</span>
                      </div>
                   </div>
                ))}
@@ -371,7 +371,7 @@ const Form_Consumer = () => {
                      </Typography>
                      <div className={styles.star}>
                         <img src={Star} alt='rank' />
-                        <span>{route.evaluation_grade}</span>
+                        <span>{route.evaluation_grade.toFixed(1)}</span>
                      </div>
                   </div>
                ))}

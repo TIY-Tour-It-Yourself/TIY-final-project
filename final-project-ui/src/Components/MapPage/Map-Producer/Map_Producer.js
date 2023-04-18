@@ -120,6 +120,11 @@ const Map_Producer = () => {
     }
 
    const initializeMap = () => {
+      navigator.geolocation.getCurrentPosition(function (position) {
+         var userPosition = {
+           lat: position.coords.latitude,
+           lng: position.coords.longitude,
+         };
       // Check if locations data is loaded and available
       if (isLocationsLoaded && locations.length > 0) {
          // Create a map object and center it on the first location
@@ -260,17 +265,14 @@ const Map_Producer = () => {
             suppressMarkers: true, // add this line to suppress markers
          });
 
-         const origin = new window.google.maps.LatLng(
-            locations[0].lat,
-            locations[0].lng
-         );
+         const origin = userPosition;
          const destination = new window.google.maps.LatLng(
             locations[locations.length - 1].lat,
             locations[locations.length - 1].lng
          );
 
          const waypoints = [];
-         for (let i = 1; i < locations.length - 1; i++) {
+         for (let i = 0; i < locations.length; i++) {
             waypoints.push({
                location: new window.google.maps.LatLng(
                   locations[i].lat,
@@ -433,7 +435,7 @@ const Map_Producer = () => {
             );
          }
       }
-   };
+   })};
    //InitializeMap() is only called after the locations array has been populated with data
    useEffect(() => {
       if (window.google) {

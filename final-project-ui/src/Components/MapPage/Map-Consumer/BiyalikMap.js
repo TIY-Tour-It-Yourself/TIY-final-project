@@ -130,10 +130,12 @@ const BiyalikMap = (props) => {
       }
    }, [locationName]);
 
+   let routePois;
+
    useEffect(() => {
       //Get AR element
-      const routePois = poisData.filter((poi) =>
-         poisIdNums.includes(poi.poiid)
+      routePois = poisData.filter((poi) =>
+      poisIdNums.includes(poi.poiid)
       );
       const arURLs = routePois.map((arElement) => arElement.arid.url);
       // const ARURLs = poisData.map((item) => item.arid.url);
@@ -157,6 +159,11 @@ const BiyalikMap = (props) => {
    }
 
    const initializeMap = () => {
+      navigator.geolocation.getCurrentPosition(function (position) {
+         var userPosition = {
+           lat: position.coords.latitude,
+           lng: position.coords.longitude,
+         };
       // Check if locations data is loaded and available
       if (isLocationsLoaded && poisCoordinatesData && poisData !== undefined) {
          const map = new window.google.maps.Map(
@@ -294,36 +301,52 @@ const BiyalikMap = (props) => {
            draggable: true,
            suppressMarkers: true, // add this line to suppress markers
          });
-         const origin = new window.google.maps.LatLng(
-           poisLatData[0],
-           poisLngData[0]
-         );
+
+         const origin = userPosition;
          const destination = new window.google.maps.LatLng(
            poisLatData[poisLatData.length - 1],
            poisLngData[poisLatData.length - 1]
          );
    
-         const request = {
-           origin: origin,
-           destination: destination,
-           waypoints: [
-             {
+         const waypoints = [];
+         for (let i = 0; i < poisLatData.length; i++) {
+            waypoints.push({
                location: new window.google.maps.LatLng(
-                 poisLatData[1],
-                 poisLngData[1]
+                  poisLatData[i],
+                  poisLngData[i]
                ),
                stopover: true,
-             },
-             {
-               location: new window.google.maps.LatLng(
-                 poisLatData[2],
-                 poisLngData[2]
-               ),
-               stopover: true,
-             },
-           ],
-           travelMode: window.google.maps.TravelMode.WALKING,
-         };
+            });
+        }
+
+        const request = {
+          origin: origin,
+          destination: destination,
+          waypoints: waypoints,
+          travelMode: window.google.maps.TravelMode.WALKING,
+        };
+
+         // const request = {
+         //   origin: origin,
+         //   destination: destination,
+         //   waypoints: [
+         //     {
+         //       location: new window.google.maps.LatLng(
+         //         poisLatData[1],
+         //         poisLngData[1]
+         //       ),
+         //       stopover: true,
+         //     },
+         //     {
+         //       location: new window.google.maps.LatLng(
+         //         poisLatData[2],
+         //         poisLngData[2]
+         //       ),
+         //       stopover: true,
+         //     },
+         //   ],
+         //   travelMode: window.google.maps.TravelMode.WALKING,
+         // };
          // Create the duration element with white background
          const durationDiv = document.createElement("div");
          durationDiv.style.backgroundColor = "white";
@@ -463,7 +486,7 @@ const BiyalikMap = (props) => {
             );
          }
       }
-   };
+   })};
 
    //InitializeMap() is only called after the locations array has been populated with data
    useEffect(() => {
