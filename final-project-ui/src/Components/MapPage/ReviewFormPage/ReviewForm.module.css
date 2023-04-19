@@ -66,8 +66,6 @@
     /* reviews-form */
     .review_form_container {
       margin: 0 auto;
-      /* direction: rtl; */
-      /* margin-right: 100px; */
       border: black;
     }
     .ReviewsForm {
@@ -76,7 +74,7 @@
     }
 
     .stars{
-        color: #ffc107;
+        /* color: #ffc107; */
     }
     .submit_review {
       background-color: #868686;
@@ -107,7 +105,7 @@
       color: #ddd;
       cursor: pointer;
     }
-    .filled {
+    .MuiRating-root {
       color: #ffcc00;
     }
     .average-rating {

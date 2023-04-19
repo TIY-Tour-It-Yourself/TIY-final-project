@@ -8,7 +8,9 @@ import {
 import axios from 'axios';
 import arIcon from './images/ar_icon1.png';
 import ranking from './images/star.png';
+import styles from './BiyalikMap.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
+import ReviewForm from '../ReviewFormPage/ReviewForm';
 
 const BiyalikMap = (props) => {
    const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -24,7 +26,10 @@ const BiyalikMap = (props) => {
    const [ARURLArray, setARURLArray] = useState([]);
    const [poisNames, setPoisNames] = useState([]);
    const [poisIdNums, setPoisIdNums] = useState([]);
-
+   const [showForm, setShowForm] = useState(false);
+   const [poiIdsLoaded, setIsPoiIdsLoaded] = useState(false);
+   const [selectedPoi, setSelectedPoi] = useState(null);
+   const [poiIds, setPoiIds] = useState([]);
    const location = useLocation();
    const navigate = useNavigate();
 
@@ -149,6 +154,15 @@ const BiyalikMap = (props) => {
       }
    }, [ARURLArray]);
 
+   useEffect(() => {
+      if (poisData && poisData.length > 0) {
+        const poiIdArray = poisData.map((poi) => poi.poiid);
+        setPoiIds(poiIdArray);
+        setIsPoiIdsLoaded(true);
+      }
+      console.log(poiIds);
+    }, [poisData]);
+
    //While data hasn't become an array yet- keep loading
    if (
       !Array.isArray(poisNames) &&
@@ -158,6 +172,14 @@ const BiyalikMap = (props) => {
       return <div>Loading...</div>;
    }
 
+   function handleAddReview(index) {
+      setShowForm(true);
+      setSelectedPoi(poiIds[index]);
+    }
+    function handleCancel() {
+      setShowForm(false);
+    }
+
    const initializeMap = () => {
       navigator.geolocation.getCurrentPosition(function (position) {
          var userPosition = {
@@ -165,7 +187,13 @@ const BiyalikMap = (props) => {
            lng: position.coords.longitude,
          };
       // Check if locations data is loaded and available
-      if (isLocationsLoaded && poisCoordinatesData && poisData !== undefined) {
+      if (
+         isLocationsLoaded &&
+         poisCoordinatesData &&
+         poisData &&
+         locationName &&
+         ARURLArray !== undefined
+       ) {
          const map = new window.google.maps.Map(
             document.getElementById('map'),
             {
@@ -436,13 +464,21 @@ const BiyalikMap = (props) => {
                               </a>
                            </div>
                            <div>
-                           <a href="#" style="text-decoration: none;">
-                              <img src=${ranking} style="padding: 7px;" width='25px' height='25px' alt='rankPoi'/>
-                              </a>
+                           <button id="add-review-button">
+                             <img src=${ranking} width='25px' height='25px' alt="Add Review" />
+                           </button>            
                            </div>
                            </div>
                         </div>`,
             });
+
+            infoWindow.addListener("domready", () => {
+               const addButton = document.querySelector("#add-review-button");
+               addButton.addEventListener("click", () => {
+                 handleAddReview(index);
+               });
+             });
+
             marker.addListener('click', () => {
                infoWindow.open(map, marker); // open the info window when the marker is clicked
             });
@@ -509,6 +545,20 @@ const BiyalikMap = (props) => {
          ) : (
             <GoogleMap />
          )}
+         {showForm && (
+        <div className={styles.lightbox}>
+          <div className={styles.lightbox_content}>
+            <button className="close-btn" onClick={handleCancel}>
+              X
+            </button>
+            <ReviewForm
+              showForm={showForm}
+              onCancel={handleCancel}
+              poiValues={selectedPoi}
+            />
+          </div>
+        </div>
+      )}
       </div>
    );
 };

@@ -117,7 +117,11 @@ const Map_Producer = () => {
    function handleAddReview(index) {
       setShowForm(true);
       setSelectedPoi(poiValues[index]);
-    }
+   }
+
+   function handleCancel() {
+      setShowForm(false);
+   }
 
    const initializeMap = () => {
       navigator.geolocation.getCurrentPosition(function (position) {
@@ -456,9 +460,12 @@ const Map_Producer = () => {
          {showForm && (
         <div className={styles.lightbox}>
           <div className={styles.lightbox_content}>
-            <ReviewForm
+          <button className="close-btn" onClick={handleCancel}>
+              X
+            </button>
+            <ReviewForm 
+              onCancel={handleCancel}
               showForm={showForm}
-            //onCancel={handleCancel}
               poiValues={selectedPoi}
             />
           </div>

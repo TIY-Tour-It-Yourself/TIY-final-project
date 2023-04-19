@@ -62,6 +62,7 @@ function ReviewForm(props) {
       .catch(error => {
         console.error(error);
       });
+      props.onCancel(); // close the modal
   }
 
   // function handleSubmit(event) {
@@ -86,7 +87,7 @@ function ReviewForm(props) {
         >
           <h4 style={{ textAlign: "center" }}>{name}</h4>
         </div>
-        <h5 className={styles.HeaderForm}> How was your experience?</h5>
+        <h5 className={styles.HeaderForm}> How was your experience in {name}?</h5>
         <form className={styles.ReviewsForm} onSubmit={handleSubmit}>
           <br />
             <Typography component='div'><h2>Ranking:</h2></Typography>
