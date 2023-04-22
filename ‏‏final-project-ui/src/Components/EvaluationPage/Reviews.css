@@ -1,0 +1,130 @@
+@media screen and (min-width: 200px) {
+  .app-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  .reviews-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    width: 100%;
+  }
+  .lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .lightbox-content {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 5px;
+    border-color: black;
+  }
+  .review {
+    margin: 0 auto;
+    width: 100%;
+    border-top: 0.5px solid #d1d1d1;
+    margin-top: 10px;
+  }
+  .name {
+    float: left;
+    margin-right: 20px;
+    font-weight: bold;
+  }
+  .rating {
+    float: right;
+    margin-left: 20px;
+  }
+  .text {
+    margin-top: 40px;
+    margin-left: 30px;
+    width: 320px;
+  }
+  .star {
+    color: rgb(252, 196, 13);
+  }
+  .add-review {
+    background-color: #d39b23;
+    border: none;
+    color: white;
+    padding: 10px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 10px;
+  }
+  /* reviews-form */
+  .review-form-container {
+    margin: 0 auto;
+    /* direction: rtl; */
+    /* margin-right: 100px; */
+    border: black;
+  }
+  .ReviewsForm {
+    width: 100%;
+    border-color: black;
+  }
+  .submit-review {
+    background-color: #868686;
+    border: none;
+    color: white;
+    padding: 10px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    width: 300px;
+  }
+  .cancel {
+    background-color: #f35c05;
+    border: none;
+    color: white;
+    padding: 10px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    width: 300px;
+  }
+  .star-rating {
+    display: inline-block;
+    font-size: 24px;
+    line-height: 1;
+  }
+  .star {
+    color: #ddd;
+    cursor: pointer;
+  }
+  .filled {
+    color: #ffcc00;
+  }
+  .average-rating {
+    /* position: fixed; */
+    top: -50;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background-color: #fff;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); */
+    z-index: 1;
+  }
+  .header {
+    font-size: 30px;
+    text-align: center;
+    margin-top: 20px;
+  }
+  .HeaderForm {
+    text-align: center;
+  }
+}

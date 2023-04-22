@@ -1,0 +1,130 @@
+.tour_page {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   padding-top: 15%;
+}
+
+.tour_page > p {
+   text-align: center;
+}
+img {
+   margin: 0 auto;
+}
+
+.slick-slide > div {
+   margin: 0 10px;
+}
+
+.slick-list {
+   margin: 0 -10px;
+}
+
+.category::before {
+   content: '';
+   background: rgb(255, 61, 61);
+   position: absolute;
+   top: calc(100% + 10px);
+   left: 0;
+   right: 0;
+   height: 2px;
+}
+
+h3 {
+   display: inline;
+}
+
+.tour_card {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   text-align: center;
+   padding: 1rem;
+   border: 1px solid #1b1010;
+   border-radius: 0.5rem;
+   max-width: 80%;
+}
+
+.slick-prev:before,
+.slick-next:before {
+   color: black;
+}
+
+.Carousel_Card {
+   margin-top: 5%;
+   color: rgb(58, 81, 123);
+}
+
+h1 {
+   text-align: center;
+}
+
+h6 {
+   text-align: center;
+}
+
+.App {
+   width: 70%;
+   margin: 0 auto;
+   margin-top: 50px;
+}
+
+.slick-slide > div {
+   margin: 0 10px;
+}
+
+.slick-list {
+   margin: 0 -10px;
+}
+
+.card {
+   border: 1px solid #fff;
+   background: black;
+   border-radius: 8px;
+   overflow: hidden;
+   height: 400px;
+   color: #fff;
+   cursor: pointer;
+}
+
+.card-top h1 {
+   font-size: 0.9rem;
+   margin: 20px;
+}
+
+.card-top > img {
+   width: 100%;
+   height: 200px;
+   object-fit: cover;
+   background: black;
+}
+
+.card-bottom {
+   margin: 10px 20px;
+}
+
+.category {
+   position: relative;
+}
+
+.category::before {
+   content: '';
+   background: rgb(255, 61, 61);
+   position: absolute;
+   top: calc(100% + 10px);
+   left: 0;
+   right: 0;
+   height: 2px;
+}
+
+@media (max-width: 600px) {
+   h1 {
+      font-size: 1.5rem;
+   }
+
+   h2 {
+      font-size: 1.25rem;
+   }
+}

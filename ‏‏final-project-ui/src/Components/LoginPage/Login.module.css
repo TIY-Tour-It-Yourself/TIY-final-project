@@ -1,0 +1,35 @@
+.flexbox {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  max-width: 80%;
+  justify-content: center;
+  margin: 1rem 0 0 7rem;
+}
+
+.google_icon {
+  background: url("../../images/icon_google.png") no-repeat;
+  width: 45px;
+  height: 45px;
+  margin-left: 0;
+  cursor: pointer;
+}
+
+.facebook_icon {
+  background: url("../../images/icon_facebook.png") no-repeat;
+  width: 45px;
+  height: 45px;
+  margin-right: 2rem;
+  cursor: pointer;
+}
+
+form {
+  max-width: 80%;
+  margin: 0 auto;
+}
+
+@media (max-width: 600px) {
+  .flexbox {
+    margin: 1rem 0 0 2rem;
+  }
+}
