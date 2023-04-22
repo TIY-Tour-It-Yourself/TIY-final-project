@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createRoot } from 'react-dom/client';
 import {
    GoogleMap,
    LoadScript,
@@ -10,12 +11,15 @@ import arIcon from './images/ar_icon1.png';
 import ranking from './images/star.png';
 import styles from './BiyalikMap.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
+import ARManagement from '../../ARPage/ARManagement';
 import ReviewForm from '../ReviewFormPage/ReviewForm';
 
 const BiyalikMap = (props) => {
    const [isMapLoaded, setIsMapLoaded] = useState(false);
+   const [isClicked, setIsClicked] = useState(false);
    const [isLocationsLoaded, setIsLocationsLoaded] = useState(false);
    const [poisData, setPoisData] = useState([]);
+   const [routePois, setRoutePois] = useState([]);
    const [isPoisDataLoaded, setIsPoisDataLoaded] = useState('');
    const [poisLatData, setPoisLatData] = useState([]);
    const [poisLngData, setPoisLngData] = useState([]);
@@ -28,6 +32,7 @@ const BiyalikMap = (props) => {
    const [poisIdNums, setPoisIdNums] = useState([]);
    const [showForm, setShowForm] = useState(false);
    const [poiIdsLoaded, setIsPoiIdsLoaded] = useState(false);
+   const [selectedARPoi, setSelectedARPoi] = useState(null);
    const [selectedPoi, setSelectedPoi] = useState(null);
    const [poiIds, setPoiIds] = useState([]);
    const location = useLocation();
@@ -57,7 +62,7 @@ const BiyalikMap = (props) => {
    useEffect(() => {
       const searchParams = new URLSearchParams(location.search);
       const routeChosen = searchParams.get('routeId');
-
+      console.log(routeChosen);
       //Get Route by ID
       const fetchRoute = async () => {
          try {
@@ -66,11 +71,12 @@ const BiyalikMap = (props) => {
             );
             //Get route pois
             const pois = response.data[0].pois;
+            // console.log(response.data);
+            // setPoisData(pois);
             const poisIds = pois.map((poi) => poi.poiid);
 
             //Get all pois' coordinates
             const coordinatesArray = pois.map((poi) => poi.coordinates);
-
             setPoisCoordinatesData(coordinatesArray);
 
             let latArray = [];
@@ -101,8 +107,8 @@ const BiyalikMap = (props) => {
          poisLngData.length > 0 &&
          poisCoordinatesData > 0
       ) {
-         console.log(poisLatData, poisLngData);
-         console.log(poisCoordinatesData);
+         // console.log(poisLatData, poisLngData);
+         // console.log(poisCoordinatesData);
       }
    }, [poisLatData, poisLngData, poisCoordinatesData]);
 
@@ -130,23 +136,28 @@ const BiyalikMap = (props) => {
    }, [poisNames, setLocationName]);
 
    useEffect(() => {
-      if (locationName !== undefined) {
+      if (locationName !== undefined && routePois !== undefined) {
          initializeMap();
       }
-   }, [locationName]);
+   }, [locationName, routePois]);
 
-   let routePois;
+   // let routePois;
 
    useEffect(() => {
       //Get AR element
-      routePois = poisData.filter((poi) =>
+      const filteredPois = poisData.filter((poi) =>
+      // routePois = poisData.filter((poi) =>
       poisIdNums.includes(poi.poiid)
       );
+      setRoutePois(filteredPois);
+      // console.log(routePois);
       const arURLs = routePois.map((arElement) => arElement.arid.url);
+      console.log(arURLs);
       // const ARURLs = poisData.map((item) => item.arid.url);
       setARURLArray(arURLs);
       setIsURLsLoaded(true);
    }, [poisData, setARURLArray]);
+   
 
    useEffect(() => {
       if (ARURLArray !== undefined) {
@@ -160,8 +171,12 @@ const BiyalikMap = (props) => {
         setPoiIds(poiIdArray);
         setIsPoiIdsLoaded(true);
       }
-      console.log(poiIds);
     }, [poisData]);
+
+   //  useEffect(() => {
+      // navigate(`http://ar_management.html?lat=${selectedARPoi.coordinates.lat}&lng=${selectedARPoi.coordinates.lng}&desc=${selectedARPoi.description}&img=${selectedARPoi.arid.url}`);
+         // openARElement();
+   //  }, [selectedARPoi]);
 
    //While data hasn't become an array yet- keep loading
    if (
@@ -172,10 +187,18 @@ const BiyalikMap = (props) => {
       return <div>Loading...</div>;
    }
 
-   function handleAddReview(index) {
+   //Open AR Element from ARManagement component
+   const openARElement = (poi) => {
+      // const url = `/src/Components/ARPage/ar_management.html?lat=${poi.coordinates.lat}&lng=${poi.coordinates.lng}&desc=${poi.description}&img=${poi.arid.url}`;
+  	   // window.open(url, '_blank');
+      navigate(<ARManagement/>);
+   };
+
+   function handleAddReview(poi) {
       setShowForm(true);
-      setSelectedPoi(poiIds[index]);
+      setSelectedPoi(poi.poiid);
     }
+
     function handleCancel() {
       setShowForm(false);
     }
@@ -190,6 +213,7 @@ const BiyalikMap = (props) => {
       if (
          isLocationsLoaded &&
          poisCoordinatesData &&
+         // routePois &&
          poisData &&
          locationName &&
          ARURLArray !== undefined
@@ -447,25 +471,42 @@ const BiyalikMap = (props) => {
            }
          );
 
+         //renderes pois' coordinates
+           console.log(poisCoordinatesData);
+           console.log(poisData);
+
+                  
+         //   <a href="${ARURLArray[index]}" target="_blank">
+         //   <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
+         //   <br/>
+         //   <span style={{textDecoration: 'none', fontWeight: 'bold', fontSize: 'small'}}>Click Me</span>
+         //  </a>   
+                           //   ******************************************
+                         
          // Create a Marker object for each poi and add an info window
-         poisCoordinatesData.forEach((poi, index) => {
+         routePois.forEach((poi, index) => {
             const marker = new window.google.maps.Marker({
-               position: { lat: poi.lat, lng: poi.lng },
+               // position: { lat: poi.lat, lng: poi.lng },
+               position: { lat: poi.coordinates.lat, lng: poi.coordinates.lng },
                map: map,
             });
-
+           
             const infoWindow = new window.google.maps.InfoWindow({
                content: `<div style="display: flex; justify-content: center; flex-direction: column;">
                            <div style="margin-left: 10px;"><h4>${locationName[index]}</h4></div>
                            <div style="display: flex; justify-content: center; flex-direction: row; margin-left: 5px;">
                            <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
-                                 <a href="${ARURLArray[index]}" target="_blank">
+                           <button id="open-ar-element" style={{backgroundColor: 'transparent'}}>
                               <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
-                              </a>
+                              <br/>
+                              <span style={{textDecoration: 'none', fontWeight: 'bold', fontSize: 'small'}}>Click Me</span>
+                           </button>
                            </div>
                            <div>
-                           <button id="add-review-button">
+                           <button id="add-review-button" style={{backgroundColor: 'transparent'}}>
                              <img src=${ranking} width='25px' height='25px' alt="Add Review" />
+                             <br/>
+                              <span style={{textDecoration: 'none', fontWeight: 'bold', fontSize: 'small'}}>Rank Me</span>
                            </button>            
                            </div>
                            </div>
@@ -473,10 +514,17 @@ const BiyalikMap = (props) => {
             });
 
             infoWindow.addListener("domready", () => {
+               //Open Review Form
                const addButton = document.querySelector("#add-review-button");
                addButton.addEventListener("click", () => {
-                 handleAddReview(index);
+                 handleAddReview(poi);
                });
+
+               //Open AR Element
+               const addARButton = document.querySelector("#open-ar-element");
+               addARButton.addEventListener("click", () => {
+                  openARElement(poi);
+                });
              });
 
             marker.addListener('click', () => {
