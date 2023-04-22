@@ -1,61 +1,98 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Form_Consumer.module.css";
 import axios from "axios";
-import { Button, Typography, Box, Grid } from "@mui/material";
-import NavBar from "../../Additionals/NavBar/NavBar";
+import { Button, Typography, Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useNavigate, useLocation } from "react-router-dom";
+import Grid from "../../Additionals/Grid/Grid";
+import NavBar from "../../Additionals/NavBar/NavBar";
+import LoadingBar from "../../Additionals/LoadingBar/LoadingBar";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useNavigate } from "react-router-dom";
 import ARFirstLevel from "./ar_imgs/boy_with_mobile_level_2.jpg";
 import ARSecondLevel from "./ar_imgs/ar_img_1.jpg";
+import ARThirdLevel from "./ar_imgs/ar_level_3_elephant.png";
 import Bialik from "./routes_imgs/tour_bialik.jpg";
+import Parks from "./routes_imgs/yom_kipur_garden.jpg";
 import Culinary from "./routes_imgs/baklava_pic.jpg";
+import Star from "./routes_imgs/star_32.png";
 
 const arImgs = [
   { id: 1, name: "Intermediate", src: ARFirstLevel },
   { id: 2, name: "Advanced", src: ARSecondLevel },
+  { id: 3, name: "Professional", src: ARThirdLevel },
 ];
 
 const Form_Consumer = () => {
   const [formTheme, setFormTheme] = useState("");
+  // const [displayPage, setDisplayPage] = useState(false);
   const [themeSelectedId, setThemeSelectedId] = useState("");
   const [selectedLevelId, setSelectedLevelId] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
   const [routeChosen, setRouteChosen] = useState("");
   const [routes, setRoutes] = useState("");
   const [filteredData, setFilteredData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [token, setToken] = useState("");
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    console.log(location);
+    if (!location.state) {
+      navigate("/");
+    } else {
+      axios
+        .get(`https://tiys.herokuapp.com/api/auth`, {
+          headers: {
+            "x-auth-token": location.state.token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((response) => {
+          // console.log(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching user: ", error);
+        });
+    }
+  }, [location.state]);
 
   useEffect(() => {
     if (routeChosen) {
-      navigate(`/bialikmap?routeId=${routeChosen}`);
+      navigate(`/biyalik_map?routeId=${routeChosen}`, {
+        state: { token: location.state.token },
+      });
     }
   }, [routeChosen, navigate]);
 
   //Get Themes from DB
   useEffect(() => {
+    setIsLoading(true);
     axios
       .get("https://tiys.herokuapp.com/api/themes")
       .then((response) => {
         setFormTheme(response.data);
+        setIsLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setIsLoading(false);
       });
   }, []);
 
   //Get Routes from DB
   useEffect(() => {
+    setIsLoading(true);
     const filterData = async () => {
       try {
         // Make an API request to fetch the routes data
         const response = await axios.get(
           "https://tiys.herokuapp.com/api/routes"
         );
+        setIsLoading(false);
         setRoutes(response.data);
 
         // Check if both Theme and ARlevel have been selected
@@ -73,9 +110,11 @@ const Form_Consumer = () => {
         } else {
           //If either theme or level is not selected, set filtered data to null
           setFilteredData(null);
+          setIsLoading(false);
         }
       } catch (error) {
         console.log(error);
+        setIsLoading(false);
       }
     };
 
@@ -84,7 +123,7 @@ const Form_Consumer = () => {
 
   //While data hasn't become an array yet- keep loading
   if (!Array.isArray(formTheme) || !Array.isArray(routes)) {
-    return <div> Loading... </div>;
+    return <LoadingBar />;
   }
 
   //Redirect to chosen route on the map
@@ -93,10 +132,8 @@ const Form_Consumer = () => {
       console.log(routeid);
       setRouteChosen(routeid);
       setIsFormValid(true);
-      //Navigate to interactive map
-      // navigate(`/biyalik_map?themeSelectedId=${themeSelectedId}&selectedLevelId=${selectedLevelId}`);
-      // navigate(`/biyalik_map?routeId=${routeChosen}`);
     } else {
+      alert("Theme and AR Experience must be chosen.");
       setIsFormValid(false);
     }
   };
@@ -126,12 +163,14 @@ const Form_Consumer = () => {
         <Typography
           sx={
             isSmallScreen
-              ? { fontSize: "1rem", marginLeft: "18%" }
+              ? { fontSize: "1rem", ml: 10, mb: 1 }
               : { fontSize: "1.25rem" }
           }
         >
-          <b> Choose Tour Theme: </b>{" "}
-        </Typography>{" "}
+          <span>
+            <b> Choose Tour Theme: </b>{" "}
+          </span>{" "}
+        </Typography>
         {/* Render themes through map */}{" "}
         <Box
           component="div"
@@ -151,46 +190,80 @@ const Form_Consumer = () => {
                 }
           }
         >
-          {" "}
-          {formTheme.map((theme) => (
-            <Button
-              key={theme.themeid}
-              onClick={() => setSelectedTheme(theme.themeid)}
-              value={theme}
-              variant={
-                themeSelectedId === theme.themeid ? "contained" : "outlined"
-              }
-              sx={
-                !isSmallScreen
-                  ? {
-                      borderRadius: "20px",
-                      height: "30px",
-                      marginLeft: 1,
-                      marginTop: 2,
-                    }
-                  : {
-                      marginLeft: 1.5,
-                      marginBottom: 1,
-                      height: "30px",
-                      borderRadius: "20px",
-                    }
-              }
-            >
-              {" "}
-              {theme.theme}{" "}
-            </Button>
-          ))}{" "}
+          {isSmallScreen ? (
+            <Grid
+              objArray={formTheme.map((theme) => (
+                <Button
+                  key={theme.themeid}
+                  onClick={() => setSelectedTheme(theme.themeid)}
+                  value={theme}
+                  variant={
+                    themeSelectedId === theme.themeid ? "contained" : "outlined"
+                  }
+                  sx={
+                    !isSmallScreen
+                      ? {
+                          borderRadius: "20px",
+                          height: "30px",
+                          marginLeft: 1,
+                          marginTop: 2,
+                          marginBottom: 1,
+                        }
+                      : {
+                          marginLeft: 1.5,
+                          marginBottom: 1,
+                          height: "30px",
+                          borderRadius: "20px",
+                        }
+                  }
+                >
+                  {theme.theme}{" "}
+                </Button>
+              ))}
+            />
+          ) : (
+            formTheme.map((theme) => (
+              <Button
+                key={theme.themeid}
+                onClick={() => setSelectedTheme(theme.themeid)}
+                value={theme}
+                variant={
+                  themeSelectedId === theme.themeid ? "contained" : "outlined"
+                }
+                sx={
+                  !isSmallScreen
+                    ? {
+                        borderRadius: "20px",
+                        height: "30px",
+                        marginLeft: 1,
+                        marginTop: 2,
+                        marginBottom: 1,
+                      }
+                    : {
+                        marginLeft: 1.5,
+                        marginBottom: 1,
+                        height: "30px",
+                        borderRadius: "20px",
+                      }
+                }
+              >
+                {theme.theme}{" "}
+              </Button>
+            ))
+          )}{" "}
         </Box>{" "}
       </Box>{" "}
       <Box component="div" className={styles.AR_exp_div}>
         <Typography
           sx={
             isSmallScreen
-              ? { fontSize: "1rem", ml: 1, mt: 2 }
+              ? { fontSize: "1rem", ml: 1, mt: 2, mb: 1 }
               : { fontSize: "1.25rem", mt: 2 }
           }
         >
-          <b> Choose AR Experience: </b>{" "}
+          <span>
+            <b> Choose AR Experience: </b>{" "}
+          </span>{" "}
         </Typography>{" "}
         <div className={styles.ar_imgs}>
           {" "}
@@ -221,10 +294,21 @@ const Form_Consumer = () => {
       <Box>
         <div className={styles.routes_title}>
           <Typography
-            component="h3"
-            sx={isSmallScreen ? { fontSize: "1rem" } : { fontSize: "1.25rem" }}
+            component="div"
+            sx={
+              isSmallScreen
+                ? {
+                    fontSize: "1.05rem",
+                    ml: 1,
+                    mt: 4,
+                    maxWidth: "max-content",
+                  }
+                : { fontSize: "1.25rem" }
+            }
           >
-            <b> Available Routes: </b>{" "}
+            <span>
+              <b> Available Routes: </b>{" "}
+            </span>{" "}
           </Typography>{" "}
         </div>{" "}
       </Box>{" "}
@@ -237,7 +321,7 @@ const Form_Consumer = () => {
               key={route.routeid}
               onClick={() => chooseRoute(route.routeid)}
             >
-              <img src={Bialik} alt={route.description} />{" "}
+              <img src={route.imgurl} alt={route.description} />{" "}
               <Typography
                 component="p"
                 sx={
@@ -250,9 +334,12 @@ const Form_Consumer = () => {
                     : { fontSize: "0.8rem", fontStyle: "italic" }
                 }
               >
-                {" "}
                 {route.description}{" "}
               </Typography>{" "}
+              <div className={styles.star}>
+                <img src={Star} alt="rank" />
+                <span> {route.evaluation_grade.toFixed(1)} </span>{" "}
+              </div>{" "}
             </div>
           ))}{" "}
         </div>
@@ -265,7 +352,7 @@ const Form_Consumer = () => {
               key={route.routeid}
               onClick={(e) => chooseRoute(route.routeid)}
             >
-              <img src={Bialik} alt={route.description} />{" "}
+              <img src={route.imgurl} alt={route.description} />{" "}
               <Typography
                 component="p"
                 sx={
@@ -278,9 +365,12 @@ const Form_Consumer = () => {
                     : { fontSize: "0.8rem", fontStyle: "italic" }
                 }
               >
-                {" "}
                 {route.description}{" "}
               </Typography>{" "}
+              <div className={styles.star}>
+                <img src={Star} alt="rank" />
+                <span> {route.evaluation_grade.toFixed(1)} </span>{" "}
+              </div>{" "}
             </div>
           ))}{" "}
         </div>

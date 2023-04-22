@@ -1,11 +1,16 @@
-@media screen and (min-width: 300px) {
-  .reviews-container {
+@media screen and (min-width: 200px) {
+  .app-container {
+    width: 100%;
     margin: 0 auto;
-    padding: 0 auto;
-    /* direction: rtl; */
-    text-align: center;
-    font-size: 14px;
-    margin-top: 30px;
+    padding: 0 20px;
+  }
+  .reviews-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    width: 100%;
   }
   .lightbox {
     position: fixed;
@@ -22,10 +27,11 @@
     background-color: #ffffff;
     padding: 20px;
     border-radius: 5px;
+    border-color: black;
   }
   .review {
     margin: 0 auto;
-    width: 380px;
+    width: 100%;
     border-top: 0.5px solid #d1d1d1;
     margin-top: 10px;
   }
@@ -59,11 +65,14 @@
   }
   /* reviews-form */
   .review-form-container {
-    margin: auto;
+    margin: 0 auto;
     /* direction: rtl; */
+    /* margin-right: 100px; */
+    border: black;
   }
   .ReviewsForm {
-    /* direction: rtl; */
+    width: 100%;
+    border-color: black;
   }
   .submit-review {
     background-color: #868686;
@@ -73,10 +82,7 @@
     text-align: center;
     text-decoration: none;
     font-size: 16px;
-    margin-top: 10px;
-    margin: auto;
     width: 300px;
-    margin-right: 250px;
   }
   .cancel {
     background-color: #f35c05;
@@ -86,9 +92,6 @@
     text-align: center;
     text-decoration: none;
     font-size: 16px;
-    margin: auto;
-    margin-right: 250px;
-    margin-top: 10px;
     width: 300px;
   }
   .star-rating {

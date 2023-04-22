@@ -21,11 +21,12 @@ function Reviews(props) {
               size={30}
               emptyStarColor={"#C4C4C4"}
               filledStarColor={"#F2C94C"}
+              edit={false}
             />{" "}
           </div>{" "}
           <p className="text"> {review.text} </p>{" "}
         </div>
-      ))}
+      ))}{" "}
       {/* button to show review form */}{" "}
       <button className="add-review" onClick={props.onAddReview}>
         Add Review{" "}

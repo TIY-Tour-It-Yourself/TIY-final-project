@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import Reviews from "./Reviews";
 import ReviewForm from "./ReviewForm";
+import axios from "axios";
 
 import "./Reviews.css";
 
 export function Evaluations() {
+  // const [reviews, setReviews] = useState([]);
+
   const [reviews, setReviews] = useState([
     { id: 1, rating: 4, name: "Yosi", text: "Very intersting tour!" },
     { id: 2, rating: 3, name: "Shany", text: "Very intersting tour!" },
@@ -13,6 +16,19 @@ export function Evaluations() {
   ]);
   const [showForm, setShowForm] = useState(false);
 
+  // useEffect(() => {
+  //   async function fetchReviews() {
+  //     try {
+  //       const response = await axios.get("/api/reviews");
+  //       setReviews(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching reviews:", error);
+  //     }
+  //   }
+
+  //   fetchReviews();
+  // }, []);
+
   function handleAddReview() {
     setShowForm(true);
   }
@@ -20,13 +36,6 @@ export function Evaluations() {
   function handleCancel() {
     setShowForm(false);
   }
-
-  // useEffect(() => {
-  //   fetch("https://your-api-endpoint.com/reviews")
-  //     .then(response => response.json())
-  //     .then(data => setReviews(data))
-  //     .catch(error => console.error(error));
-  // }, []);
 
   function handleSubmit(event) {
     const name = event.target.elements.name.value;
@@ -50,7 +59,7 @@ export function Evaluations() {
 
   return (
     <div className={`app-container ${showForm ? "dark" : ""}`}>
-      <h5 className="header"> Reviwes </h5>{" "}
+      <h5 className="header"> Reviews </h5>{" "}
       <div className="average-rating">
         Average Rating: {calculateAverageRating().toFixed(1)}{" "}
       </div>{" "}
@@ -59,9 +68,9 @@ export function Evaluations() {
         <div className="lightbox">
           <div className="lightbox-content">
             <ReviewForm onSubmit={handleSubmit} onCancel={handleCancel} />{" "}
-          </div>{" "}
+          </div>
         </div>
-      )}{" "}
+      )}
     </div>
   );
 }

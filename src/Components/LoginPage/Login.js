@@ -1,26 +1,24 @@
-import React, { useState, useEffect } from "react";
-import {
-  TextField,
-  Button,
-  FormControl,
-  Typography,
-  Link,
-} from "@mui/material";
+import React, { useState, useEffect, useContext } from "react";
+import { TextField, Button, FormControl, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 // import FacebookLogin from 'react-facebook-login';
-import { googleLogout, useGoogleLogin, GoogleLogin } from "@react-oauth/google";
-import axios from "axios";
+import {
+  googleLogout,
+  useGoogleLogin,
+  // GoogleLogin
+} from "@react-oauth/google";
+import axios, { isCancel } from "axios";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Logo from "../Additionals/Logo/Logo";
 import Header from "../Additionals/Header/Header";
 import styles from "./Login.module.css";
 import PageContainer from "../Additionals/Container/PageContainer";
 import Divider from "../Additionals/Divider/Divider";
-import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFacebookF } from "@fortawesome/free-brands-svg-icons";
+import { Link, useNavigate } from "react-router-dom";
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faFacebookF } from '@fortawesome/free-brands-svg-icons';
 
-const Login = (props) => {
+const Login = () => {
   const [user, setUser] = useState([]);
   const [profile, setProfile] = useState(false);
   const [email, setEmail] = useState("");
@@ -28,50 +26,45 @@ const Login = (props) => {
   const [isValid, setIsValid] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
-
+  const [is_accessible, setIsAccessible] = useState("");
   const [logged, setIsLogged] = useState(false);
   const [data, setData] = useState({});
   const [picture, setPicture] = useState("");
-
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    //Post request - need to post data to DB to check if specific user is already registered
-    if (email.trim().length !== 0 && password.trim().length !== 0) {
-      axios
-        .post(`https://tiys.herokuapp.com/api/auth`, {
-          email,
-          password,
-        })
-        .then((response) => {
-          console.log(response.data);
-          setIsFormValid(true);
-          setData(response.data);
+    try {
+      if (email.trim().length !== 0 && password.trim().length !== 0) {
+        const response = await axios.post(
+          `https://tiys.herokuapp.com/api/auth`,
+          {
+            email,
+            password,
+          }
+        );
+        const token = response.data.token;
+        setIsFormValid(true);
 
-          if (response.status == 200) {
-            navigate("/dashboard");
-          } else {
-            console.log("Status is not 200");
-          }
-          // console.log(response.data.token);
-        })
-        .catch((err) => {
-          console.log(err.response.data.errors[0]);
-          if (err.response.data.errors[0].msg == "Password is not correct") {
-            alert("Password is not correct.");
-          } else if (
-            err.response.data.errors[0].msg == "Email is not correct"
-          ) {
-            alert("Email is not correct.");
-          } else {
-            alert("Invalid Credentials.");
-          }
-        });
-    } else {
-      alert("All fields are required.");
-      setIsFormValid(false);
+        if (response.status == 200) {
+          navigate(`/dashboard`, { state: { token } });
+        } else {
+          console.log("Status is not 200");
+        }
+      } else {
+        alert("All fields are required.");
+        setIsFormValid(false);
+      }
+    } catch (err) {
+      console.log(err.response.data.errors[0]);
+      if (err.response.data.errors[0].msg == "Password is not correct") {
+        alert("Password is not correct.");
+      } else if (err.response.data.errors[0].msg == "Email is not correct") {
+        alert("Email is not correct.");
+      } else {
+        alert("Invalid Credentials.");
+      }
     }
   };
 
@@ -94,34 +87,34 @@ const Login = (props) => {
   };
 
   //Google Login
-  //   const login = useGoogleLogin({
-  //     onSuccess: (codeResponse) => setUser(codeResponse),
-  //     onError: (error) => console.log("Login Failed:", error),
-  //   });
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse) => setUser(codeResponse),
+    onError: (error) => console.log("Login Failed:", error),
+  });
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   //Login through Google - Takes data from Google
-  //   useEffect(() => {
-  //     if (user) {
-  //       axios
-  //         .get(
-  //           `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`,
-  //           {
-  //             headers: {
-  //               Authorization: `Bearer ${user.access_token}`,
-  //               Accept: "application/json",
-  //             },
-  //           }
-  //         )
-  //         .then((res) => {
-  //           setProfile(res.data);
-  //           navigate("/form_consumer");
-  //         })
-  //         .catch((err) => console.log(err));
-  //     }
-  //   }, [user]);
+  useEffect(() => {
+    if (user) {
+      axios
+        .get(
+          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.access_token}`,
+              Accept: "application/json",
+            },
+          }
+        )
+        .then((res) => {
+          setProfile(res.data);
+          navigate("/form_consumer");
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [user]);
 
   //Post request - need to post Google connection data of user to DB to check if specific user is already registered
   useEffect(() => {
@@ -216,7 +209,7 @@ const Login = (props) => {
         >
           <b>Don't Have An Account?</b>{" "}
           <Link
-            href="/register"
+            to="/register"
             sx={{
               textDecoration: "none",
               "&:hover": {
@@ -285,24 +278,25 @@ const Login = (props) => {
                      </div>
                   )}*/}
           </div>
-          {/* <div>
+          <div>
             {profile ? (
               {
-                 <button onClick={logOut}>Log out</button> 
+                /* <button onClick={logOut}>Log out</button> */
               }
             ) : (
-                <div>
-                   <img src={profile.picture} alt="user image" />
-                    <h3>User Logged in</h3>
-                   <p>Name: {profile.name}</p>
-                    <p>Email Address: {profile.email}</p>
-                    <br />
-                    <br />
-                    <button onClick={logOut}>Log out</button>
-                </div> */}
-          {/* <div className={styles.google_icon} onClick={() => login()}></div> */}
-          {/* )} */}
-          {/* </div> */} */
+              //  <div>
+              //      <img src={profile.picture} alt="user image" />
+              //      <h3>User Logged in</h3>
+              //      <p>Name: {profile.name}</p>
+              //      <p>Email Address: {profile.email}</p>
+              //      <br />
+              //      <br />
+              //      <button onClick={logOut}>Log out</button>
+              //  </div> */}
+
+              <div className={styles.google_icon} onClick={() => login()}></div>
+            )}
+          </div>
         </div>
       </PageContainer>
     </>
