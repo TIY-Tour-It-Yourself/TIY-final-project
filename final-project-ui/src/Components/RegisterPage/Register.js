@@ -186,8 +186,8 @@ const Register = (props) => {
                      color='primary'
                      sx={
                         isSmallScreen
-                           ? { mt: 2, ml: 2, width: '80%' }
-                           : { mt: 1, ml: 14, width: '50%' }
+                           ? { mt: 2, ml: 3, mb: 1, width: '80%' }
+                           : { mt: 2, ml: 13, width: '50%' }
                      }
                      style={{
                         borderRadius: 20,
@@ -214,9 +214,6 @@ const Register = (props) => {
             </Typography>
             <Divider title='Sign Up With' />
             <div className={styles.flexbox}>
-               <a href='#'>
-                  <div className={styles.facebook_icon}></div>
-               </a>
                <a href='#'>
                   <div className={styles.google_icon}></div>
                </a>

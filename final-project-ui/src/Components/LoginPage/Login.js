@@ -176,8 +176,8 @@ const Login = () => {
                      color='primary'
                      sx={
                         isSmallScreen
-                           ? { mt: 2, ml: 2, mb: 3, width: '80%' }
-                           : { mt: 3, ml: 12, mb: 3, width: '50%' }
+                           ? { mt: 2, ml: 3.25, mb: 3, width: '80%' }
+                           : { mt: 3, ml: 13.25, mb: 3, width: '50%' }
                      }
                      style={{
                         borderRadius: 20,
@@ -226,9 +226,9 @@ const Login = () => {
                   <div className={styles.facebook_icon}></div>
                </a> */}
                <div className='container'>
-                  <a href='#'>
+                  {/* <a href='#'>
                      <div className={styles.facebook_icon}></div>
-                  </a>
+                  </a> */}
                   {/* {!logged && (
                      <FacebookLogin
                         appId={process.env.REACT_APP_FACEBOOK_CLIENT_ID}
