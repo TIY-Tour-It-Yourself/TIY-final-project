@@ -5,6 +5,8 @@ import Add_Route from "./Add_Route";
 import Update_Route from "./Update_Route";
 import { useState } from "react";
 import "./Route_Table.css";
+import NavBar from "../../Additionals/NavBar/NavBar";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function MyComponent(props) {
   const [routes, setRoutes] = React.useState([]);
@@ -12,15 +14,41 @@ function MyComponent(props) {
   const [showUpdateForm, setUpdateShowForm] = useState(false);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [routeid, setRouteid] = useState(0);
+  const [activeImage, setActiveImage] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+
 
   function handleCancelAdd() {
     setAddShowForm(false);
   }
 
-
   function handleCancelUpdate() {
     setUpdateShowForm(false);
   }
+
+  //  useEffect(() => {
+  //   console.log(location);
+  //   if (!location.state) {
+  //     navigate("/");
+  //   } else {
+  //     setActiveImage(1);
+  //     axios
+  //       .get(`https://tiys.herokuapp.com/api/auth`, {
+  //         headers: {
+  //           "x-auth-token": location.state.token,
+  //           "Content-Type": "application/json",
+  //         },
+  //       })
+  //       .then((response) => {
+  //         // console.log(response.data);   //user's data
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching user: ", error);
+  //       });
+  //   }
+  // }, [location.state]);
+
 
   React.useEffect(() => {
     async function fetchData() {
@@ -39,9 +67,8 @@ function MyComponent(props) {
 
   // }
   function handleUpdate(id) {
-    // console.log("Selected POI ID:", id);
+    console.log("Selected POI ID:", id);
     const selected = routes.find((route) => route.routeid === id);
-    // console.log(selected);
     setSelectedRoute(selected);
     setUpdateShowForm(true);
   }
@@ -91,7 +118,10 @@ function MyComponent(props) {
       headerName: "",
       flex: 0.5,
       renderCell: (params) => (
-        <button onClick={() => handleUpdate(params.row.routeid)}>Update</button>
+        <button onClick={() => handleUpdate(params.row.routeid)}>
+          {" "}
+          Update{" "}
+        </button>
       ),
     },
   ];
@@ -105,6 +135,7 @@ function MyComponent(props) {
 
   return (
     <div>
+          {/* <NavBar activeImage={activeImage} /> */}
       <div style={{ height: 500, width: "100%" }}>
         <DataGrid
           rows={routes.map((route) => ({ ...route, id: route._id }))}
@@ -122,30 +153,30 @@ function MyComponent(props) {
             )
           }
         />{" "}
-        <button onClick={handleAddRoute}> Add New Route </button>
-        <button onClick={handleDeleteSelected}> Delete Selected </button>
-      </div>
+        <button onClick={handleAddRoute}> Add New Route </button>{" "}
+        <button onClick={handleDeleteSelected}> Delete Selected </button>{" "}
+      </div>{" "}
       {showAddForm && (
         <div className="lightbox">
-          <div className="lightbox-content">
+          <div className="lightbox-content" style={{ marginTop: "250px" }}>
             <button className="close-button" onClick={handleCancelAdd}>
-              X
-            </button>
+              X{" "}
+            </button>{" "}
             <Add_Route lastRouteId={routeid} onCancel={handleCancelAdd} />{" "}
-          </div>
+          </div>{" "}
         </div>
-      )}
+      )}{" "}
       {showUpdateForm && (
         <div className="lightbox">
-          <div className="lightbox-content">
+          <div className="lightbox-content" style={{ marginTop: "250px" }}>
             <button className="close-button" onClick={handleCancelUpdate}>
-              X
-            </button>
+              X{" "}
+            </button>{" "}
             <Update_Route
               onCancel={handleCancelUpdate}
               selectedRoute={selectedRoute}
-            />
-          </div>
+            />{" "}
+          </div>{" "}
         </div>
       )}
     </div>

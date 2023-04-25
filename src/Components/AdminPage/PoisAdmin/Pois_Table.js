@@ -3,17 +3,24 @@ import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import Add_Pois from "./Add_Poi";
 import Update_Poi from "./Update_Poi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./Pois_Table.css";
+import NavBar from "../../Additionals/NavBar/NavBar";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function MyComponent(props) {
   const [pois, setPois] = React.useState([]);
   const [showAddForm, setAddShowForm] = useState(false);
   const [showUpdateForm, setUpdateShowForm] = useState(false);
   const [selectedPoi, setSelectedPoi] = useState(null);
+  const [Poiid, setPoiid] = useState(0);
+  const [activeImage, setActiveImage] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   function handleAddPoi(id) {
     setAddShowForm(true);
+    setPoiid(pois.length - 1);
   }
 
   function handleCancelAdd() {
@@ -30,6 +37,28 @@ function MyComponent(props) {
   function handleCancelUpdate() {
     setUpdateShowForm(false);
   }
+
+  // useEffect(() => {
+  //   console.log(location);
+  //   if (!location.state) {
+  //     navigate("/");
+  //   } else {
+  //     setActiveImage(1);
+  //     axios
+  //       .get(`https://tiys.herokuapp.com/api/auth`, {
+  //         headers: {
+  //           "x-auth-token": location.state.token,
+  //           "Content-Type": "application/json",
+  //         },
+  //       })
+  //       .then((response) => {
+  //         // console.log(response.data);   //user's data
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching user: ", error);
+  //       });
+  //   }
+  // }, [location.state]);
 
   React.useEffect(() => {
     async function fetchData() {
@@ -128,6 +157,7 @@ function MyComponent(props) {
 
   return (
     <div>
+      {/* <NavBar activeImage={activeImage} /> */}
       <div style={{ height: 500, width: "100%" }}>
         <DataGrid
           rows={pois.map((poi) => ({ ...poi, id: poi._id }))}
@@ -150,17 +180,17 @@ function MyComponent(props) {
       </div>
       {showAddForm && (
         <div className="lightbox">
-          <div className="lightbox-content">
+          <div className="lightbox-content" style={{ marginTop: "250px" }}>
             <button className="close-button" onClick={handleCancelAdd}>
               X
             </button>
-            <Add_Pois onCancel={handleCancelAdd} />{" "}
+            <Add_Pois lastRouteId={Poiid} onCancel={handleCancelAdd} />{" "}
           </div>
         </div>
       )}
       {showUpdateForm && (
         <div className="lightbox">
-          <div className="lightbox-content">
+          <div className="lightbox-content" style={{ marginTop: "250px" }}>
             <button className="close-button" onClick={handleCancelUpdate}>
               X
             </button>

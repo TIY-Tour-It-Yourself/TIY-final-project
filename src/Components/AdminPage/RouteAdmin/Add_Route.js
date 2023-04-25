@@ -9,6 +9,7 @@ import {
   Button,
 } from "@mui/material";
 import { useState, useEffect } from "react";
+import NavBar from "../../Additionals/NavBar/NavBar";
 
 function Add_Route(props) {
   const [pois, setPOIs] = useState([]);
@@ -116,7 +117,7 @@ function Add_Route(props) {
   }
 
   return (
-    <div>
+    <div style={{ height: "100%" }}>
       <h2>Add New Route:</h2>
       <form onSubmit={handleSubmit}>
         <Grid

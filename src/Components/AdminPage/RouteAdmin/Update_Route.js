@@ -9,12 +9,12 @@ import {
   Button,
 } from "@mui/material";
 import { useState, useEffect } from "react";
+import NavBar from "../../Additionals/NavBar/NavBar";
 
 function Update_Route(props) {
   const [pois, setPOIs] = useState([]);
   const [themeOptions, setThemeOptions] = useState([]);
   const { selectedRoute, onCancel } = props;
-
   const [routeid, setRouteId] = useState(selectedRoute.routeid);
   const [description, setDescription] = useState(selectedRoute.description);
   const [evaluation_grade, setEvaluationGrade] = useState(
@@ -25,20 +25,7 @@ function Update_Route(props) {
   );
   const [theme, setTheme] = useState(selectedRoute.theme.theme);
   const [imgurl, setImgUrl] = useState(selectedRoute.imgurl);
-
   const [newRouteId, setNewRouteId] = useState(props.lastRouteId + 1);
-  console.log(newRouteId);
-
-  useEffect(() => {
-    fetch("https://tiys.herokuapp.com/api/pois")
-      .then((response) => response.json())
-      .then((data) => {
-        setPOIs(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching POIs:", error);
-      });
-  }, []);
 
   useEffect(() => {
     fetch("https://tiys.herokuapp.com/api/themes")
@@ -60,15 +47,13 @@ function Update_Route(props) {
     theme: theme,
     imgurl: imgurl,
   });
-
-  // function handleChange(event) {
-  //   const { name, value } = event.target;
-  //   setFormData((prevFormData) => ({
-  //     ...prevFormData,
-  //     [name]: value,
-  //   }));
-  // }
-
+  //   // function handleChange(event) {
+  //   //   const { name, value } = event.target;
+  //   //   setFormData((prevFormData) => ({
+  //   //     ...prevFormData,
+  //   //     [name]: value,
+  //   //   }));
+  //   // }
   function handleChange(event, index) {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({
@@ -93,25 +78,6 @@ function Update_Route(props) {
     console.log(event.target);
     setFormData((prevFormData) => ({ ...formData, imgurl: value }));
   };
-  //   function handleCoordinatesChange(event) {
-  //     const { name, value } = event.target;
-  //     setFormData((prevFormData) => ({
-  //       ...prevFormData,
-  //       pois: prevFormData.pois.map((poi, index) =>
-  //         index === Number(name) ? { ...poi, lat: value } : { ...poi }
-  //       ),
-  //     }));
-  //   }
-
-  function handleCoordinatesChange(event, index) {
-    const { name, value } = event.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      pois: prevFormData.pois.map((poi, i) =>
-        i === index ? { ...poi, [name]: value } : poi
-      ),
-    }));
-  }
 
   function addPoi() {
     setFormData((prevFormData) => ({
@@ -119,16 +85,14 @@ function Update_Route(props) {
       pois: [...prevFormData.pois, { poiid: "", name: "" }],
     }));
   }
-
   function handleSubmit(event) {
     event.preventDefault();
     console.log(formData);
     // handle form submit logic here
   }
-
   return (
-    <div>
-      <h2>Add New Route:</h2>
+    <div style={{ height: "100%" }}>
+      <h2> Update Route: </h2>{" "}
       <form onSubmit={handleSubmit}>
         <Grid
           container
@@ -150,7 +114,7 @@ function Update_Route(props) {
               onChange={handleChange}
               disabled
             />
-          </Grid>
+          </Grid>{" "}
           <Grid item xs={12}>
             <TextField
               name="description"
@@ -167,8 +131,8 @@ function Update_Route(props) {
               <Grid item xs={6}>
                 <FormControl fullWidth>
                   <InputLabel id={`poi-id-${index}`}>
-                    Poi ID {index + 1}
-                  </InputLabel>
+                    Poi ID {index + 1}{" "}
+                  </InputLabel>{" "}
                   <Select
                     labelId={`poi-id-${index}`}
                     id={`poi-id-${index}`}
@@ -176,7 +140,7 @@ function Update_Route(props) {
                     onChange={(e) => handleChange(e, index)}
                     name={`pois[${index}].name`}
                   >
-                    {pois.map((poiOption) => (
+                    {selectedRoute.pois.map((poiOption) => (
                       <MenuItem key={poiOption.poiid} value={poiOption.poiid}>
                         {poiOption.name}
                       </MenuItem>
@@ -193,9 +157,9 @@ function Update_Route(props) {
               type="button"
               onClick={addPoi}
             >
-              Add POI
-            </Button>
-          </Grid>
+              Add POI{" "}
+            </Button>{" "}
+          </Grid>{" "}
           <Grid item xs={12}>
             <TextField
               name="evaluation_grade"
@@ -206,28 +170,10 @@ function Update_Route(props) {
               disabled
             />{" "}
           </Grid>{" "}
-          {/* <Grid item xs={6}>
-            <TextField
-              name="coordinates.lat"
-              label="Latitude"
-              fullWidth
-              value={formData.coordinates.lat}
-              onChange={handleCoordinatesChange}
-            />{" "}
-          </Grid>{" "} */}
-          {/* <Grid item xs={6}>
-            <TextField
-              name="coordinates.lng"
-              label="Longitude"
-              fullWidth
-              value={formData.coordinates.lng}
-              onChange={handleCoordinatesChange}
-            />{" "}
-          </Grid>{" "} */}
           <Grid item xs={12}>
             <InputLabel id="experience-level-label">
-              Experience Level
-            </InputLabel>
+              Experience Level{" "}
+            </InputLabel>{" "}
             <Select
               labelId="experience-level-label"
               name="experience_level"
@@ -235,28 +181,29 @@ function Update_Route(props) {
               value={formData.experience_level}
               onChange={handleChangeArLevel}
             >
-              <MenuItem value={1}>1</MenuItem>
-              <MenuItem value={2}>2</MenuItem>
-              <MenuItem value={3}>3</MenuItem>
-            </Select>
-          </Grid>
+              <MenuItem value={1}> 1 </MenuItem>{" "}
+              <MenuItem value={2}> 2 </MenuItem>{" "}
+              <MenuItem value={3}> 3 </MenuItem>{" "}
+            </Select>{" "}
+          </Grid>{" "}
           <Grid item xs={12}>
             <FormControl fullWidth>
-              <InputLabel id="theme-label">Theme</InputLabel>
+              <InputLabel id="theme-label"> Theme </InputLabel>{" "}
               <Select
-                labelId="theme-label"
+                labelId="theme"
                 name="theme"
+                fullWidth
                 value={formData.theme}
                 onChange={handleChangeTheme}
               >
                 {themeOptions.map((option) => (
-                  <MenuItem key={option.themeid} value={option.themeid}>
+                  <MenuItem key={option.themeid} value={option.theme}>
                     {option.theme}
                   </MenuItem>
                 ))}
-              </Select>
-            </FormControl>
-          </Grid>
+              </Select>{" "}
+            </FormControl>{" "}
+          </Grid>{" "}
           <Grid item xs={12}>
             <TextField
               name="imgurl"
@@ -268,11 +215,11 @@ function Update_Route(props) {
           </Grid>{" "}
           <Grid item sx={{ display: "flex", justifyContent: "center" }}>
             <Button variant="contained" color="primary" type="submit">
-              Submit
-            </Button>
-          </Grid>
+              Submit{" "}
+            </Button>{" "}
+          </Grid>{" "}
         </Grid>{" "}
-      </form>
+      </form>{" "}
     </div>
   );
 }

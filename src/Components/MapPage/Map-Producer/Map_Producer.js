@@ -180,6 +180,11 @@ const Map_Producer = (props) => {
           timerDiv
         );
 
+        // Add the timer element to the map controls
+        map.controls[window.google.maps.ControlPosition.TOP_CENTER].push(
+          timerDiv
+        );
+
         // Add media query to update marginTop if screen width is greater than 400px
         const mediaQuery = window.matchMedia("(min-width: 600px)");
 
@@ -214,7 +219,11 @@ const Map_Producer = (props) => {
           alert("Hope you enjoyed your tour!");
 
           // Disable the buttons
+          // Disable the button
           stopNavigationButton.disabled = true;
+          stopNavigationButton.style.backgroundColor = "#EEEEEE";
+          stopNavigationButton.style.color = "grey";
+          stopNavigationButton.style.cursor = "default";
         });
 
         let savedRoute;
@@ -251,6 +260,9 @@ const Map_Producer = (props) => {
 
           // Disable the button
           startNavigationButton.disabled = true;
+          startNavigationButton.style.backgroundColor = "#EEEEEE";
+          startNavigationButton.style.color = "grey";
+          startNavigationButton.style.cursor = "default";
           isNavigationStarted = true;
 
           // Get user's current location
@@ -357,49 +369,110 @@ const Map_Producer = (props) => {
           durationDiv.appendChild(stopNavigationButton);
         }
 
+        // Create an empty div to hold the navigation instructions
+        const directionsDiv = document.createElement("div");
+        directionsDiv.style.backgroundColor = "white";
+        directionsDiv.style.padding = "5px";
+        directionsDiv.style.borderRadius = "5px";
+        directionsDiv.style.boxShadow = "0 0 5px rgba(0, 0, 0, 0.3)";
+        directionsDiv.style.fontSize = "16px";
+        directionsDiv.style.maxHeight = "300px";
+        directionsDiv.style.width = "300px";
+        directionsDiv.style.overflowY = "auto";
+        directionsDiv.style.marginTop = "55px";
+
+        // Add the directionsDiv to the map controls
+        map.controls[window.google.maps.ControlPosition.TOP_CENTER].push(
+          directionsDiv
+        );
+
+        let currentStepIndex = 0;
+
+        function updateDirectionsDiv(response, userPosition) {
+          // Clear the previous directions from the div
+          directionsDiv.innerHTML = "";
+
+          const route = response.routes[0];
+          const legs = route.legs;
+
+          // Find the current leg and step based on the user's current position
+          let currentLegIndex = 0;
+          let currentStepIndex = 0;
+          for (let i = 0; i < legs.length; i++) {
+            const steps = legs[i].steps;
+            for (let j = 0; j < steps.length; j++) {
+              const step = steps[j];
+              const stepStart = step.start_location;
+              const stepEnd = step.end_location;
+              if (isPositionOnStep(userPosition, stepStart, stepEnd)) {
+                currentLegIndex = i;
+                currentStepIndex = j;
+                break;
+              }
+            }
+          }
+
+          // Loop through the remaining steps of the current leg and add the current instruction to the div
+          const currentStep = legs[currentLegIndex].steps[currentStepIndex];
+          const currentInstruction = currentStep.instructions;
+          const currentDistance = currentStep.distance.text;
+          const currentDuration = currentStep.duration.text;
+          const currentInstructionDiv = document.createElement("div");
+          currentInstructionDiv.innerHTML = `<b>${currentInstruction}</b> (${currentDistance}, ${currentDuration})`;
+          directionsDiv.appendChild(currentInstructionDiv);
+        }
+
+        function isPositionOnStep(position, stepStart, stepEnd) {
+          const positionLat = position.lat;
+          const positionLng = position.lng;
+          const stepStartLat = stepStart.lat();
+          const stepStartLng = stepStart.lng();
+          const stepEndLat = stepEnd.lat();
+          const stepEndLng = stepEnd.lng();
+
+          // Check if the position is within the bounding box of the step
+          const minLat = Math.min(stepStartLat, stepEndLat);
+          const maxLat = Math.max(stepStartLat, stepEndLat);
+          const minLng = Math.min(stepStartLng, stepEndLng);
+          const maxLng = Math.max(stepStartLng, stepEndLng);
+          if (
+            positionLat < minLat ||
+            positionLat > maxLat ||
+            positionLng < minLng ||
+            positionLng > maxLng
+          ) {
+            return false;
+          }
+
+          // Check if the position is close enough to the step
+          const stepLength = new window.google.maps.LatLng(
+            stepStartLat,
+            stepStartLng
+          ).distanceTo(new window.google.maps.LatLng(stepEndLat, stepEndLng));
+          const distanceToStart = new window.google.maps.LatLng(
+            positionLat,
+            positionLng
+          ).distanceTo(
+            new window.google.maps.LatLng(stepStartLat, stepStartLng)
+          );
+          const distanceToEnd = new window.google.maps.LatLng(
+            positionLat,
+            positionLng
+          ).distanceTo(new window.google.maps.LatLng(stepEndLat, stepEndLng));
+          const buffer = stepLength * 0.1; // 10% buffer
+          return (
+            distanceToStart < stepLength + buffer &&
+            distanceToEnd < stepLength + buffer
+          );
+        }
+
         directionsService.route(request, function (response, status) {
           if (status == window.google.maps.DirectionsStatus.OK) {
             directionsRenderer.setDirections(response);
             updateDurationDiv();
+            updateDirectionsDiv(response, userPosition);
           }
         });
-        // directionsService.route(request, function (response, status) {
-        //   if (status == window.google.maps.DirectionsStatus.OK) {
-        //     // set the first polyline to green
-        //     const routes = response.routes;
-        //     const legs = routes[0].legs;
-        //     const firstLeg = legs[0];
-        //     const steps = firstLeg.steps;
-        //     const firstStep = steps[0];
-        //     const path = firstStep.path;
-        //     const firstPolyline = path.map((point) => ({
-        //       lat: point.lat(),
-        //       lng: point.lng(),
-        //     }));
-        //     console.log(firstPolyline);
-        //     const greenPolyline = new window.google.maps.Polyline({
-        //       path: steps[0],
-        //       strokeColor: "green",
-        //       strokeWeight: 5,
-        //       strokeOpacity: 0.9,
-        //       map: map,
-        //     });
-        //     // set the remaining polylines to blue
-        //     directionsRenderer.setDirections(response);
-        //     const remainingPolylines = directionsRenderer
-        //       .getDirections()
-        //       .routes[0].overview_path.slice(firstPolyline.length);
-        //     console.log(remainingPolylines);
-        //     const bluePolyline = new window.google.maps.Polyline({
-        //       path: remainingPolylines,
-        //       strokeColor: "red",
-        //       strokeWeight: 5,
-        //       strokeOpacity: 1,
-        //       map: map,
-        //     });
-        //     updateDurationDiv();
-        //   }
-        // });
 
         // Create a Marker object for each location and add an info window
         locations.forEach((location, index) => {

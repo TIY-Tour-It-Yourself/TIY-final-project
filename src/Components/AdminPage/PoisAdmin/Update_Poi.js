@@ -1,7 +1,16 @@
 import * as React from "react";
-import { TextField, Button, Grid } from "@mui/material";
-import { useState } from "react";
+import {
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Button,
+} from "@mui/material";
+import { useState, useEffect } from "react";
 import "./Pois_Table.css";
+import NavBar from "../../Additionals/NavBar/NavBar";
 
 function Update_Poi(props) {
   const { selectedPoi, onCancel } = props;
@@ -14,6 +23,18 @@ function Update_Poi(props) {
   const [address, setAddress] = useState(selectedPoi.address);
   const [arid, setArid] = useState(selectedPoi.arid.arid);
   const [theme, setTheme] = useState(selectedPoi.theme.theme);
+  const [themeOptions, setThemeOptions] = useState([]);
+
+  useEffect(() => {
+    fetch("https://tiys.herokuapp.com/api/themes")
+      .then((response) => response.json())
+      .then((data) => {
+        setThemeOptions(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching POIs:", error);
+      });
+  }, []);
 
   console.log(selectedPoi);
   const [formData, setFormData] = React.useState({
@@ -34,6 +55,12 @@ function Update_Poi(props) {
     }));
   }
 
+  const handleChangeTheme = (event) => {
+    const { theme, value } = event.target;
+    console.log(event.target);
+    setFormData((prevFormData) => ({ ...formData, theme: value }));
+  };
+
   function handleCoordinatesChange(event) {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({
@@ -52,8 +79,8 @@ function Update_Poi(props) {
   }
 
   return (
-    <div>
-      <h2>Update Point Of Interest(POI):</h2>
+    <div style={{ height: "100%" }}>
+      <h2> Update Point Of Interest(POI): </h2>{" "}
       <form onSubmit={handleSubmit}>
         <Grid
           container
@@ -74,6 +101,7 @@ function Update_Poi(props) {
               sx={{ width: "100%" }}
               value={formData.poiid}
               onChange={handleChange}
+              disabled
             />{" "}
           </Grid>{" "}
           <Grid item xs={12}>
@@ -133,21 +161,30 @@ function Update_Poi(props) {
             />{" "}
           </Grid>{" "}
           <Grid item xs={12}>
-            <TextField
-              name="theme"
-              label="Theme"
-              fullWidth
-              value={formData.theme}
-              onChange={handleChange}
-            />{" "}
+            <FormControl fullWidth>
+              <InputLabel id="theme-label"> Theme </InputLabel>{" "}
+              <Select
+                labelId="theme"
+                name="theme"
+                fullWidth
+                value={formData.theme}
+                onChange={handleChangeTheme}
+              >
+                {themeOptions.map((option) => (
+                  <MenuItem key={option.themeid} value={option.theme}>
+                    {option.theme}
+                  </MenuItem>
+                ))}
+              </Select>{" "}
+            </FormControl>{" "}
           </Grid>{" "}
           <Grid item sx={{ display: "flex", justifyContent: "center" }}>
             <Button variant="contained" color="primary" type="submit">
-              Submit
-            </Button>
-          </Grid>
+              Submit{" "}
+            </Button>{" "}
+          </Grid>{" "}
         </Grid>{" "}
-      </form>
+      </form>{" "}
     </div>
   );
 }

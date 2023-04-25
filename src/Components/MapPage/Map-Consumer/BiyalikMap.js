@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createRoot } from "react-dom/client";
 import {
   GoogleMap,
   LoadScript,
@@ -8,62 +9,72 @@ import {
 import axios from "axios";
 import arIcon from "./images/ar_icon1.png";
 import ranking from "./images/star.png";
-import { useLocation } from "react-router-dom";
-import NavBar from "../../Additionals/NavBar/NavBar";
+import styles from "./BiyalikMap.module.css";
+import { useLocation, useNavigate } from "react-router-dom";
+import ARManagement from "../../ARPage/ARManagement";
 import ReviewForm from "../../EvaluationPage/ReviewForm";
-import "./map_consumer.css";
 
 const BiyalikMap = (props) => {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
   const [isLocationsLoaded, setIsLocationsLoaded] = useState(false);
   const [poisData, setPoisData] = useState([]);
+  const [routePois, setRoutePois] = useState([]);
   const [isPoisDataLoaded, setIsPoisDataLoaded] = useState("");
   const [poisLatData, setPoisLatData] = useState([]);
   const [poisLngData, setPoisLngData] = useState([]);
-  const [themeSelectedId, setThemeSelectedId] = useState("");
-  const [selectedLevelId, setSelectedLevelId] = useState("");
   const [poisCoordinatesData, setPoisCoordinatesData] = useState([]);
-  const [filteredRoutes, setFilteredRoutes] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
   const [isNamesLoaded, setIsNamesLoaded] = useState(false);
   const [isURLsLoaded, setIsURLsLoaded] = useState(false);
-  const [poiIds, setPoiIds] = useState([]);
-  const [poiIdsLoaded, setIsPoiIdsLoaded] = useState(false);
-  const [selectedPoi, setSelectedPoi] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-
   const [locationName, setLocationName] = useState([]);
   const [ARURLArray, setARURLArray] = useState([]);
+  const [poisNames, setPoisNames] = useState([]);
+  const [poisIdNums, setPoisIdNums] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [poiIdsLoaded, setIsPoiIdsLoaded] = useState(false);
+  const [selectedARPoi, setSelectedARPoi] = useState(null);
+  const [selectedPoi, setSelectedPoi] = useState(null);
+  const [poiIds, setPoiIds] = useState([]);
   const location = useLocation();
-  let locations;
+  const navigate = useNavigate();
 
-  function handleAddReview(index) {
-    setShowForm(true);
-    setSelectedPoi(poiIds[index]);
-  }
-  function handleCancel() {
-    setShowForm(false);
-  }
   useEffect(() => {
-    console.log(location.search);
+    console.log(location);
+    if (!location.state) {
+      navigate("/");
+    } else {
+      axios
+        .get(`https://tiys.herokuapp.com/api/auth`, {
+          headers: {
+            "x-auth-token": location.state.token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((response) => {
+          // console.log(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching user: ", error);
+        });
+    }
+  }, [location.state]);
+
+  useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const routeChosen = searchParams.get("routeId");
-    const ARlevel = searchParams.get("ARLevel");
-
-
+    console.log(routeChosen);
     //Get Route by ID
     const fetchRoute = async () => {
       try {
         const response = await axios.get(
           `https://tiys.herokuapp.com/api/routes/${routeChosen}`
         );
-
         //Get route pois
         const pois = response.data[0].pois;
-        console.log(response.data);
-        setPoisData(pois);
+        // console.log(response.data);
+        // setPoisData(pois);
+        const poisIds = pois.map((poi) => poi.poiid);
 
-        console.log(pois);
         //Get all pois' coordinates
         const coordinatesArray = pois.map((poi) => poi.coordinates);
         setPoisCoordinatesData(coordinatesArray);
@@ -78,6 +89,8 @@ const BiyalikMap = (props) => {
 
         setPoisLatData(latArray);
         setPoisLngData(lngArray);
+        setPoisNames(pois);
+        setPoisIdNums(poisIds);
 
         // Set the state variable to true when data is loaded
         setIsLocationsLoaded(true);
@@ -94,28 +107,52 @@ const BiyalikMap = (props) => {
       poisLngData.length > 0 &&
       poisCoordinatesData > 0
     ) {
-      console.log(poisLatData, poisLngData);
-      console.log(poisCoordinatesData);
+      // console.log(poisLatData, poisLngData);
+      // console.log(poisCoordinatesData);
     }
   }, [poisLatData, poisLngData, poisCoordinatesData]);
 
-  // getPoisName
+  //Get POIs from DB
   useEffect(() => {
-    const names = poisData.map((item) => item.name);
+    const getPoisData = async () => {
+      try {
+        const response = await axios.get("https://tiys.herokuapp.com/api/pois");
+        setPoisData(response.data);
+        setIsPoisDataLoaded(true);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getPoisData();
+  }, []);
+
+  useEffect(() => {
+    //Get route pois' names
+    const names = poisNames.map((poi) => poi.name);
     setLocationName(names);
     setIsNamesLoaded(true);
-  }, [poisData, setLocationName]);
+  }, [poisNames, setLocationName]);
 
   useEffect(() => {
-    if (locationName !== undefined) {
+    if (locationName !== undefined && routePois !== undefined) {
       initializeMap();
     }
-  }, [locationName]);
+  }, [locationName, routePois]);
 
-  // getAREelement
+  // let routePois;
+
   useEffect(() => {
-    const ARURLs = poisData.map((item) => item.arid.url);
-    setARURLArray(ARURLs);
+    //Get AR element
+    const filteredPois = poisData.filter((poi) =>
+      // routePois = poisData.filter((poi) =>
+      poisIdNums.includes(poi.poiid)
+    );
+    setRoutePois(filteredPois);
+    // console.log(routePois);
+    const arURLs = routePois.map((arElement) => arElement.arid.url);
+    console.log(arURLs);
+    // const ARURLs = poisData.map((item) => item.arid.url);
+    setARURLArray(arURLs);
     setIsURLsLoaded(true);
   }, [poisData, setARURLArray]);
 
@@ -124,19 +161,43 @@ const BiyalikMap = (props) => {
       initializeMap();
     }
   }, [ARURLArray]);
-  // getPoiIds
+
   useEffect(() => {
     if (poisData && poisData.length > 0) {
       const poiIdArray = poisData.map((poi) => poi.poiid);
       setPoiIds(poiIdArray);
       setIsPoiIdsLoaded(true);
     }
-    console.log(poiIds);
   }, [poisData]);
 
+  //  useEffect(() => {
+  // navigate(`http://ar_management.html?lat=${selectedARPoi.coordinates.lat}&lng=${selectedARPoi.coordinates.lng}&desc=${selectedARPoi.description}&img=${selectedARPoi.arid.url}`);
+  // openARElement();
+  //  }, [selectedARPoi]);
+
   //While data hasn't become an array yet- keep loading
-  if (!Array.isArray(poisData)) {
+  if (
+    !Array.isArray(poisNames) &&
+    !Array.isArray(poisIdNums) &&
+    !Array.isArray(poisData)
+  ) {
     return <div> Loading... </div>;
+  }
+
+  //Open AR Element from ARManagement component
+  const openARElement = (poi) => {
+    // const url = `/src/Components/ARPage/ar_management.html?lat=${poi.coordinates.lat}&lng=${poi.coordinates.lng}&desc=${poi.description}&img=${poi.arid.url}`;
+    // window.open(url, '_blank');
+    navigate(<ARManagement />);
+  };
+
+  function handleAddReview(poi) {
+    setShowForm(true);
+    setSelectedPoi(poi.poiid);
+  }
+
+  function handleCancel() {
+    setShowForm(false);
   }
 
   const initializeMap = () => {
@@ -145,30 +206,19 @@ const BiyalikMap = (props) => {
         lat: position.coords.latitude,
         lng: position.coords.longitude,
       };
-
-      // Check if locations data is loaded and available
-      // if (
-      //   isLocationsLoaded &&
-      //   poisCoordinatesData &&
-      //   poisData &&
-      //   locationName &&
-      //   ARURLArray
-      // ) {
       // Check if locations data is loaded and available
       if (
         isLocationsLoaded &&
         poisCoordinatesData &&
+        // routePois &&
         poisData &&
         locationName &&
         ARURLArray !== undefined
       ) {
-        // console.log(isLocationsLoaded, JSON.stringify(poisCoordinatesData), JSON.stringify(poisData));
-        // Create a map object and center it on the first location
         const map = new window.google.maps.Map(document.getElementById("map"), {
           center: { lat: poisLatData[0], lng: poisLngData[0] },
           zoom: 12,
         });
-
         // Create the start navigation button
         const startNavigationButton = document.createElement("button");
         startNavigationButton.textContent = "Start";
@@ -297,16 +347,14 @@ const BiyalikMap = (props) => {
           draggable: true,
           suppressMarkers: true, // add this line to suppress markers
         });
-        const origin = userPosition;
 
+        const origin = userPosition;
         const destination = new window.google.maps.LatLng(
           poisLatData[poisLatData.length - 1],
           poisLngData[poisLatData.length - 1]
         );
 
-        console.log(poisLatData.length);
         const waypoints = [];
-
         for (let i = 0; i < poisLatData.length; i++) {
           waypoints.push({
             location: new window.google.maps.LatLng(
@@ -323,42 +371,7 @@ const BiyalikMap = (props) => {
           waypoints: waypoints,
           travelMode: window.google.maps.TravelMode.WALKING,
         };
-        // const request = {
-        //   origin: origin,
-        //   destination: destination,
-        //   waypoints: [
-        //     {
-        //       location: new window.google.maps.LatLng(
-        //         poisLatData[0],
-        //         poisLngData[0]
-        //       ),
-        //       stopover: true,
-        //     },
-        //     {
-        //       location: new window.google.maps.LatLng(
-        //         poisLatData[1],
-        //         poisLngData[1]
-        //       ),
-        //       stopover: true,
-        //     },
-        //     {
-        //       location: new window.google.maps.LatLng(
-        //         poisLatData[2],
-        //         poisLngData[2]
-        //       ),
-        //       stopover: true,
-        //     },
-        //     {
-        //       location: new window.google.maps.LatLng(
-        //         poisLatData[3],
-        //         poisLngData[3]
-        //       ),
-        //       stopover: true,
-        //     },
 
-        //   ],
-        //   travelMode: window.google.maps.TravelMode.WALKING,
-        // };
         // Create the duration element with white background
         const durationDiv = document.createElement("div");
         durationDiv.style.backgroundColor = "white";
@@ -415,10 +428,155 @@ const BiyalikMap = (props) => {
           durationDiv.appendChild(stopNavigationButton);
         }
 
+        // Create an empty div to hold the navigation instructions
+        const directionsDiv = document.createElement("div");
+        directionsDiv.style.backgroundColor = "white";
+        directionsDiv.style.padding = "5px";
+        directionsDiv.style.borderRadius = "5px";
+        directionsDiv.style.boxShadow = "0 0 5px rgba(0, 0, 0, 0.3)";
+        directionsDiv.style.fontSize = "16px";
+        directionsDiv.style.maxHeight = "300px";
+        directionsDiv.style.width = "300px";
+        directionsDiv.style.overflowY = "auto";
+        directionsDiv.style.marginTop = "55px";
+
+        // Add the directionsDiv to the map controls
+        map.controls[window.google.maps.ControlPosition.TOP_CENTER].push(
+          directionsDiv
+        );
+
+        // function updateDirectionsDiv(response) {
+        //   // Clear the previous directions from the div
+        //   directionsDiv.innerHTML = "";
+
+        //   const route = response.routes[0];
+        //   const legs = route.legs;
+
+        //   // Loop through each leg of the route and add the instructions to the div
+        //   for (let i = 0; i < legs.length; i++) {
+        //     const steps = legs[i].steps;
+        //     for (let j = 0; j < steps.length; j++) {
+        //       const instruction = steps[j].instructions;
+        //       const distance = steps[j].distance.text;
+        //       const duration = steps[j].duration.text;
+
+        //       // Create a new div for each instruction and add it to the directionsDiv
+        //       const instructionDiv = document.createElement("div");
+        //       instructionDiv.innerHTML = `<b>${instruction}</b> (${distance}, ${duration})`;
+        //       directionsDiv.appendChild(instructionDiv);
+        //     }
+        //   }
+        // }
+        function updateDirectionsDiv(response, userPosition) {
+          // Clear the previous directions from the div
+          directionsDiv.innerHTML = "";
+
+          const route = response.routes[0];
+          const legs = route.legs;
+
+          // Add the first instruction outside of the loop
+          const firstStep = legs[0].steps[0];
+          const firstInstruction = firstStep.instructions;
+          const firstDistance = firstStep.distance.text;
+          const firstDuration = firstStep.duration.text;
+          const firstInstructionDiv = document.createElement("div");
+          firstInstructionDiv.innerHTML = `<b>${firstInstruction}</b> (${firstDistance}, ${firstDuration})`;
+          directionsDiv.appendChild(firstInstructionDiv);
+
+          // Find the current leg and step based on the user's current position
+          let currentLegIndex = 0;
+          let currentStepIndex = 0;
+          for (let i = 0; i < legs.length; i++) {
+            const steps = legs[i].steps;
+            for (let j = 0; j < steps.length; j++) {
+              const step = steps[j];
+              const stepStart = step.start_location;
+              const stepEnd = step.end_location;
+              if (isPositionOnStep(userPosition, stepStart, stepEnd)) {
+                currentLegIndex = i;
+                currentStepIndex = j;
+                break;
+              }
+            }
+          }
+
+          // Loop through the remaining steps of the current leg and add the instructions to the div
+          for (
+            let j = currentStepIndex;
+            j < legs[currentLegIndex].steps.length;
+            j++
+          ) {
+            const step = legs[currentLegIndex].steps[j];
+            const instruction = step.instructions;
+            const distance = step.distance.text;
+            const duration = step.duration.text;
+
+            // Create a new div for each instruction and add it to the directionsDiv
+            const instructionDiv = document.createElement("div");
+            instructionDiv.innerHTML = `<b>${instruction}</b> (${distance}, ${duration})`;
+            directionsDiv.appendChild(instructionDiv);
+          }
+        }
+
+        // Helper function to check if a position is on a step of the route
+        function isPositionOnStep(position, stepStart, stepEnd) {
+          const positionLat = position.lat();
+          const positionLng = position.lng();
+          const stepStartLat = stepStart.lat();
+          const stepStartLng = stepStart.lng();
+          const stepEndLat = stepEnd.lat();
+          const stepEndLng = stepEnd.lng();
+
+          // Check if the position is within the bounding box of the step
+          const minLat = Math.min(stepStartLat, stepEndLat);
+          const maxLat = Math.max(stepStartLat, stepEndLat);
+          const minLng = Math.min(stepStartLng, stepEndLng);
+          const maxLng = Math.max(stepStartLng, stepEndLng);
+          if (
+            positionLat < minLat ||
+            positionLat > maxLat ||
+            positionLng < minLng ||
+            positionLng > maxLng
+          ) {
+            return false;
+          }
+
+          // Check if the position is close enough to the step
+          const stepLength = new window.google.maps.LatLng(
+            stepStartLat,
+            stepStartLng
+          ).distanceTo(new window.google.maps.LatLng(stepEndLat, stepEndLng));
+          const distanceToStart = new window.google.maps.LatLng(
+            positionLat,
+            positionLng
+          ).distanceTo(
+            new window.google.maps.LatLng(stepStartLat, stepStartLng)
+          );
+          const distanceToEnd = new window.google.maps.LatLng(
+            positionLat,
+            positionLng
+          ).distanceTo(new window.google.maps.LatLng(stepEndLat, stepEndLng));
+          const buffer = stepLength * 0.1; // 10% buffer
+          return (
+            distanceToStart < stepLength + buffer &&
+            distanceToEnd < stepLength + buffer
+          );
+        }
+
+        // directionsService.route(request, function (response, status) {
+        //   if (status == window.google.maps.DirectionsStatus.OK) {
+        //     console.log(response);
+        //     directionsRenderer.setDirections(response);
+        //     updateDurationDiv();
+        //   }
+        // });
+
+        // Call the DirectionsService to calculate the route
         directionsService.route(request, function (response, status) {
           if (status == window.google.maps.DirectionsStatus.OK) {
             directionsRenderer.setDirections(response);
             updateDurationDiv();
+            updateDirectionsDiv(response, userPosition);
           }
         });
 
@@ -428,13 +586,26 @@ const BiyalikMap = (props) => {
           function () {
             savedRoute = directionsRenderer.getDirections();
             updateDurationDiv();
+            updateDirectionsDiv(savedRoute, userPosition);
           }
         );
 
+        //renderes pois' coordinates
+        console.log(poisCoordinatesData);
+        console.log(poisData);
+
+        //   <a href="${ARURLArray[index]}" target="_blank">
+        //   <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
+        //   <br/>
+        //   <span style={{textDecoration: 'none', fontWeight: 'bold', fontSize: 'small'}}>Click Me</span>
+        //  </a>
+        //   ******************************************
+
         // Create a Marker object for each poi and add an info window
-        poisCoordinatesData.forEach((poi, index) => {
+        routePois.forEach((poi, index) => {
           const marker = new window.google.maps.Marker({
-            position: { lat: poi.lat, lng: poi.lng },
+            // position: { lat: poi.lat, lng: poi.lng },
+            position: { lat: poi.coordinates.lat, lng: poi.coordinates.lng },
             map: map,
           });
 
@@ -443,23 +614,34 @@ const BiyalikMap = (props) => {
                            <div style="margin-left: 10px;"><h4>${locationName[index]}</h4></div>
                            <div style="display: flex; justify-content: center; flex-direction: row; margin-left: 5px;">
                            <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
-                                 <a href="${ARURLArray[index]}" target="_blank">
+                           <button id="open-ar-element" style={{backgroundColor: 'transparent'}}>
                               <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
-                              </a>
+                              <br/>
+                              <span style={{textDecoration: 'none', fontWeight: 'bold', fontSize: 'small'}}>Click Me</span>
+                           </button>
                            </div>
                            <div>
-                           <button id="add-review-button">
+                           <button id="add-review-button" style={{backgroundColor: 'transparent'}}>
                              <img src=${ranking} width='25px' height='25px' alt="Add Review" />
+                             <br/>
+                              <span style={{textDecoration: 'none', fontWeight: 'bold', fontSize: 'small'}}>Rank Me</span>
                            </button>            
-                           </div> 
+                           </div>
                            </div>
                         </div>`,
           });
 
           infoWindow.addListener("domready", () => {
+            //Open Review Form
             const addButton = document.querySelector("#add-review-button");
             addButton.addEventListener("click", () => {
-              handleAddReview(index);
+              handleAddReview(poi);
+            });
+
+            //Open AR Element
+            const addARButton = document.querySelector("#open-ar-element");
+            addARButton.addEventListener("click", () => {
+              openARElement(poi);
             });
           });
 
@@ -468,7 +650,6 @@ const BiyalikMap = (props) => {
           });
         });
 
-        // Create a Marker object for the current user location
         let userLocationMarker;
 
         if (navigator.geolocation) {
@@ -506,7 +687,6 @@ const BiyalikMap = (props) => {
             { enableHighAccuracy: true }
           );
         }
-        // }
       }
     });
   };
@@ -524,7 +704,8 @@ const BiyalikMap = (props) => {
 
   return (
     <div id="map" style={{ height: "100vh", width: "100%" }}>
-      <NavBar /> {/* {isMapLoaded && <LoadScript />} */};{" "}
+      {" "}
+      {/* {isMapLoaded && <LoadScript />} */};{" "}
       {window.google === undefined ? (
         <LoadScript>
           <GoogleMap />
@@ -533,19 +714,19 @@ const BiyalikMap = (props) => {
         <GoogleMap />
       )}{" "}
       {showForm && (
-        <div className="lightbox">
-          <div className="lightbox-content">
+        <div className={styles.lightbox}>
+          <div className={styles.lightbox_content}>
             <button className="close-btn" onClick={handleCancel}>
-              X
-            </button>
+              X{" "}
+            </button>{" "}
             <ReviewForm
               showForm={showForm}
               onCancel={handleCancel}
               poiValues={selectedPoi}
-            />
-          </div>
+            />{" "}
+          </div>{" "}
         </div>
-      )}
+      )}{" "}
     </div>
   );
 };
