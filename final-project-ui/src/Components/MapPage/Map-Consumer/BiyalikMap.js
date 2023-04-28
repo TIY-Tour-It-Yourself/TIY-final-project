@@ -39,7 +39,6 @@ const BiyalikMap = (props) => {
    const navigate = useNavigate();
 
    useEffect(() => {
-      console.log(location);
       if (!location.state) {
          navigate('/');
       } else {
@@ -152,7 +151,7 @@ const BiyalikMap = (props) => {
       setRoutePois(filteredPois);
       // console.log(routePois);
       const arURLs = routePois.map((arElement) => arElement.arid.url);
-      console.log(arURLs);
+      // console.log(arURLs);
       // const ARURLs = poisData.map((item) => item.arid.url);
       setARURLArray(arURLs);
       setIsURLsLoaded(true);
@@ -189,9 +188,10 @@ const BiyalikMap = (props) => {
 
    //Open AR Element from ARManagement component
    const openARElement = (poi) => {
-      // const url = `/src/Components/ARPage/ar_management.html?lat=${poi.coordinates.lat}&lng=${poi.coordinates.lng}&desc=${poi.description}&img=${poi.arid.url}`;
-  	   // window.open(url, '_blank');
-      navigate(<ARManagement/>);
+      const url = `/ar.html?lat=${poi.coordinates.lat}&lng=${poi.coordinates.lng}&desc=${poi.description}&img=${poi.arid.url}`;
+      // const url = `/ar_page?lat=${poi.coordinates.lat}&lng=${poi.coordinates.lng}&desc=${poi.description}&img=${poi.arid.url}`;
+      // window.location.href = `/ar.html?lat=${poi.coordinates.lat}&lng=${poi.coordinates.lng}&desc=${poi.description}&img=${poi.arid.url}`;
+      window.open(url, '_blank');
    };
 
    function handleAddReview(poi) {
@@ -347,6 +347,33 @@ const BiyalikMap = (props) => {
             isNavigationStarted = true;
          });
 
+        //Reset button
+        const resetButton = document.createElement("button");
+        resetButton.innerText = "Reset";
+        resetButton.style.backgroundColor = "#007aff";
+        resetButton.style.color = "white";
+        resetButton.style.padding = "10px";
+        resetButton.style.borderRadius = "25px"; // change from "50%" to "25px"
+        resetButton.style.boxShadow = "0 0 5px rgba(0, 0, 0, 0.3)";
+        resetButton.style.fontSize = "16px";
+        resetButton.style.lineHeight = "1";
+        resetButton.style.border = "none";
+        resetButton.style.cursor = "pointer";
+ 
+
+        resetButton.addEventListener("click", () => {
+          console.log("Reset button clicked");
+          directionsRenderer.setDirections(null);
+          directionsService.route(request, function (response, status) {
+            if (status == window.google.maps.DirectionsStatus.OK) {
+              directionsRenderer.setDirections(response);
+              updateDurationDiv();
+            } else {
+              console.log("Directions request failed: " + status);
+            }
+          });
+        });
+
          const directionsService = new window.google.maps.DirectionsService();
          const directionsRenderer = new window.google.maps.DirectionsRenderer({
            map: map,
@@ -453,6 +480,7 @@ const BiyalikMap = (props) => {
            )}`;
            durationDiv.appendChild(startNavigationButton);
            durationDiv.appendChild(stopNavigationButton);
+           durationDiv.appendChild(resetButton);
          }
    
          directionsService.route(request, function (response, status) {

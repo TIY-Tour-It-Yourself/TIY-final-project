@@ -24,7 +24,6 @@ const arImgs = [
 
 const Form_Consumer = () => {
    const [formTheme, setFormTheme] = useState('');
-   // const [displayPage, setDisplayPage] = useState(false);
    const [themeSelectedId, setThemeSelectedId] = useState('');
    const [selectedLevelId, setSelectedLevelId] = useState('');
    const [isFormValid, setIsFormValid] = useState(false);
@@ -150,7 +149,7 @@ const Form_Consumer = () => {
    const handleARExperience = (arId) => {
       setSelectedLevelId(arId);
    };
-
+   
    return (
       <>
          <NavBar />
@@ -192,8 +191,10 @@ const Form_Consumer = () => {
                }
             >
                {isSmallScreen ? (
-                  <Grid
-                     objArray={formTheme.map((theme) => (
+                  <Grid objArray={formTheme.map((theme, index) => ({
+                        ...theme,
+                        id: `theme_${index}`
+                     })).map((theme) => (
                         <Button
                            key={theme.themeid}
                            onClick={() => setSelectedTheme(theme.themeid)}

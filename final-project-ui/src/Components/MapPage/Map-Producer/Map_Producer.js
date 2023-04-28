@@ -262,6 +262,33 @@ const Map_Producer = () => {
             isNavigationStarted = true;
          });
 
+        //Reset button
+        const resetButton = document.createElement("button");
+        resetButton.innerText = "Reset";
+        resetButton.style.backgroundColor = "#007aff";
+        resetButton.style.color = "white";
+        resetButton.style.padding = "10px";
+        resetButton.style.borderRadius = "25px"; // change from "50%" to "25px"
+        resetButton.style.boxShadow = "0 0 5px rgba(0, 0, 0, 0.3)";
+        resetButton.style.fontSize = "16px";
+        resetButton.style.lineHeight = "1";
+        resetButton.style.border = "none";
+        resetButton.style.cursor = "pointer";
+ 
+
+        resetButton.addEventListener("click", () => {
+          console.log("Reset button clicked");
+          directionsRenderer.setDirections(null);
+          directionsService.route(request, function (response, status) {
+            if (status == window.google.maps.DirectionsStatus.OK) {
+              directionsRenderer.setDirections(response);
+              updateDurationDiv();
+            } else {
+              console.log("Directions request failed: " + status);
+            }
+          });
+        });
+
          const directionsService = new window.google.maps.DirectionsService();
          const directionsRenderer = new window.google.maps.DirectionsRenderer({
             map: map,
@@ -346,14 +373,69 @@ const Map_Producer = () => {
             )}`;
             durationDiv.appendChild(startNavigationButton);
             durationDiv.appendChild(stopNavigationButton);
+            durationDiv.appendChild(resetButton);
          }
 
-         directionsService.route(request, function(response, status) {
+         // directionsService.route(request, function(response, status) {
+         //    if (status == window.google.maps.DirectionsStatus.OK) {
+         //       directionsRenderer.setDirections(response);
+         //       updateDurationDiv();
+         //    }
+         // });
+
+         directionsService.route(request, function (response, status) {
             if (status == window.google.maps.DirectionsStatus.OK) {
-               directionsRenderer.setDirections(response);
-               updateDurationDiv();
+              directionsRenderer.setDirections(response);
+              updateDurationDiv();
+  
+              // Get the next step in the route
+              const nextStep = response.routes[0].legs[0].steps[0];
+  
+              // Create an arrow marker that points in the direction of the next step
+              const arrowMarker = new window.google.maps.Marker({
+                position: nextStep.start_location,
+                icon: {
+                  path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                  strokeColor: "blue",
+                  scale: 4,
+                },
+                map,
+              });
+              // Rotate the symbol to point in the direction of the next step
+              arrowMarker.setIcon(
+                Object.assign({}, arrowMarker.getIcon(), {
+                  rotation: window.google.maps.geometry.spherical.computeHeading(
+                    nextStep.start_location,
+                    nextStep.end_location
+                  ),
+                })
+              );
+  
+              // Update the arrow marker whenever the user's location changes
+              navigator.geolocation.watchPosition((position) => {
+                const userLocation = {
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude,
+                };
+  
+                // Move the user marker to the new location
+                // userMarker.setPosition(userLocation);
+  
+                // Rotate the symbol to point in the direction of the next step
+                arrowMarker.setIcon(
+                  Object.assign({}, arrowMarker.getIcon(), {
+                    rotation:
+                      window.google.maps.geometry.spherical.computeHeading(
+                        userLocation,
+                        nextStep.end_location
+                      ),
+                  })
+                );
+              });
+            } else {
+              console.log("Directions request failed: " + status);
             }
-         });
+          });
 
          window.google.maps.event.addListener(
             directionsRenderer,
@@ -401,43 +483,43 @@ const Map_Producer = () => {
             });
          });
 
-         let userLocationMarker;
+         // let userLocationMarker;
 
-         if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(
-               (position) => {
-                  if (userLocationMarker) {
-                     // If the userLocationMarker already exists, update its position
-                     userLocationMarker.setPosition({
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                     });
-                  } else {
-                     // If the userLocationMarker doesn't exist yet, create it
-                     userLocationMarker = new window.google.maps.Marker({
-                        position: {
-                           lat: position.coords.latitude,
-                           lng: position.coords.longitude,
-                        },
-                        map,
-                        icon: {
-                           path: window.google.maps.SymbolPath.CIRCLE,
-                           fillColor: '#0088FF',
-                           fillOpacity: 0.6,
-                           strokeColor: '#FFFFFF',
-                           strokeWeight: 2,
-                           scale: 10,
-                        },
-                     });
-                  }
-                  map.setCenter(userLocationMarker.getPosition());
-               },
-               (error) => {
-                  console.log(error);
-               },
-               { enableHighAccuracy: true }
-            );
-         }
+         // if (navigator.geolocation) {
+         //    navigator.geolocation.watchPosition(
+         //       (position) => {
+         //          if (userLocationMarker) {
+         //             // If the userLocationMarker already exists, update its position
+         //             userLocationMarker.setPosition({
+         //                lat: position.coords.latitude,
+         //                lng: position.coords.longitude,
+         //             });
+         //          } else {
+         //             // If the userLocationMarker doesn't exist yet, create it
+         //             userLocationMarker = new window.google.maps.Marker({
+         //                position: {
+         //                   lat: position.coords.latitude,
+         //                   lng: position.coords.longitude,
+         //                },
+         //                map,
+         //                icon: {
+         //                   path: window.google.maps.SymbolPath.CIRCLE,
+         //                   fillColor: '#0088FF',
+         //                   fillOpacity: 0.6,
+         //                   strokeColor: '#FFFFFF',
+         //                   strokeWeight: 2,
+         //                   scale: 10,
+         //                },
+         //             });
+         //          }
+         //          map.setCenter(userLocationMarker.getPosition());
+         //       },
+         //       (error) => {
+         //          console.log(error);
+         //       },
+         //       { enableHighAccuracy: true }
+         //    );
+         // }
       }
    })};
    //InitializeMap() is only called after the locations array has been populated with data

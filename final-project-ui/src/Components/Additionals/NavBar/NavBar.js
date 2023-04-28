@@ -10,6 +10,9 @@ import history from './nav_imgs/history_origin.png';
 import history_clicked from './nav_imgs/history_clicked.png';
 import calendar from './nav_imgs/schedule_origin.png';
 import calendar_clicked from './nav_imgs/schedule_clicked.png';
+import logout_rounded from './nav_imgs/logout_rounded_corners.png';
+import logout_rect from './nav_imgs/logout_rectangle.png';
+import logout_straight from './nav_imgs/logout_straight.png';
 import logo from '../Assets/logo_nav_no_sub.png';
 import AppBar from '@mui/material/AppBar';
 import Tooltip from '@mui/material/Tooltip';
@@ -25,7 +28,6 @@ import Divider from '@mui/material/Divider';
 import Logout from '@mui/icons-material/Logout';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import user from './user.png';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
@@ -58,7 +60,7 @@ const NavBar = ({ activeImage, activeLink }) => {
          src: calendar,
          src_clicked: calendar_clicked,
          url: '/events',
-      },
+      }
    ]);
 
    const [avatar, setAvatar] = useState(null);
