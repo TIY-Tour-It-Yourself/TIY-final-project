@@ -107,6 +107,7 @@ const Tours = () => {
       p: 4,
     };
 
+   //TBD: add the creates route by the user / the tour the user chose to participate
    const openRoute = (routeid) => {
       navigate(`/biyalik_map?routeId=${routeid}`, {
          state: { token: location.state.token },
@@ -158,10 +159,13 @@ const Tours = () => {
                <div>AR level: {route.experience_level}</div>
                <div>{route.duration}</div> 
                <div>Rank: {route.evaluation_grade}</div>
+               <div className={styles.align_right}>
+                  <Button sx={{ fontSize: '10px', borderRadius: '20px' }} variant='outlined' onClick={() => openRoute(route.routeid)}>Open Route</Button>
+               </div>
             </div>)}
          </div>) : (
             <div className={styles.modal}>
-               <Button sx={{ border: '1px solid #2146C7', borderRadius: '20px'}} onClick={handleOpenModalRoutes}>Show Routes</Button>
+               <Button sx={{ border: '1px solid #2146C7', borderRadius: '20px', width: '40%'}} onClick={handleOpenModalRoutes}>Show Routes</Button>
                <Modal
                open={open}
                onClose={handleCloseModalRoutes}
@@ -179,7 +183,7 @@ const Tours = () => {
                         <div><b>Duration: </b>{route.duration}</div> 
                         <div><b>Rank: </b>{route.evaluation_grade}</div>
                         <div className={styles.align_right}>
-                           <Button sx={{ fontSize: '10px' }} variant='outlined' onClick={() => openRoute(route.routeid)}>Open Route</Button>
+                           <Button sx={{ fontSize: '10px', borderRadius: '20px' }} variant='outlined' onClick={() => openRoute(route.routeid)}>Open Route</Button>
                         </div>
                         <hr/>
                      </div>
@@ -213,10 +217,13 @@ const Tours = () => {
                <div>AR level: {tour.experience_level}</div>
                <div>{tour.duration}</div> 
                <div>Rank: {tour.evaluation_grade}</div>
+               <div className={styles.align_right}>
+                  <Button sx={{ fontSize: '10px', borderRadius: '20px' }} variant='outlined' onClick={() => openRoute(tour.routeid)}>Open Tour</Button>
+               </div>
             </div>)}
          </div> ) : (
            <div className={styles.modal}>
-           <Button variant='text' sx={{ border: '1px solid #2146C7', borderRadius: '20px'}} onClick={handleOpenModalTours}>Show Tours</Button>
+           <Button variant='text' sx={{ border: '1px solid #2146C7', borderRadius: '20px', width: '40%' }} onClick={handleOpenModalTours}>Show Tours</Button>
            <Modal
            open={openTours}
            onClose={handleCloseModalTours}
@@ -232,6 +239,9 @@ const Tours = () => {
                     <div><b>AR level: </b>{tour.experience_level}</div>
                     <div><b>Duration: </b>{tour.duration}</div> 
                     <div><b>Rank: </b>{tour.evaluation_grade}</div>
+                    <div className={styles.align_right}>
+                           <Button sx={{ fontSize: '10px', borderRadius: '20px' }} variant='outlined' onClick={() => openRoute(tour.routeid)}>Open Tour</Button>
+                     </div>
                     <hr/>
                  </div>
                  )}

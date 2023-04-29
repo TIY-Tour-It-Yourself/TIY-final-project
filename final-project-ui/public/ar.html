@@ -13,12 +13,13 @@
             const latitude = urlParams.get('lat');
             const longitude = urlParams.get('lng');
             const description = urlParams.get('desc');
-            const imageUrl = urlParams.get('img');
-            
+            // const imageUrl = urlParams.get('img');
+            const imageUrl = 'cdn.glitch.global/e974619b-5809-4dcb-bd75-55d296fd7ad8/ramat_gan_theatre.jpg?v=1681841957886';
+           
             AFRAME.registerComponent('clicker', {
                 init: function() {
                     this.el.addEventListener('click', e => {
-                        alert({description});
+                        alert(description);
                     });
                 }
             });
@@ -33,7 +34,7 @@
         renderer="antialias: true; alpha: true">
             <a-camera gps-camera rotation-reader></a-camera>
             <a-image
-                src=" ${imageUrl}"
+                src="${imageUrl}"
                 look-at="[gps-camera]"
                 scale="20 20 20"
                 gps-entity-place="latitude: ${latitude}; longitude: ${longitude};"

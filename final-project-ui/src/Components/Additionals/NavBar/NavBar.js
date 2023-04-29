@@ -207,7 +207,7 @@ const NavBar = ({ activeImage, activeLink }) => {
                      {images.map((img) => (
                         <Button
                            component='div'
-                           sx={{ marginLeft: '15px' }}
+                           sx={{ marginLeft: '17px' }}
                            key={img.id}
                         >
                            <img

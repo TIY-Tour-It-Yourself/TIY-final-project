@@ -17,7 +17,6 @@ const cards = [
 ];
 
 const Dashboard = () => {
-   const [token, setToken] = useState('');
    const [activeImage, setActiveImage] = useState(null);
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -70,7 +69,7 @@ const Dashboard = () => {
                        mt: '5%',
                        textAlign: 'center',
                     }
-                  : { fontSize: '12.5px', mt: '2%', textAlign: 'center' }
+                  : { fontSize: '12px', mt: '2%', textAlign: 'center' }
             }
          >
             <h1>What Would You Like To Do?</h1>
