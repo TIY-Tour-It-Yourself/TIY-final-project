@@ -45,7 +45,6 @@ const Dashboard = () => {
    }, [location.state]);
 
    const handleNavigation = (title) => {
-      console.log(title);
       if(title === 'Choose Your Tour')
          navigate('/form_consumer', { state: { token: location.state.token } });
       if(title === 'Build Your Tour')

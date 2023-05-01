@@ -16,22 +16,22 @@ import ReviewForm from '../ReviewFormPage/ReviewForm';
 
 const BiyalikMap = (props) => {
    const [isMapLoaded, setIsMapLoaded] = useState(false);
-   const [isClicked, setIsClicked] = useState(false);
+   const [isPoisDataLoaded, setIsPoisDataLoaded] = useState('');
    const [isLocationsLoaded, setIsLocationsLoaded] = useState(false);
+   const [isNamesLoaded, setIsNamesLoaded] = useState(false);
+   const [isURLsLoaded, setIsURLsLoaded] = useState(false);
+   const [poiIdsLoaded, setIsPoiIdsLoaded] = useState(false);
+   const [isClicked, setIsClicked] = useState(false);
    const [poisData, setPoisData] = useState([]);
    const [routePois, setRoutePois] = useState([]);
-   const [isPoisDataLoaded, setIsPoisDataLoaded] = useState('');
    const [poisLatData, setPoisLatData] = useState([]);
    const [poisLngData, setPoisLngData] = useState([]);
    const [poisCoordinatesData, setPoisCoordinatesData] = useState([]);
-   const [isNamesLoaded, setIsNamesLoaded] = useState(false);
-   const [isURLsLoaded, setIsURLsLoaded] = useState(false);
    const [locationName, setLocationName] = useState([]);
    const [ARURLArray, setARURLArray] = useState([]);
    const [poisNames, setPoisNames] = useState([]);
    const [poisIdNums, setPoisIdNums] = useState([]);
    const [showForm, setShowForm] = useState(false);
-   const [poiIdsLoaded, setIsPoiIdsLoaded] = useState(false);
    const [selectedARPoi, setSelectedARPoi] = useState(null);
    const [selectedPoi, setSelectedPoi] = useState(null);
    const [poiIds, setPoiIds] = useState([]);
@@ -61,7 +61,7 @@ const BiyalikMap = (props) => {
    useEffect(() => {
       const searchParams = new URLSearchParams(location.search);
       const routeChosen = searchParams.get('routeId');
-      console.log(routeChosen);
+      // console.log(routeChosen);
       //Get Route by ID
       const fetchRoute = async () => {
          try {
@@ -100,16 +100,16 @@ const BiyalikMap = (props) => {
       fetchRoute();
    }, [location.search]);
 
-   useEffect(() => {
-      if (
-         poisLatData.length > 0 &&
-         poisLngData.length > 0 &&
-         poisCoordinatesData > 0
-      ) {
-         // console.log(poisLatData, poisLngData);
-         // console.log(poisCoordinatesData);
-      }
-   }, [poisLatData, poisLngData, poisCoordinatesData]);
+   // useEffect(() => {
+   //    if (
+   //       poisLatData.length > 0 &&
+   //       poisLngData.length > 0 &&
+   //       poisCoordinatesData > 0
+   //    ) {
+   //       // console.log(poisLatData, poisLngData);
+   //       // console.log(poisCoordinatesData);
+   //    }
+   // }, [poisLatData, poisLngData, poisCoordinatesData]);
 
    //Get POIs from DB
    useEffect(() => {
@@ -135,17 +135,14 @@ const BiyalikMap = (props) => {
    }, [poisNames, setLocationName]);
 
    useEffect(() => {
-      if (locationName !== undefined && routePois !== undefined) {
+      if (locationName !== undefined && routePois !== undefined && ARURLArray !== undefined) {
          initializeMap();
       }
-   }, [locationName, routePois]);
-
-   // let routePois;
+   }, [locationName, routePois, ARURLArray, isLocationsLoaded]);
 
    useEffect(() => {
       //Get AR element
       const filteredPois = poisData.filter((poi) =>
-      // routePois = poisData.filter((poi) =>
       poisIdNums.includes(poi.poiid)
       );
       setRoutePois(filteredPois);
@@ -158,33 +155,30 @@ const BiyalikMap = (props) => {
    }, [poisData, setARURLArray]);
    
 
-   useEffect(() => {
-      if (ARURLArray !== undefined) {
-         initializeMap();
-      }
-   }, [ARURLArray]);
+   // useEffect(() => {
+   //    if (ARURLArray !== undefined) {
+   //       initializeMap();
+   //    }
+   // }, [ARURLArray]);
 
-   useEffect(() => {
-      if (poisData && poisData.length > 0) {
-        const poiIdArray = poisData.map((poi) => poi.poiid);
-        setPoiIds(poiIdArray);
-        setIsPoiIdsLoaded(true);
-      }
-    }, [poisData]);
+   // useEffect(() => {
+   //    if (poisData && poisData.length > 0) {
+   //      const poiIdArray = poisData.map((poi) => poi.poiid);
+   //      setPoiIds(poiIdArray);
+   //      setIsPoiIdsLoaded(true);
+   //    }
+   //  }, [poisData]);
 
-   //  useEffect(() => {
-      // navigate(`http://ar_management.html?lat=${selectedARPoi.coordinates.lat}&lng=${selectedARPoi.coordinates.lng}&desc=${selectedARPoi.description}&img=${selectedARPoi.arid.url}`);
-         // openARElement();
-   //  }, [selectedARPoi]);
+   //InitializeMap() is only called after the locations array has been populated with data
+   // useEffect(() => {
+   //    initializeMap();
+   // }, [isLocationsLoaded]);
 
-   //While data hasn't become an array yet- keep loading
-   if (
-      !Array.isArray(poisNames) &&
-      !Array.isArray(poisIdNums) &&
-      !Array.isArray(poisData)
-   ) {
-      return <div>Loading...</div>;
-   }
+   // useEffect(() => {
+   //    // Load the Google Maps API script when the component mounts
+   //    // loadGoogleMapsScript();
+   //    setIsMapLoaded(true);
+   // }, []);
 
    //Open AR Element from ARManagement component
    const openARElement = (poi) => {
@@ -194,14 +188,14 @@ const BiyalikMap = (props) => {
       window.open(url, '_blank');
    };
 
-   function handleAddReview(poi) {
+   const handleAddReview = (poi) => {
       setShowForm(true);
       setSelectedPoi(poi.poiid);
-    }
+   }
 
-    function handleCancel() {
-      setShowForm(false);
-    }
+   const handleCancel = () => {
+   setShowForm(false);
+   }
 
    const initializeMap = () => {
       navigator.geolocation.getCurrentPosition(function (position) {
@@ -211,12 +205,11 @@ const BiyalikMap = (props) => {
          };
       // Check if locations data is loaded and available
       if (
+         routePois &&
          isLocationsLoaded &&
-         poisCoordinatesData &&
-         // routePois &&
          poisData &&
          locationName &&
-         ARURLArray !== undefined
+         ARURLArray
        ) {
          const map = new window.google.maps.Map(
             document.getElementById('map'),
@@ -360,7 +353,6 @@ const BiyalikMap = (props) => {
         resetButton.style.border = "none";
         resetButton.style.cursor = "pointer";
  
-
         resetButton.addEventListener("click", () => {
           console.log("Reset button clicked");
           directionsRenderer.setDirections(null);
@@ -378,7 +370,7 @@ const BiyalikMap = (props) => {
          const directionsRenderer = new window.google.maps.DirectionsRenderer({
            map: map,
            draggable: true,
-           suppressMarkers: true, // add this line to suppress markers
+           suppressMarkers: true, //Suppress default markers
          });
 
          const origin = userPosition;
@@ -500,21 +492,19 @@ const BiyalikMap = (props) => {
          );
 
          //renderes pois' coordinates
-           console.log(poisCoordinatesData);
-           console.log(poisData);
+         //   console.log(poisCoordinatesData);
+         //   console.log(poisData);
 
                   
          //   <a href="${ARURLArray[index]}" target="_blank">
          //   <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
          //   <br/>
          //   <span style={{textDecoration: 'none', fontWeight: 'bold', fontSize: 'small'}}>Click Me</span>
-         //  </a>   
-                           //   ******************************************
+         //  </a> 
                          
          // Create a Marker object for each poi and add an info window
          routePois.forEach((poi, index) => {
             const marker = new window.google.maps.Marker({
-               // position: { lat: poi.lat, lng: poi.lng },
                position: { lat: poi.coordinates.lat, lng: poi.coordinates.lng },
                map: map,
             });
@@ -524,17 +514,16 @@ const BiyalikMap = (props) => {
                            <div style="margin-left: 10px;"><h4>${locationName[index]}</h4></div>
                            <div style="display: flex; justify-content: center; flex-direction: row; margin-left: 5px;">
                            <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
-                           <button id="open-ar-element" style={{backgroundColor: 'transparent'}}>
+                           <button id="open-ar-element" style="border: none; background-color: transparent;">
                               <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
                               <br/>
-                              <span style={{textDecoration: 'none', fontWeight: 'bold', fontSize: 'small'}}>Click Me</span>
+                              <span style="text-decoration: none; font-size: small;">Click Me</span>
                            </button>
-                           </div>
-                           <div>
-                           <button id="add-review-button" style={{backgroundColor: 'transparent'}}>
+                          
+                           <button id="add-review-button" style="border: none; background-color: transparent;">
                              <img src=${ranking} width='25px' height='25px' alt="Add Review" />
                              <br/>
-                              <span style={{textDecoration: 'none', fontWeight: 'bold', fontSize: 'small'}}>Rank Me</span>
+                              <span style="text-decoration: none; font-size: small;">Rank Me</span>
                            </button>            
                            </div>
                            </div>
@@ -600,16 +589,16 @@ const BiyalikMap = (props) => {
       }
    })};
 
-   //InitializeMap() is only called after the locations array has been populated with data
-   useEffect(() => {
-      initializeMap();
-   }, [isLocationsLoaded]);
+   // //InitializeMap() is only called after the locations array has been populated with data
+   // useEffect(() => {
+   //    initializeMap();
+   // }, [isLocationsLoaded]);
 
-   useEffect(() => {
-      // Load the Google Maps API script when the component mounts
-      // loadGoogleMapsScript();
-      setIsMapLoaded(true);
-   }, []);
+   // useEffect(() => {
+   //    // Load the Google Maps API script when the component mounts
+   //    // loadGoogleMapsScript();
+   //    setIsMapLoaded(true);
+   // }, []);
 
    return (
       <div id='map' style={{ height: '100vh', width: '100%' }}>

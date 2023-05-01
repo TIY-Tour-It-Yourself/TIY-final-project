@@ -10,9 +10,9 @@ import arIcon from './images/ar_icon1.png';
 import ranking from './images/star.png';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ReviewForm from '../ReviewFormPage/ReviewForm';
-import styles from './Map_Producer.module.css';
+import styles from './MapProducer.module.css';
 
-const Map_Producer = () => {
+const MapProducer = () => {
    const [isMapLoaded, setIsMapLoaded] = useState(false);
    const [isLocationsLoaded, setIsLocationsLoaded] = useState(false);
    const [dataArray, setDataArray] = useState([]);
@@ -60,6 +60,8 @@ const Map_Producer = () => {
       fetchData();
    }, [location]);
 
+   console.log(poiDataArray);
+   
    useEffect(() => {
       if (!location.state) {
          navigate('/');
@@ -114,12 +116,23 @@ const Map_Producer = () => {
       }
    }, [poiDataArray]);
 
-   function handleAddReview(index) {
+   console.log(locations);
+
+   //Open AR Element from ARManagement component
+    const openARElement = (poi) => {
+      console.log(`function of AR: ${poi}`);
+      // const url = `/ar.html?lat=${poi.coordinates.lat}&lng=${poi.coordinates.lng}&desc=${poi.description}&img=${poi.arid.url}`;
+      // const url = `/ar_page?lat=${poi.coordinates.lat}&lng=${poi.coordinates.lng}&desc=${poi.description}&img=${poi.arid.url}`;
+      // window.location.href = `/ar.html?lat=${poi.coordinates.lat}&lng=${poi.coordinates.lng}&desc=${poi.description}&img=${poi.arid.url}`;
+      // window.open(url, '_blank');
+   };
+
+   const handleAddReview = (index) => {
       setShowForm(true);
       setSelectedPoi(poiValues[index]);
    }
 
-   function handleCancel() {
+   const handleCancel = () => {
       setShowForm(false);
    }
 
@@ -275,9 +288,7 @@ const Map_Producer = () => {
         resetButton.style.border = "none";
         resetButton.style.cursor = "pointer";
  
-
         resetButton.addEventListener("click", () => {
-          console.log("Reset button clicked");
           directionsRenderer.setDirections(null);
           directionsService.route(request, function (response, status) {
             if (status == window.google.maps.DirectionsStatus.OK) {
@@ -293,7 +304,7 @@ const Map_Producer = () => {
          const directionsRenderer = new window.google.maps.DirectionsRenderer({
             map: map,
             draggable: true,
-            suppressMarkers: true, // add this line to suppress markers
+            suppressMarkers: true, //Suppress default markers
          });
 
          const origin = userPosition;
@@ -445,27 +456,30 @@ const Map_Producer = () => {
                updateDurationDiv();
             }
          );
-
+         // <a href="${ARElements[index]}" target="_blank"></a>
+         //TBD: need to change to poiDataArray
          // Create a Marker object for each location and add an info window
          locations.forEach((location, index) => {
             const marker = new window.google.maps.Marker({
                position: { lat: location.lat, lng: location.lng },
                map: map,
             });
-
             const infoWindow = new window.google.maps.InfoWindow({
                content: `<div style="display: flex; justify-content: center; flex-direction: column;">
                            <div style="margin-left: 10px;"><h4>${names[index]}</h4></div>
                            <div style="display: flex; justify-content: center; flex-direction: row; margin-left: 5px;">
-                           <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
-                                 <a href="${ARElements[index]}" target="_blank">
-                              <img src="${arIcon}" width='40px' height='40px' alt='${names[index]}'>
-                              </a>
-                           </div>
-                           <div>
-                           <button id="add-review-button">
-                              <img src=${ranking} width='25px' height='25px' alt="Add Review" />
-                           </button>            
+                           <div style={{backgroundColor: 'transparent', textAlign: 'center'}}> 
+                              <button id="open-ar-element" style="border: none; background-color: transparent;">
+                                 <img src="${arIcon}" width='40px' height='40px' alt='${names[index]}'>
+                                 <br/>
+                                 <span style="text-decoration: none; font-size: small;">Click Me</span>
+                              </button>
+                             
+                              <button id="add-review-button" style="border: none; background-color: transparent;">
+                                 <img src=${ranking} width='25px' height='25px' alt="Add Review" />
+                                 <br/>
+                                 <span style="text-decoration: none; font-size: small;">Rank Me</span>
+                              </button>            
                            </div>
                            </div>
                         </div>`,
@@ -477,6 +491,12 @@ const Map_Producer = () => {
                  handleAddReview(index);
                });
              });
+
+            //Open AR Element
+            // const addARButton = document.querySelector("#open-ar-element");
+            // addARButton.addEventListener("click", () => {
+            //    openARElement(location);
+            // });
              
             marker.addListener('click', () => {
                infoWindow.open(map, marker); // open the info window when the marker is clicked
@@ -557,4 +577,4 @@ const Map_Producer = () => {
    );
 };
 
-export default Map_Producer;
+export default MapProducer;

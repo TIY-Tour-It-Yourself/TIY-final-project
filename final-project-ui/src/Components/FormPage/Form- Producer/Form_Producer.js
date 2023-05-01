@@ -43,7 +43,6 @@ const Form_Producer = () => {
    const location = useLocation();
 
    useEffect(() => {
-      console.log(location);
       if (!location.state) {
          navigate('/');
       } else {
@@ -103,7 +102,7 @@ const Form_Producer = () => {
             const response = await axios.get(
                'https://tiys.herokuapp.com/api/pois'
             );
-            console.log(response.data);
+            // console.log(response.data);
             setIsLoading(false);
             setCoordinates(response.data);
          } catch (error) {

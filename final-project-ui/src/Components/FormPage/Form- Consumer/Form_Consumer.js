@@ -39,7 +39,6 @@ const Form_Consumer = () => {
    const location = useLocation();
 
    useEffect(() => {
-      console.log(location);
       if (!location.state) {
          navigate('/');
       } else {
@@ -105,7 +104,6 @@ const Form_Consumer = () => {
                });
                // Update the state with the filtered data
                setFilteredData(filtered);
-               console.log(`filtered: ${filtered.length}`);
             } else {
                //If either theme or level is not selected, set filtered data to null
                setFilteredData(null);
@@ -128,7 +126,6 @@ const Form_Consumer = () => {
    //Redirect to chosen route on the map
    const chooseRoute = (routeid) => {
       if (selectedLevelId && themeSelectedId) {
-         console.log(routeid);
          setRouteChosen(routeid);
          setIsFormValid(true);
       } else {
