@@ -28,6 +28,7 @@ const MapProducer = () => {
    const [poiValues, setPoiValues] = useState([]);
    const [poiValuesLoaded, setIsPoiValuesLoaded] = useState(false);
    const [selectedPoi, setSelectedPoi] = useState(null);
+   const [email, setEmail] = useState('');
    const location = useLocation();
    const navigate = useNavigate();
 
@@ -60,7 +61,7 @@ const MapProducer = () => {
       fetchData();
    }, [location]);
 
-   console.log(poiDataArray);
+   // console.log(poiDataArray);
    
    useEffect(() => {
       if (!location.state) {
@@ -75,6 +76,7 @@ const MapProducer = () => {
             })
             .then((response) => {
                // console.log(response.data);
+               setEmail(response.data.email);
             })
             .catch((error) => {
                console.error('Error fetching user: ', error);
@@ -116,7 +118,7 @@ const MapProducer = () => {
       }
    }, [poiDataArray]);
 
-   console.log(locations);
+   // console.log(locations);
 
    //Open AR Element from ARManagement component
     const openARElement = (poi) => {
@@ -223,7 +225,7 @@ const MapProducer = () => {
             // Stop the timer
             clearInterval(timerInterval);
             totalTime = `${hours}:${minutes}:${seconds}`;
-            console.log('Total time:', totalTime);
+            // console.log('Total time:', totalTime);
 
             // Disable the button
             stopNavigationButton.disabled = true;
@@ -393,60 +395,151 @@ const MapProducer = () => {
          //       updateDurationDiv();
          //    }
          // });
+         //Arrow location marker
+         // directionsService.route(request, function (response, status) {
+         //    if (status == window.google.maps.DirectionsStatus.OK) {
+         //      directionsRenderer.setDirections(response);
+         //      updateDurationDiv();
+  
+         //      // Get the next step in the route
+         //      const nextStep = response.routes[0].legs[0].steps[0];
+  
+         //      // Create an arrow marker that points in the direction of the next step
+         //      const arrowMarker = new window.google.maps.Marker({
+         //        position: nextStep.start_location,
+         //        icon: {
+         //          path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+         //          strokeColor: "#1C6758",
+         //          fillColor: "#03C988",
+         //          fillOpacity: 1,
+         //          scale: 4,
+         //        },
+         //        map,
+         //      });
 
+         // Arrow location marker
          directionsService.route(request, function (response, status) {
+            console.log("route created");
             if (status == window.google.maps.DirectionsStatus.OK) {
               directionsRenderer.setDirections(response);
               updateDurationDiv();
   
-              // Get the next step in the route
-              const nextStep = response.routes[0].legs[0].steps[0];
+              // Get the first step in the route
+              let nextStep = response.routes[0].legs[0].steps[0];
   
               // Create an arrow marker that points in the direction of the next step
               const arrowMarker = new window.google.maps.Marker({
-                position: nextStep.start_location,
+                position: userPosition,
                 icon: {
                   path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                  strokeColor: "blue",
+                  strokeColor: "#1C6758",
+                  fillColor: "#03C988",
+                  fillOpacity: 1,
                   scale: 4,
                 },
                 map,
               });
-              // Rotate the symbol to point in the direction of the next step
-              arrowMarker.setIcon(
-                Object.assign({}, arrowMarker.getIcon(), {
-                  rotation: window.google.maps.geometry.spherical.computeHeading(
-                    nextStep.start_location,
-                    nextStep.end_location
-                  ),
-                })
-              );
-  
+
               // Update the arrow marker whenever the user's location changes
-              navigator.geolocation.watchPosition((position) => {
-                const userLocation = {
-                  lat: position.coords.latitude,
-                  lng: position.coords.longitude,
-                };
+              navigator.geolocation.watchPosition(
+               (position) => {
+                 const userLocation = new window.google.maps.LatLng(
+                   position.coords.latitude,
+                   position.coords.longitude
+                 );
+ 
+                 // Check if the user has reached the end of the current step
+                 if (
+                   window.google.maps.geometry.spherical.computeDistanceBetween(
+                     userLocation,
+                     nextStep.end_location
+                   ) < 5
+                 ) {
+                   // Move to the next step in the route
+                   nextStep = response.routes[0].legs[0].steps.find((step) => {
+                     return (
+                       window.google.maps.geometry.spherical.computeDistanceBetween(
+                         userLocation,
+                         step.start_location
+                       ) < 5
+                     );
+                   });
+ 
+                   // Rotate the symbol to point in the direction of the next step
+                   arrowMarker.setIcon(
+                     Object.assign({}, arrowMarker.getIcon(), {
+                       rotation:
+                         window.google.maps.geometry.spherical.computeHeading(
+                           userLocation,
+                          //  nextStep.start_location,
+                           nextStep.end_location
+                         ),
+                     })
+                   );
+                 }
+ 
+                 // Rotate the symbol to point in the direction of the next step
+                 arrowMarker.setIcon(
+                   Object.assign({}, arrowMarker.getIcon(), {
+                     rotation:
+                       window.google.maps.geometry.spherical.computeHeading(
+                         userLocation,
+                         nextStep.end_location
+                       ) - position.coords.heading,
+                   })
+                 );
+                 // Move the arrow marker to the new location and center the map
+                 arrowMarker.setPosition(userLocation);
+                 map.setCenter(userLocation);
+               },
+               (error) => {
+                 console.log(error);
+               },
+               {
+                 enableHighAccuracy: true,
+                 timeout: 100,
+                 maximumAge: 10000,
+               }
+             );
+           } else {
+             console.log("Directions request failed: " + status);
+           }
+         });
+            // Rotate the symbol to point in the direction of the next step
+            //   arrowMarker.setIcon(
+            //     Object.assign({}, arrowMarker.getIcon(), {
+            //       rotation: window.google.maps.geometry.spherical.computeHeading(
+            //         nextStep.start_location,
+            //         nextStep.end_location
+            //       ),
+            //     })
+            //   );
   
-                // Move the user marker to the new location
-                // userMarker.setPosition(userLocation);
+         //      // Update the arrow marker whenever the user's location changes
+         //      navigator.geolocation.watchPosition((position) => {
+         //        const userLocation = {
+         //          lat: position.coords.latitude,
+         //          lng: position.coords.longitude,
+         //        };
   
-                // Rotate the symbol to point in the direction of the next step
-                arrowMarker.setIcon(
-                  Object.assign({}, arrowMarker.getIcon(), {
-                    rotation:
-                      window.google.maps.geometry.spherical.computeHeading(
-                        userLocation,
-                        nextStep.end_location
-                      ),
-                  })
-                );
-              });
-            } else {
-              console.log("Directions request failed: " + status);
-            }
-          });
+         //        // Move the user marker to the new location
+         //        // userMarker.setPosition(userLocation);
+  
+         //        // Rotate the symbol to point in the direction of the next step
+         //        arrowMarker.setIcon(
+         //          Object.assign({}, arrowMarker.getIcon(), {
+         //            rotation:
+         //              window.google.maps.geometry.spherical.computeHeading(
+         //                userLocation,
+         //                nextStep.end_location
+         //              ),
+         //          })
+         //        );
+         //      });
+         //    } else {
+         //      console.log("Directions request failed: " + status);
+         //    }
+         //  });
 
          window.google.maps.event.addListener(
             directionsRenderer,
@@ -545,9 +638,10 @@ const MapProducer = () => {
    //InitializeMap() is only called after the locations array has been populated with data
    useEffect(() => {
       if (window.google) {
+      // if (window.google && email) {
          initializeMap();
       }
-   }, [isLocationsLoaded]);
+   }, [isLocationsLoaded, email]);
 
    return (
       <div id='map' style={{ height: '100vh', width: '100%' }}>

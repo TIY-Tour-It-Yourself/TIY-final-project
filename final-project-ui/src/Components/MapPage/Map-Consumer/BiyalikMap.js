@@ -35,6 +35,12 @@ const BiyalikMap = (props) => {
    const [selectedARPoi, setSelectedARPoi] = useState(null);
    const [selectedPoi, setSelectedPoi] = useState(null);
    const [poiIds, setPoiIds] = useState([]);
+   const [email, setEmail] = useState('');
+   const [grade, setGrade] = useState('');
+   const [experienceLevel, setExperienceLevel] = useState('');
+   const [routeDescription, setRouteDescription] = useState('');
+   const [theme, setTheme] = useState('');
+   const [routeId, setRouteId] = useState(''); 
    const location = useLocation();
    const navigate = useNavigate();
 
@@ -51,6 +57,7 @@ const BiyalikMap = (props) => {
             })
             .then((response) => {
                // console.log(response.data);
+               setEmail(response.data.email);
             })
             .catch((error) => {
                console.error('Error fetching user: ', error);
@@ -61,6 +68,7 @@ const BiyalikMap = (props) => {
    useEffect(() => {
       const searchParams = new URLSearchParams(location.search);
       const routeChosen = searchParams.get('routeId');
+      setRouteId(routeChosen);
       // console.log(routeChosen);
       //Get Route by ID
       const fetchRoute = async () => {
@@ -70,6 +78,10 @@ const BiyalikMap = (props) => {
             );
             //Get route pois
             const pois = response.data[0].pois;
+            setExperienceLevel(response.data[0].experience_level);
+            setRouteDescription(response.data[0].description);
+            setGrade(response.data[0].evaluation_grade);
+            setTheme(response.data[0].theme.theme);
             // console.log(response.data);
             // setPoisData(pois);
             const poisIds = pois.map((poi) => poi.poiid);
@@ -100,17 +112,6 @@ const BiyalikMap = (props) => {
       fetchRoute();
    }, [location.search]);
 
-   // useEffect(() => {
-   //    if (
-   //       poisLatData.length > 0 &&
-   //       poisLngData.length > 0 &&
-   //       poisCoordinatesData > 0
-   //    ) {
-   //       // console.log(poisLatData, poisLngData);
-   //       // console.log(poisCoordinatesData);
-   //    }
-   // }, [poisLatData, poisLngData, poisCoordinatesData]);
-
    //Get POIs from DB
    useEffect(() => {
       const getPoisData = async () => {
@@ -132,27 +133,47 @@ const BiyalikMap = (props) => {
       const names = poisNames.map((poi) => poi.name);
       setLocationName(names);
       setIsNamesLoaded(true);
-   }, [poisNames, setLocationName]);
+   }, [poisNames]);
+
+   useEffect(() => {
+      const fetchData = async () => {
+        try {
+          // Get AR element
+          const filteredPois = poisData.filter((poi) =>
+            poisIdNums.includes(poi.poiid)
+          );
+          setRoutePois(filteredPois);
+  
+          const arURLs = routePois.map((arElement) => arElement.arid.url);
+  
+          setARURLArray(arURLs);
+          setIsURLsLoaded(true);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      fetchData();
+    }, [poisData]);
 
    useEffect(() => {
       if (locationName !== undefined && routePois !== undefined && ARURLArray !== undefined) {
          initializeMap();
       }
-   }, [locationName, routePois, ARURLArray, isLocationsLoaded]);
+   }, [ARURLArray, email, routeDescription, grade, experienceLevel, theme, routeId]);
 
-   useEffect(() => {
-      //Get AR element
-      const filteredPois = poisData.filter((poi) =>
-      poisIdNums.includes(poi.poiid)
-      );
-      setRoutePois(filteredPois);
-      // console.log(routePois);
-      const arURLs = routePois.map((arElement) => arElement.arid.url);
-      // console.log(arURLs);
-      // const ARURLs = poisData.map((item) => item.arid.url);
-      setARURLArray(arURLs);
-      setIsURLsLoaded(true);
-   }, [poisData, setARURLArray]);
+   // useEffect(() => {
+   //    //Get AR element
+   //    const filteredPois = poisData.filter((poi) =>
+   //    poisIdNums.includes(poi.poiid)
+   //    );
+   //    setRoutePois(filteredPois);
+   //    // console.log(routePois);
+   //    const arURLs = routePois.map((arElement) => arElement.arid.url);
+   //    // console.log(arURLs);
+   //    // const ARURLs = poisData.map((item) => item.arid.url);
+   //    setARURLArray(arURLs);
+   //    setIsURLsLoaded(true);
+   // }, [poisData, setARURLArray]);
    
 
    // useEffect(() => {
@@ -198,8 +219,9 @@ const BiyalikMap = (props) => {
    }
 
    const initializeMap = () => {
+      // console.log(email, theme, routeDescription, grade, experienceLevel, routeId);
       navigator.geolocation.getCurrentPosition(function (position) {
-         var userPosition = {
+         let userPosition = {
            lat: position.coords.latitude,
            lng: position.coords.longitude,
          };
@@ -298,6 +320,25 @@ const BiyalikMap = (props) => {
 
             // Show the alert message
             alert('Hope you enjoyed your tour!');
+            // const routeData = {
+            //    description: routeDescription,
+            //    duration: '00:00:00',
+            //    email: email,
+            //    evaluation_grade: grade,
+            //    experience_level: experienceLevel, 
+            //    routeid: routeId,
+            //    theme: theme
+            // }
+
+            axios.post('https://tiys.herokuapp.com/api/tours', {
+               description: routeDescription,
+               duration: '00:00:00',
+               email: email,
+               evaluation_grade: grade,
+               experience_level: experienceLevel, 
+               routeid: routeId,
+               theme: theme
+            })
          });
 
          let savedRoute;
@@ -355,7 +396,6 @@ const BiyalikMap = (props) => {
  
         resetButton.addEventListener("click", () => {
           console.log("Reset button clicked");
-          directionsRenderer.setDirections(null);
           directionsService.route(request, function (response, status) {
             if (status == window.google.maps.DirectionsStatus.OK) {
               directionsRenderer.setDirections(response);
@@ -475,13 +515,113 @@ const BiyalikMap = (props) => {
            durationDiv.appendChild(resetButton);
          }
    
+         // directionsService.route(request, function (response, status) {
+         //   if (status == window.google.maps.DirectionsStatus.OK) {
+         //     directionsRenderer.setDirections(response);
+         //     updateDurationDiv();
+         //   }
+         // });
+         
+         // Arrow location marker
          directionsService.route(request, function (response, status) {
-           if (status == window.google.maps.DirectionsStatus.OK) {
-             directionsRenderer.setDirections(response);
-             updateDurationDiv();
-           }
-         });
-   
+            console.log("route created");
+            if (status == window.google.maps.DirectionsStatus.OK) {
+              directionsRenderer.setDirections(response);
+              updateDurationDiv();
+  
+              // Get the first step in the route
+              let nextStep = response.routes[0].legs[0].steps[0];
+  
+              // Create an arrow marker that points in the direction of the next step
+              const arrowMarker = new window.google.maps.Marker({
+                position: userPosition,
+                icon: {
+                  path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                  strokeColor: "#1C6758",
+                  fillColor: "#03C988",
+                  fillOpacity: 1,
+                  scale: 4,
+                },
+                map,
+              });
+  
+            //   // Rotate the symbol to point in the direction of the next step
+            //   arrowMarker.setIcon(
+            //     Object.assign({}, arrowMarker.getIcon(), {
+            //       rotation: window.google.maps.geometry.spherical.computeHeading(
+            //         nextStep.start_location,
+            //         nextStep.end_location
+            //       ),
+            //     })
+            //   );
+  
+              // Update the arrow marker whenever the user's location changes
+              navigator.geolocation.watchPosition(
+                (position) => {
+                  const userLocation = new window.google.maps.LatLng(
+                    position.coords.latitude,
+                    position.coords.longitude
+                  );
+  
+                  // Check if the user has reached the end of the current step
+                  if (
+                    window.google.maps.geometry.spherical.computeDistanceBetween(
+                      userLocation,
+                      nextStep.end_location
+                    ) < 5
+                  ) {
+                    // Move to the next step in the route
+                    nextStep = response.routes[0].legs[0].steps.find((step) => {
+                      return (
+                        window.google.maps.geometry.spherical.computeDistanceBetween(
+                          userLocation,
+                          step.start_location
+                        ) < 5
+                      );
+                    });
+  
+                    // Rotate the symbol to point in the direction of the next step
+                    arrowMarker.setIcon(
+                      Object.assign({}, arrowMarker.getIcon(), {
+                        rotation:
+                          window.google.maps.geometry.spherical.computeHeading(
+                            userLocation,
+                           //  nextStep.start_location,
+                            nextStep.end_location
+                          ),
+                      })
+                    );
+                  }
+  
+                  // Rotate the symbol to point in the direction of the next step
+                  arrowMarker.setIcon(
+                    Object.assign({}, arrowMarker.getIcon(), {
+                      rotation:
+                        window.google.maps.geometry.spherical.computeHeading(
+                          userLocation,
+                          nextStep.end_location
+                        ) - position.coords.heading,
+                    })
+                  );
+                  // Move the arrow marker to the new location and center the map
+                  arrowMarker.setPosition(userLocation);
+                  map.setCenter(userLocation);
+                },
+                (error) => {
+                  console.log(error);
+                },
+                {
+                  enableHighAccuracy: true,
+                  timeout: 100,
+                  maximumAge: 10000,
+                }
+              );
+            } else {
+              console.log("Directions request failed: " + status);
+            }
+          });
+          /* END OF ARROW LOCATION MARKER */
+
          window.google.maps.event.addListener(
            directionsRenderer,
            "directions_changed",
@@ -490,7 +630,7 @@ const BiyalikMap = (props) => {
              updateDurationDiv();
            }
          );
-
+         
          //renderes pois' coordinates
          //   console.log(poisCoordinatesData);
          //   console.log(poisData);
@@ -549,43 +689,43 @@ const BiyalikMap = (props) => {
             });
          });
 
-         let userLocationMarker;
+         // let userLocationMarker;
 
-         if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(
-               (position) => {
-                  if (userLocationMarker) {
-                     // If the userLocationMarker already exists, update its position
-                     userLocationMarker.setPosition({
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                     });
-                  } else {
-                     // If the userLocationMarker doesn't exist yet, create it
-                     userLocationMarker = new window.google.maps.Marker({
-                        position: {
-                           lat: position.coords.latitude,
-                           lng: position.coords.longitude,
-                        },
-                        map,
-                        icon: {
-                           path: window.google.maps.SymbolPath.CIRCLE,
-                           fillColor: '#0088FF',
-                           fillOpacity: 0.6,
-                           strokeColor: '#FFFFFF',
-                           strokeWeight: 2,
-                           scale: 10,
-                        },
-                     });
-                  }
-                  map.setCenter(userLocationMarker.getPosition());
-               },
-               (error) => {
-                  console.log(error);
-               },
-               { enableHighAccuracy: true }
-            );
-         }
+         // if (navigator.geolocation) {
+         //    navigator.geolocation.watchPosition(
+         //       (position) => {
+         //          if (userLocationMarker) {
+         //             // If the userLocationMarker already exists, update its position
+         //             userLocationMarker.setPosition({
+         //                lat: position.coords.latitude,
+         //                lng: position.coords.longitude,
+         //             });
+         //          } else {
+         //             // If the userLocationMarker doesn't exist yet, create it
+         //             userLocationMarker = new window.google.maps.Marker({
+         //                position: {
+         //                   lat: position.coords.latitude,
+         //                   lng: position.coords.longitude,
+         //                },
+         //                map,
+         //                icon: {
+         //                   path: window.google.maps.SymbolPath.CIRCLE,
+         //                   fillColor: '#0088FF',
+         //                   fillOpacity: 0.6,
+         //                   strokeColor: '#FFFFFF',
+         //                   strokeWeight: 2,
+         //                   scale: 10,
+         //                },
+         //             });
+         //          }
+         //          map.setCenter(userLocationMarker.getPosition());
+         //       },
+         //       (error) => {
+         //          console.log(error);
+         //       },
+         //       { enableHighAccuracy: true }
+         //    );
+         // }
       }
    })};
 

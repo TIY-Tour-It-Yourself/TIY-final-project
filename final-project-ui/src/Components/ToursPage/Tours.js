@@ -32,13 +32,16 @@ const Tours = () => {
 
    const [activeImage, setActiveImage] = useState(null);
    const [activeLink, setActiveLink] = useState(null);
+   const [email, setEmail] = useState('');
    const [fullName, setFullName] = useState('');
    const [firstName, setFirstName] = useState('');
    const [loading, setLoading] = useState(true);
    const [open, setOpen] = useState(false);
    const [openTours, setOpenTours] = useState(false);
-  //const [routes, setRoutes] = useState([]); 
-  //const [tours, setTours] = useState([]); 
+   // const [routes, setRoutes] = useState([]); 
+   const [newRoutes, setNewRoutes] = useState([]); 
+   const [newTours, setNewTours] = useState([]); 
+   // const [tours, setTours] = useState([]); 
 
    const handleOpenModalRoutes = () => setOpen(true);
    const handleOpenModalTours = () => setOpenTours(true);
@@ -49,6 +52,7 @@ const Tours = () => {
       if (!location.state) {
          navigate('/');
       } else {
+         if(!fullName && !email) {
          axios
             .get(`https://tiys.herokuapp.com/api/auth`, {
                headers: {
@@ -57,6 +61,8 @@ const Tours = () => {
                },
             })
             .then((response) => {
+               // console.log(response.data);
+               setEmail(response.data.email);
                setFullName(response.data.fname);
                setActiveImage(3);
                setActiveLink(2);
@@ -67,29 +73,48 @@ const Tours = () => {
                setLoading(false);
             });
       }
+   }
    }, [location.state]);
-  
-   //Get User's Routes Data
+
+   //Get User's Tours Data
    useEffect(() => {
-      const fetchData = async () => {
-         try{
-            const response = await axios.get('https://tiys.herokuapp.com/api/routes');  
-            //console.log(response.data);
-            // setRoutes(response.data);
-         } catch (error) {
-            console.log(error);
-         }  
+      if (email) {
+         const fetchData = async () => {
+            try {
+               const response = await axios.get(`https://tiys.herokuapp.com/api/tours/${email}`);  
+               console.log(response.data);
+               setNewTours(response.data);
+            } catch (error) {
+               console.log(error);
+            }  
       }
-   },[]);
+      fetchData();
+   }
+   },[email]);
+
+   //Get User's Routes Data
+   // useEffect(() => {
+   //    const fetchData = async () => {
+   //       try{
+   //          const response = await axios.get(`https://tiys.herokuapp.com/api/routes/${email}`);  
+   //          console.log(response.data);
+   //          // setRoutes(response.data);
+   //       } catch (error) {
+   //          console.log(error);
+   //       }  
+   //    }
+   //    fetchData();
+   // },[]);
       
      
    //Get User's first name
    useEffect(() => {
-    if(fullName) {
+      if(fullName) {
         const fname = fullName.substring(0, fullName.indexOf(' ')); 
         setFirstName(fname);
     }
    },[fullName]);
+
 
    //Modal Style
    const style = {
@@ -130,7 +155,7 @@ const Tours = () => {
                        mt: '6%',
                     }
                   : { fontSize: '13.5px', mt: 2,  textAlign: 'center' }
-            }
+            } 
          >
             <h1>{firstName}'s Tours</h1>
          </Typography>
@@ -210,7 +235,7 @@ const Tours = () => {
             <h2>Tours I Took</h2>
          </Typography>
          {!isSmallScreen ? (<div className={styles.container}>
-            {tours.map(tour => 
+            {newTours.map(tour => 
             <div key={tour.routeid} className={styles.record}>
                <div>{tour.description}</div>
                <div>{tour.theme}</div>

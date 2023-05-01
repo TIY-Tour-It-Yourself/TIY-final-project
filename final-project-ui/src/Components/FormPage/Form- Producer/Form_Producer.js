@@ -433,12 +433,12 @@ const Form_Producer = () => {
                component='div'
                sx={
                   isSmallScreen
-                     ? { fontSize: '1rem', mb: 1 }
+                     ? { fontSize: '1rem', mb: 1, maxWidth: '90%', textAlign: 'center' }
                      : { fontSize: '1.25rem' }
                }
             >
                <span>
-                  <b> Choose the POIs you want to visit: </b>
+                  <b> Choose the POIs you want to visit<br/> (at least 3): </b>
                </span>
             </Typography>
          </div>
