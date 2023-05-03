@@ -7,7 +7,7 @@ import {
    DirectionsRenderer,
 } from '@react-google-maps/api';
 import axios from 'axios';
-import arIcon from './images/ar_icon1.png';
+import arIcon from './images/ar_icon.png';
 import ranking from './images/star.png';
 import styles from './BiyalikMap.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -157,6 +157,7 @@ const BiyalikMap = (props) => {
 
    useEffect(() => {
       if (locationName !== undefined && routePois !== undefined && ARURLArray !== undefined) {
+         console.log("init");
          initializeMap();
       }
    }, [ARURLArray, email, routeDescription, grade, experienceLevel, theme, routeId]);
@@ -631,16 +632,14 @@ const BiyalikMap = (props) => {
            }
          );
          
-         //renderes pois' coordinates
-         //   console.log(poisCoordinatesData);
-         //   console.log(poisData);
-
+        
+               // <button id="open-ar-element" style="border: none; background-color: transparent;">
+               //    <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
+               //    <br/>
+               //    <span style="text-decoration: none; font-size: small;">Click Me</span>
+               // </button>
                   
-         //   <a href="${ARURLArray[index]}" target="_blank">
-         //   <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
-         //   <br/>
-         //   <span style={{textDecoration: 'none', fontWeight: 'bold', fontSize: 'small'}}>Click Me</span>
-         //  </a> 
+      
                          
          // Create a Marker object for each poi and add an info window
          routePois.forEach((poi, index) => {
@@ -650,23 +649,28 @@ const BiyalikMap = (props) => {
             });
            
             const infoWindow = new window.google.maps.InfoWindow({
-               content: `<div style="display: flex; justify-content: center; flex-direction: column;">
-                           <div style="margin-left: 10px;"><h4>${locationName[index]}</h4></div>
-                           <div style="display: flex; justify-content: center; flex-direction: row; margin-left: 5px;">
-                           <div style={{backgroundColor: 'transparent', textAlign: 'center'}}>
-                           <button id="open-ar-element" style="border: none; background-color: transparent;">
-                              <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
-                              <br/>
-                              <span style="text-decoration: none; font-size: small;">Click Me</span>
-                           </button>
-                          
-                           <button id="add-review-button" style="border: none; background-color: transparent;">
-                             <img src=${ranking} width='25px' height='25px' alt="Add Review" />
-                             <br/>
-                              <span style="text-decoration: none; font-size: small;">Rank Me</span>
-                           </button>            
+               content: `<div style="display: flex; justify-content: center; flex-direction: column; margin-left: 22px;">
+                           <div style="margin: 0 auto;"><h4>${locationName[index]}</h4></div>
+                           <div style="display: flex; margin-left: 15px; justify-content: center;">
+                           <div style="display: flex; flex-direction: column; align-items: center; margin-right: 10px;">
+                             <a href="${ARURLArray[index]}" target="_blank" style="text-decoration: none;">
+                               <div>
+                                 <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
+                               </div>
+                               <div style="margin-top: 7px;">
+                                 <span style="text-decoration: none; font-size: small;">Click Me</span>
+                               </div>
+                             </a> 
                            </div>
+                           <div style="display: flex; flex-direction: column; align-items: center;">
+                             <button id="add-review-button" style="border: none; background-color: transparent;">
+                               <img src=${ranking} width='40px' height='40px' alt="Add Review" />
+                               <div style="margin-top: 5px;">
+                                 <span style="text-decoration: none; font-size: small;">Rank Me</span>
+                               </div>
+                             </button>  
                            </div>
+                         </div>
                         </div>`,
             });
 
@@ -678,10 +682,10 @@ const BiyalikMap = (props) => {
                });
 
                //Open AR Element
-               const addARButton = document.querySelector("#open-ar-element");
-               addARButton.addEventListener("click", () => {
-                  openARElement(poi);
-                });
+               // const addARButton = document.querySelector("#open-ar-element");
+               // addARButton.addEventListener("click", () => {
+               //    openARElement(poi);
+               //  });
              });
 
             marker.addListener('click', () => {
