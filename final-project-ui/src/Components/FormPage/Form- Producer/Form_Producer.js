@@ -23,8 +23,10 @@ const arImgs = [
 
 const Form_Producer = () => {
    const [formTheme, setFormTheme] = useState('');
+   const [themeName, setSelectedThemeName] = useState('');
    const [themeSelectedId, setThemeSelectedId] = useState('');
    const [selectedLevelId, setSelectedLevelId] = useState('');
+   const [email, setEmail] = useState('');
    const [isFormValid, setIsFormValid] = useState(false);
    const [routeChosen, setRouteChosen] = useState('');
    const [routes, setRoutes] = useState('');
@@ -55,6 +57,7 @@ const Form_Producer = () => {
             })
             .then((response) => {
                // console.log(response.data);
+               setEmail(response.data.email);
             })
             .catch((error) => {
                console.error('Error fetching user: ', error);
@@ -226,13 +229,28 @@ const Form_Producer = () => {
       return accumulator;
    }, {});
 
-   const handleNavigate = () => {
-      navigate(
-         `/map_producer?${Object.entries(poiidMap)
-            .map(([key, value]) => `${key}=${value}`)
-            .join('&')}`,
-         { state: { token: location.state.token } }
-      );
+   const handleNavigate = async () => {
+      const getNewRouteIdRes = await axios.get('https://tiys.herokuapp.com/api/routes/getnewid/');
+      const userRouteData = await axios.post('https://tiys.herokuapp.com/api/routes', {
+         routeid: getNewRouteIdRes.data,
+         description: 'Private Route',
+         pois: poiid,
+         evaluation_grade: '0',
+         experience_level: selectedLevelId,
+         theme: themeName,
+         imgurl: '',
+         access: 'private',
+         email: email
+      });
+      // navigate(
+      //    `/map_producer?${Object.entries(poiidMap)
+      //       .map(([key, value]) => `${key}=${value}`)
+      //       .join('&')}`,
+      //    { state: { token: location.state.token } }
+      // );
+      navigate(`/map_builder?routeId=${getNewRouteIdRes.data}`, {
+         state: { token: location.state.token },
+      });
    };
 
    //POIs Grades array
@@ -283,7 +301,7 @@ const Form_Producer = () => {
                      objArray={formTheme.map((theme) => (
                         <Button
                            key={theme.themeid}
-                           onClick={() => setSelectedTheme(theme.themeid)}
+                           onClick={() => {setSelectedTheme(theme.themeid); setSelectedThemeName(theme.theme)}}
                            value={theme}
                            variant={
                               themeSelectedId === theme.themeid

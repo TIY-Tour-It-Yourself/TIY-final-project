@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import NavBar from "../../Additionals/NavBar/NavBar";
-import BiyalikMap from "../../MapPage/Map-Consumer/BiyalikMap";
+import MapBuilder from "../../MapPage/Map-Consumer/MapBuilder";
 import LoadingBar from "../../Additionals/LoadingBar/LoadingBar";
 import MapModal from '../../MapModal/MapModal';
 
@@ -19,7 +19,7 @@ const InteractiveMap_Consumer = () => {
     <>
       <MapModal/>
       <NavBar />
-      {loading ? <LoadingBar /> : <BiyalikMap />}
+      {loading ? <LoadingBar /> : <MapBuilder />}
     </>
   );
 };

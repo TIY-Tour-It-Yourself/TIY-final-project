@@ -93,18 +93,20 @@ const Tours = () => {
    },[email]);
 
    //Get User's Routes Data
-   // useEffect(() => {
-   //    const fetchData = async () => {
-   //       try{
-   //          const response = await axios.get(`https://tiys.herokuapp.com/api/routes/${email}`);  
-   //          console.log(response.data);
-   //          // setRoutes(response.data);
-   //       } catch (error) {
-   //          console.log(error);
-   //       }  
-   //    }
-   //    fetchData();
-   // },[]);
+   useEffect(() => {
+      if (email) {
+            const fetchData = async () => {
+               try {
+                  const response = await axios.get(`https://tiys.herokuapp.com/api/routes/users/${email}`);  
+                  console.log(response.data);
+                  setNewRoutes(response.data);
+               } catch (error) {
+                  console.log(error);
+               }  
+         }
+         fetchData();
+      }
+   },[email]);
       
      
    //Get User's first name
@@ -114,7 +116,6 @@ const Tours = () => {
         setFirstName(fname);
     }
    },[fullName]);
-
 
    //Modal Style
    const style = {
@@ -176,13 +177,12 @@ const Tours = () => {
          </Typography>
          {!isSmallScreen ? (
          <div className={styles.container}>
-            {routes.map(route => 
+            {newRoutes.map(route => 
             <div key={route.routeid} className={styles.record}>
                <div>{route.description}</div>
-               <div>{route.theme}</div>
-               <div>POIs: {route.pois}</div>
+               <div>{route.theme.theme}</div>
+               <div>POIs: {route.pois.length}</div>
                <div>AR level: {route.experience_level}</div>
-               <div>{route.duration}</div> 
                <div>Rank: {route.evaluation_grade}</div>
                <div className={styles.align_right}>
                   <Button sx={{ fontSize: '10px', borderRadius: '20px' }} variant='outlined' onClick={() => openRoute(route.routeid)}>Open Route</Button>
@@ -199,13 +199,12 @@ const Tours = () => {
                >
                <Box sx={style}>
                   <div className={styles.container}>
-                  {routes.map(route => 
+                  {newRoutes.map(route => 
                      <div key={route.routeid} className={styles.record_mobile}>
                         <div><b>{route.description}</b></div>
-                        <div><b>Theme: </b>{route.theme}</div>
-                        <div><b>POIs: </b>{route.pois}</div>
+                        <div><b>Theme: </b>{route.theme.theme}</div>
+                        <div><b>POIs: </b>{route.pois.length}</div>
                         <div><b>AR level: </b>{route.experience_level}</div>
-                        <div><b>Duration: </b>{route.duration}</div> 
                         <div><b>Rank: </b>{route.evaluation_grade}</div>
                         <div className={styles.align_right}>
                            <Button sx={{ fontSize: '10px', borderRadius: '20px' }} variant='outlined' onClick={() => openRoute(route.routeid)}>Open Route</Button>
@@ -257,7 +256,7 @@ const Tours = () => {
            >
            <Box sx={style}>
               <div className={styles.container}>
-              {tours.map(tour => 
+              {newTours.map(tour => 
                  <div key={tour.routeid} className={styles.record_mobile}>
                     <div><b>{tour.description}</b></div>
                     <div><b>Theme: </b>{tour.theme}</div>

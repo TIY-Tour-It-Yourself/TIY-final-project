@@ -60,7 +60,7 @@ const Form_Consumer = () => {
 
    useEffect(() => {
       if (routeChosen) {
-         navigate(`/biyalik_map?routeId=${routeChosen}`, {
+         navigate(`/map_builder?routeId=${routeChosen}`, {
             state: { token: location.state.token },
          });
       }
@@ -88,7 +88,7 @@ const Form_Consumer = () => {
          try {
             // Make an API request to fetch the routes data
             const response = await axios.get(
-               'https://tiys.herokuapp.com/api/routes'
+               'https://tiys.herokuapp.com/api/routes/users/admin@admin.com'
             );
             setIsLoading(false);
             setRoutes(response.data);

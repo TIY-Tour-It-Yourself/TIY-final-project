@@ -11,10 +11,10 @@ import FormConsumerPage from './Pages/FormConsumerPage';
 import NotFoundPage from './Pages/NotFoundPage';
 import MapProducerPage from './Pages/MapProducerPage';
 import FormProducerPage from './Pages/FormProducerPage';
-import BiyalikMapPage from "./Pages/BiyalikMapPage";
 import AccountPage from './Pages/AccountPage';
 import ToursPage from './Pages/ToursPage';
 import ARManagementPage from './Pages/ARManagementPage';
+import MapBuilderPage from './Pages/MapBuilderPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -32,13 +32,13 @@ root.render(
                <Route path='/form_consumer' element={<FormConsumerPage />} />
                <Route path='/form_producer' element={<FormProducerPage />} />
                <Route path='/map_producer' element={<MapProducerPage />} />
-               <Route path='/biyalik_map' element={<BiyalikMapPage />} />
+               <Route path='/map_builder' element={<MapBuilderPage />} />
                <Route path='/ar_page' element={<ARManagementPage />} />
                <Route path='/user_settings' element={<AccountPage/>} />
                <Route path='/tours_history' element={<ToursPage />} />
                <Route path="*" element={<NotFoundPage />} />
             </Routes>
          </BrowserRouter>
-         </React.StrictMode>
+      </React.StrictMode>
    </GoogleOAuthProvider>
 );
