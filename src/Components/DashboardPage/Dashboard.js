@@ -1,38 +1,30 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Dashboard.module.css";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import NavBar from "../Additionals/NavBar/NavBar";
-import Box from "@mui/material/Box";
-import Link from "@mui/material/Link";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import Container from "@mui/material/Container";
-import bursa from "./card_images/bursa.jpg";
-import map from "../Additionals/Assets/map_cropped.jpg";
+import consumer from "./card_images/consumer.jpg";
+import producer from "./card_images/producer.jpg";
 import { useTheme } from "@mui/material/styles";
 import axios from "axios";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const cards = [
-  { id: 1, title: "Choose Your Tour", src: bursa, url: "/form_consumer" },
-  { id: 2, title: "Build Your Tour", src: map, url: "/form_producer" },
+  { id: 1, title: "Choose Your Tour", src: consumer, url: "/form_consumer" },
+  { id: 2, title: "Build Your Tour", src: producer, url: "/form_producer" },
   // { id: 3, title: 'My Tours', src: '', url: '/tours_history' },
 ];
 
 const Dashboard = () => {
-  const [token, setToken] = useState("");
   const [activeImage, setActiveImage] = useState(null);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
   const location = useLocation();
 
+  console.log(location.state.token);
   useEffect(() => {
-    console.log(location);
     if (!location.state) {
       navigate("/");
     } else {
@@ -77,7 +69,7 @@ const Dashboard = () => {
                 mt: "5%",
                 textAlign: "center",
               }
-            : { fontSize: "50px", textAlign: "center" }
+            : { fontSize: "12px", mt: "2%", textAlign: "center" }
         }
       >
         <h1>What Would You Like To Do?</h1>
@@ -87,46 +79,23 @@ const Dashboard = () => {
           marginTop: "80px",
           display: "flex",
           flexWrap: "wrap",
-          mt: 1,
+          mt: 0,
           mb: 8,
           justifyContent: "space-evenly",
         }}
       >
         {cards.map((card) => (
-          <Card
-            className={styles.card}
-            key={card.id}
-            sx={{ width: 220, borderRadius: "25px" }}
-          >
-            <CardMedia
-              component="img"
-              sx={{ height: 100 }}
-              image={card.src}
-              alt={card.title}
-            />
-            <CardContent>
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <Typography variant="h6" component="div">
-                  {card.title}
-                </Typography>
-              </div>
-            </CardContent>
-            <CardActions>
-              <Box sx={{ m: "0 auto" }}>
-                <Button
-                  onClick={() => handleNavigation(card.title)}
-                  size="small"
-                  style={
-                    isSmallScreen
-                      ? { fontWeight: "bold" }
-                      : { fontWeight: "bold", fontSize: "1rem" }
-                  }
-                >
-                  Enter
-                </Button>
-              </Box>
-            </CardActions>
-          </Card>
+          <div key={card.id}>
+            <p className={styles.box_title}>{card.title}</p>
+            <div className={styles.card}>
+              <a onClick={() => handleNavigation(card.title)}>
+                <img
+                  style={{ cursor: "pointer", borderRadius: "25px" }}
+                  src={card.src}
+                />
+              </a>
+            </div>
+          </div>
         ))}
       </Container>
     </>

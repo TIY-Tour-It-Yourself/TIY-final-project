@@ -3,8 +3,7 @@ import axios from "axios";
 import "./Event.css";
 
 export function Event() {
-  const [events, setEvents] = useState([]);
-  const [forceUpdate, setForceUpdate] = useState(false);
+  const [events, setEvents] = useState([]); // State to hold the events
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -31,7 +30,13 @@ export function Event() {
       ) : (
         events.map((event, index) => (
           <div key={index}>
-            <p> {event} </p>{" "}
+            <p>
+              {event.title}
+              {event.location}
+              {event.address}
+            </p>
+            {/* Uncomment the line below if "date" property is included in the event dictionary */}
+            {/* <p>Date: {event.date}</p> */}
           </div>
         ))
       )}{" "}

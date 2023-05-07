@@ -1,0 +1,23 @@
+.divider {
+  /* border: 2px solid blue; */
+}
+
+.divider_span {
+  color: "#B3B6B7";
+  /* border: 2px solid blue; */
+}
+
+.divider_span > hr {
+  margin-top: 25px;
+}
+
+.divider_hr {
+  width: 80px;
+  display: inline-block;
+}
+
+@media (max-width: 600px) {
+  .divider_hr {
+    width: 50px;
+  }
+}

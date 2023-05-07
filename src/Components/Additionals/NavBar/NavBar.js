@@ -10,17 +10,24 @@ import history from "./nav_imgs/history_origin.png";
 import history_clicked from "./nav_imgs/history_clicked.png";
 import calendar from "./nav_imgs/schedule_origin.png";
 import calendar_clicked from "./nav_imgs/schedule_clicked.png";
+import logout_rounded from "./nav_imgs/logout_rounded_corners.png";
+import logout_rect from "./nav_imgs/logout_rectangle.png";
+import logout_straight from "./nav_imgs/logout_straight.png";
 import logo from "../Assets/logo_nav_no_sub.png";
 import AppBar from "@mui/material/AppBar";
 import Tooltip from "@mui/material/Tooltip";
 import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Button from "@mui/material/Button";
 import Toolbar from "@mui/material/Toolbar";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
-import Button from "@mui/material/Button";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import Settings from "@mui/icons-material/Settings";
+import Divider from "@mui/material/Divider";
+import Logout from "@mui/icons-material/Logout";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
-import user from "./user.png";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -56,9 +63,12 @@ const NavBar = ({ activeImage, activeLink }) => {
     },
   ]);
 
+  const [avatar, setAvatar] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
   const [updatedToken, setUpdatedToken] = useState("");
   const [anchorElNav, setAnchorElNav] = useState("");
-  const [anchorElUser, setAnchorElUser] = useState("");
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -67,7 +77,6 @@ const NavBar = ({ activeImage, activeLink }) => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
-    console.log(location);
     if (!location.state) {
       navigate("/");
     } else {
@@ -80,6 +89,7 @@ const NavBar = ({ activeImage, activeLink }) => {
         })
         .then((response) => {
           // console.log(response.data);
+          setAvatar(response.data.avatar);
         })
         .catch((error) => {
           console.error("Error fetching user: ", error);
@@ -97,27 +107,25 @@ const NavBar = ({ activeImage, activeLink }) => {
     navigate(imageUrl, { state: { token: location.state.token } });
   };
 
+  //User menu interaction
   const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseUserMenu = () => {
+    setAnchorEl(null);
   };
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
+  const openSettingsPage = (event) => {
+    navigate("/user_settings", { state: { token: location.state.token } });
+  };
+  const handleLogout = (event) => {
+    navigate("/");
   };
 
-  const handleButtonClick = (title) => {
-    console.log(title);
-    if (links.filter((link) => link.url === "user_settings")) {
-      navigate("/user_settings", { state: { token: location.state.token } });
-    } else if (links.filter((link) => link.url === "tours_history")) {
-      navigate("/tours_history", { state: { token: location.state.token } });
-    } else if (links.filter((link) => link.url === "events")) {
-      navigate("/events", { state: { token: location.state.token } });
+  const handleButtonClick = (newLink) => {
+    if (links.filter((link) => link.title === newLink.title)) {
+      navigate(newLink.url, { state: { token: location.state.token } });
     }
-  };
-
-  const handleTokenUpdate = (newToken) => {
-    setUpdatedToken(newToken);
   };
 
   return (
@@ -164,7 +172,7 @@ const NavBar = ({ activeImage, activeLink }) => {
               <Button
                 disableRipple
                 key={link.id}
-                onClick={() => handleButtonClick(link.title)}
+                onClick={() => handleButtonClick(link)}
                 sx={{
                   my: 2,
                   mx: 1,
@@ -199,7 +207,7 @@ const NavBar = ({ activeImage, activeLink }) => {
               {images.map((img) => (
                 <Button
                   component="div"
-                  sx={{ marginLeft: "15px" }}
+                  sx={{ marginLeft: "17px" }}
                   key={img.id}
                 >
                   <img
@@ -216,16 +224,16 @@ const NavBar = ({ activeImage, activeLink }) => {
 
           <Box sx={{ flexGrow: 0 }}>
             {!isSmallScreen && (
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="user" src={user} />
+              <Tooltip title="Open Menu">
+                <IconButton onClick={handleOpenUserMenu}>
+                  <Avatar alt="user" src={avatar} />
                 </IconButton>
               </Tooltip>
             )}
             <Menu
               sx={{ mt: "45px" }}
               id="menu-appbar"
-              anchorEl={anchorElUser}
+              anchorEl={anchorEl}
               anchorOrigin={{
                 vertical: "top",
                 horizontal: "right",
@@ -235,20 +243,31 @@ const NavBar = ({ activeImage, activeLink }) => {
                 vertical: "top",
                 horizontal: "right",
               }}
-              open={Boolean(anchorElUser)}
-              //   onClose={handleCloseUserMenu}
+              open={open}
+              onClick={handleCloseUserMenu}
+              onClose={handleCloseUserMenu}
             >
-              {/* {settings.map((setting) => (
-                <MenuItem key={setting} onClick={}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))} */}
+              {/* <MenuItem onClick={handleCloseUserMenu}>
+                     <Avatar /> My account
+                  </MenuItem>
+                  <Divider /> */}
+              <MenuItem onClick={openSettingsPage}>
+                <ListItemIcon>
+                  <Settings fontSize="small" />
+                </ListItemIcon>
+                Settings
+              </MenuItem>
+              <MenuItem onClick={handleLogout}>
+                <ListItemIcon>
+                  <Logout fontSize="small" />
+                </ListItemIcon>
+                Logout
+              </MenuItem>
             </Menu>
           </Box>
         </Toolbar>
       </Container>
     </AppBar>
-    // )}
   );
 };
 

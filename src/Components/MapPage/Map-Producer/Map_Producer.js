@@ -8,7 +8,7 @@ import {
 import axios from "axios";
 import arIcon from "./images/ar_icon1.png";
 import ranking from "./images/star.png";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 // import { Modal } from "react-bootstrap";
 import "./Map_Producer.css";
 import ReviewForm from "../../EvaluationPage/ReviewForm";
@@ -28,7 +28,6 @@ const Map_Producer = (props) => {
   const [isNamesLoaded, setIsNamesLoaded] = useState(false);
   const [ARElements, setARElements] = useState([]);
   const [isARLoaded, setIsARLoaded] = useState(false);
-  const location = useLocation();
   const [arId, setArId] = useState(null);
   const [open, setOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -38,6 +37,9 @@ const Map_Producer = (props) => {
   const [poiValues, setPoiValues] = useState([]);
   const [poiValuesLoaded, setIsPoiValuesLoaded] = useState(false);
   const [selectedPoi, setSelectedPoi] = useState(null);
+  const [email, setEmail] = useState("");
+  const location = useLocation();
+  const navigate = useNavigate();
 
   function handleAddReview(index) {
     setShowForm(true);
@@ -51,6 +53,28 @@ const Map_Producer = (props) => {
   function handleGoBack() {
     window.history.back();
   }
+
+  useEffect(() => {
+    if (!location.state) {
+      navigate("/");
+    } else {
+      axios
+        .get(`https://tiys.herokuapp.com/api/auth`, {
+          headers: {
+            "x-auth-token": location.state.token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((response) => {
+          // console.log(response.data);
+          setEmail(response.data.email);
+        })
+        .catch((error) => {
+          console.error("Error fetching user: ", error);
+        });
+    }
+  }, [location.state]);
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const id = params.get("ar");
@@ -117,6 +141,15 @@ const Map_Producer = (props) => {
     }
   }, [poiDataArray]);
 
+  //Open AR Element from ARManagement component
+  const openARElement = (poi) => {
+    console.log(`function of AR: ${poi}`);
+    // const url = `/ar.html?lat=${poi.coordinates.lat}&lng=${poi.coordinates.lng}&desc=${poi.description}&img=${poi.arid.url}`;
+    // const url = `/ar_page?lat=${poi.coordinates.lat}&lng=${poi.coordinates.lng}&desc=${poi.description}&img=${poi.arid.url}`;
+    // window.location.href = `/ar.html?lat=${poi.coordinates.lat}&lng=${poi.coordinates.lng}&desc=${poi.description}&img=${poi.arid.url}`;
+    // window.open(url, '_blank');
+  };
+
   const initializeMap = () => {
     // Check if locations data is loaded and available
     // Define user's current position
@@ -133,10 +166,7 @@ const Map_Producer = (props) => {
             lng: position.coords.longitude,
           },
           zoom: 12,
-          // mapTypeId: "roadmap",
-          // heading: 90,
         });
-        // map.setTilt(45);
 
         // Create the start navigation button
         const startNavigationButton = document.createElement("button");
@@ -278,6 +308,31 @@ const Map_Producer = (props) => {
           });
         });
 
+        const resetButton = document.createElement("button");
+        resetButton.innerText = "Reset";
+        resetButton.style.backgroundColor = "#007aff";
+        resetButton.style.color = "white";
+        resetButton.style.padding = "10px";
+        resetButton.style.borderRadius = "25px"; // change from "50%" to "25px"
+        resetButton.style.boxShadow = "0 0 5px rgba(0, 0, 0, 0.3)";
+        resetButton.style.fontSize = "16px";
+        resetButton.style.lineHeight = "1";
+        resetButton.style.border = "none";
+        resetButton.style.cursor = "pointer";
+
+        resetButton.addEventListener("click", () => {
+          console.log("Reset button clicked");
+          directionsRenderer.setDirections(null);
+          directionsService.route(request, function (response, status) {
+            if (status == window.google.maps.DirectionsStatus.OK) {
+              directionsRenderer.setDirections(response);
+              updateDurationDiv();
+            } else {
+              console.log("Directions request failed: " + status);
+            }
+          });
+        });
+
         const directionsService = new window.google.maps.DirectionsService();
         const directionsRenderer = new window.google.maps.DirectionsRenderer({
           map: map,
@@ -321,7 +376,6 @@ const Map_Producer = (props) => {
         durationDiv.style.boxShadow = "0 0 5px rgba(0, 0, 0, 0.3)";
         durationDiv.style.fontSize = "16px";
         durationDiv.style.marginBottom = "60px";
-
         // Add the duration element to the map controls
         map.controls[window.google.maps.ControlPosition.BOTTOM_CENTER].push(
           durationDiv
@@ -367,112 +421,134 @@ const Map_Producer = (props) => {
           )}`;
           durationDiv.appendChild(startNavigationButton);
           durationDiv.appendChild(stopNavigationButton);
+          durationDiv.appendChild(resetButton);
         }
 
-        // Create an empty div to hold the navigation instructions
-        const directionsDiv = document.createElement("div");
-        directionsDiv.style.backgroundColor = "white";
-        directionsDiv.style.padding = "5px";
-        directionsDiv.style.borderRadius = "5px";
-        directionsDiv.style.boxShadow = "0 0 5px rgba(0, 0, 0, 0.3)";
-        directionsDiv.style.fontSize = "16px";
-        directionsDiv.style.maxHeight = "300px";
-        directionsDiv.style.width = "300px";
-        directionsDiv.style.overflowY = "auto";
-        directionsDiv.style.marginTop = "55px";
-
-        // Add the directionsDiv to the map controls
-        map.controls[window.google.maps.ControlPosition.TOP_CENTER].push(
-          directionsDiv
-        );
-
-        let currentStepIndex = 0;
-
-        function updateDirectionsDiv(response, userPosition) {
-          // Clear the previous directions from the div
-          directionsDiv.innerHTML = "";
-
-          const route = response.routes[0];
-          const legs = route.legs;
-
-          // Find the current leg and step based on the user's current position
-          let currentLegIndex = 0;
-          let currentStepIndex = 0;
-          for (let i = 0; i < legs.length; i++) {
-            const steps = legs[i].steps;
-            for (let j = 0; j < steps.length; j++) {
-              const step = steps[j];
-              const stepStart = step.start_location;
-              const stepEnd = step.end_location;
-              if (isPositionOnStep(userPosition, stepStart, stepEnd)) {
-                currentLegIndex = i;
-                currentStepIndex = j;
-                break;
-              }
-            }
-          }
-
-          // Loop through the remaining steps of the current leg and add the current instruction to the div
-          const currentStep = legs[currentLegIndex].steps[currentStepIndex];
-          const currentInstruction = currentStep.instructions;
-          const currentDistance = currentStep.distance.text;
-          const currentDuration = currentStep.duration.text;
-          const currentInstructionDiv = document.createElement("div");
-          currentInstructionDiv.innerHTML = `<b>${currentInstruction}</b> (${currentDistance}, ${currentDuration})`;
-          directionsDiv.appendChild(currentInstructionDiv);
-        }
-
-        function isPositionOnStep(position, stepStart, stepEnd) {
-          const positionLat = position.lat;
-          const positionLng = position.lng;
-          const stepStartLat = stepStart.lat();
-          const stepStartLng = stepStart.lng();
-          const stepEndLat = stepEnd.lat();
-          const stepEndLng = stepEnd.lng();
-
-          // Check if the position is within the bounding box of the step
-          const minLat = Math.min(stepStartLat, stepEndLat);
-          const maxLat = Math.max(stepStartLat, stepEndLat);
-          const minLng = Math.min(stepStartLng, stepEndLng);
-          const maxLng = Math.max(stepStartLng, stepEndLng);
-          if (
-            positionLat < minLat ||
-            positionLat > maxLat ||
-            positionLng < minLng ||
-            positionLng > maxLng
-          ) {
-            return false;
-          }
-
-          // Check if the position is close enough to the step
-          const stepLength = new window.google.maps.LatLng(
-            stepStartLat,
-            stepStartLng
-          ).distanceTo(new window.google.maps.LatLng(stepEndLat, stepEndLng));
-          const distanceToStart = new window.google.maps.LatLng(
-            positionLat,
-            positionLng
-          ).distanceTo(
-            new window.google.maps.LatLng(stepStartLat, stepStartLng)
-          );
-          const distanceToEnd = new window.google.maps.LatLng(
-            positionLat,
-            positionLng
-          ).distanceTo(new window.google.maps.LatLng(stepEndLat, stepEndLng));
-          const buffer = stepLength * 0.1; // 10% buffer
-          return (
-            distanceToStart < stepLength + buffer &&
-            distanceToEnd < stepLength + buffer
-          );
-        }
-
+        // Arrow location marker
         directionsService.route(request, function (response, status) {
+          console.log("route created");
           if (status == window.google.maps.DirectionsStatus.OK) {
             directionsRenderer.setDirections(response);
             updateDurationDiv();
-            updateDirectionsDiv(response, userPosition);
+
+            // Get the first step in the route
+            let nextStep = response.routes[0].legs[0].steps[0];
+
+            // Create an arrow marker that points in the direction of the next step
+            const arrowMarker = new window.google.maps.Marker({
+              position: userPosition,
+              icon: {
+                path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                strokeColor: "#1C6758",
+                fillColor: "#03C988",
+                fillOpacity: 1,
+                scale: 4,
+              },
+              map,
+            });
+
+            // Update the arrow marker whenever the user's location changes
+            // Get the bearing of a line between two points
+            function getBearing(from, to) {
+              const lat1 = from.lat();
+              const lng1 = from.lng();
+              const lat2 = to.lat();
+              const lng2 = to.lng();
+              const y = Math.sin(lng2 - lng1) * Math.cos(lat2);
+              const x =
+                Math.cos(lat1) * Math.sin(lat2) -
+                Math.sin(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1);
+              const bearing = (Math.atan2(y, x) * 180) / Math.PI;
+              return bearing;
+            }
+
+            // Calculate the difference between two angles in degrees
+            function getAngleDiff(a, b) {
+              const diff = Math.abs(a - b) % 360;
+              const angle = diff > 180 ? 360 - diff : diff;
+              return angle;
+            }
+
+            // Update the arrow marker whenever the user's location changes
+            navigator.geolocation.watchPosition(
+              (position) => {
+                const userLocation = new window.google.maps.LatLng(
+                  position.coords.latitude,
+                  position.coords.longitude
+                );
+
+                // Check if the user has reached the end of the current step
+                if (
+                  window.google.maps.geometry.spherical.computeDistanceBetween(
+                    userLocation,
+                    nextStep.end_location
+                  ) < 5
+                ) {
+                  // Move to the next step in the route
+                  nextStep = response.routes[0].legs[0].steps.find((step) => {
+                    return (
+                      window.google.maps.geometry.spherical.computeDistanceBetween(
+                        userLocation,
+                        step.start_location
+                      ) < 5
+                    );
+                  });
+
+                  // Rotate the symbol to point in the direction of the next step
+                  const bearing = getBearing(
+                    nextStep.start_location,
+                    nextStep.end_location
+                  );
+                  const angleDiff = getAngleDiff(
+                    position.coords.heading,
+                    bearing
+                  );
+                  if (angleDiff > 45) {
+                    arrowMarker.setIcon(
+                      Object.assign({}, arrowMarker.getIcon(), {
+                        rotation: bearing,
+                      })
+                    );
+                  }
+                }
+
+                // Rotate the symbol to point in the direction of the next step
+                arrowMarker.setIcon(
+                  Object.assign({}, arrowMarker.getIcon(), {
+                    rotation:
+                      window.google.maps.geometry.spherical.computeHeading(
+                        userLocation,
+                        nextStep.end_location
+                      ) - position.coords.heading,
+                  })
+                );
+
+                // Move the arrow marker to the new location and center the map
+                arrowMarker.setPosition(userLocation);
+                map.setCenter(userLocation);
+              },
+              (error) => {
+                console.log(error);
+              },
+              {
+                enableHighAccuracy: true,
+                maximumAge: 10000,
+              }
+            );
+          } else {
+            console.log("Directions request failed: " + status);
           }
         });
+
+        window.google.maps.event.addListener(
+          directionsRenderer,
+          "directions_changed",
+          function () {
+            savedRoute = directionsRenderer.getDirections();
+            updateDurationDiv();
+            // updateDirectionsDiv(savedRoute, userPosition);
+          }
+        );
 
         // Create a Marker object for each location and add an info window
         locations.forEach((location, index) => {
@@ -526,43 +602,43 @@ const Map_Producer = (props) => {
         // onClick=${handleAddReview()}
         // <a href="review_form?poiIds=${poiValues[index]}">
 
-        let userLocationMarker;
+        // let userLocationMarker;
 
-        if (navigator.geolocation) {
-          navigator.geolocation.watchPosition(
-            (position) => {
-              if (userLocationMarker) {
-                // If the userLocationMarker already exists, update its position
-                userLocationMarker.setPosition({
-                  lat: position.coords.latitude,
-                  lng: position.coords.longitude,
-                });
-              } else {
-                // If the userLocationMarker doesn't exist yet, create it
-                userLocationMarker = new window.google.maps.Marker({
-                  position: {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                  },
-                  map,
-                  icon: {
-                    path: window.google.maps.SymbolPath.CIRCLE,
-                    fillColor: "#0088FF",
-                    fillOpacity: 0.6,
-                    strokeColor: "#FFFFFF",
-                    strokeWeight: 2,
-                    scale: 10,
-                  },
-                });
-              }
-              map.setCenter(userLocationMarker.getPosition());
-            },
-            (error) => {
-              console.log(error);
-            },
-            { enableHighAccuracy: true }
-          );
-        }
+        // if (navigator.geolocation) {
+        //   navigator.geolocation.watchPosition(
+        //     (position) => {
+        //       if (userLocationMarker) {
+        //         // If the userLocationMarker already exists, update its position
+        //         userLocationMarker.setPosition({
+        //           lat: position.coords.latitude,
+        //           lng: position.coords.longitude,
+        //         });
+        //       } else {
+        //         // If the userLocationMarker doesn't exist yet, create it
+        //         userLocationMarker = new window.google.maps.Marker({
+        //           position: {
+        //             lat: position.coords.latitude,
+        //             lng: position.coords.longitude,
+        //           },
+        //           map,
+        //           icon: {
+        //             path: window.google.maps.SymbolPath.CIRCLE,
+        //             fillColor: "#0088FF",
+        //             fillOpacity: 0.6,
+        //             strokeColor: "#FFFFFF",
+        //             strokeWeight: 2,
+        //             scale: 10,
+        //           },
+        //         });
+        //       }
+        //       map.setCenter(userLocationMarker.getPosition());
+        //     },
+        //     (error) => {
+        //       console.log(error);
+        //     },
+        //     { enableHighAccuracy: true }
+        //   );
+        // }
       }
     });
   };
@@ -570,9 +646,10 @@ const Map_Producer = (props) => {
   //InitializeMap() is only called after the locations array has been populated with data
   useEffect(() => {
     if (window.google) {
+      // if (window.google && email) {
       initializeMap();
     }
-  }, [isLocationsLoaded]);
+  }, [isLocationsLoaded, email]);
 
   return (
     <div id="map" style={{ height: "100vh", width: "100%" }}>

@@ -23,8 +23,10 @@ const arImgs = [
 
 const Form_Producer = () => {
    const [formTheme, setFormTheme] = useState('');
+   const [themeName, setSelectedThemeName] = useState('');
    const [themeSelectedId, setThemeSelectedId] = useState('');
    const [selectedLevelId, setSelectedLevelId] = useState('');
+   const [email, setEmail] = useState('');
    const [isFormValid, setIsFormValid] = useState(false);
    const [routeChosen, setRouteChosen] = useState('');
    const [routes, setRoutes] = useState('');
@@ -43,7 +45,6 @@ const Form_Producer = () => {
    const location = useLocation();
 
    useEffect(() => {
-      console.log(location);
       if (!location.state) {
          navigate('/');
       } else {
@@ -56,6 +57,7 @@ const Form_Producer = () => {
             })
             .then((response) => {
                // console.log(response.data);
+               setEmail(response.data.email);
             })
             .catch((error) => {
                console.error('Error fetching user: ', error);
@@ -103,7 +105,7 @@ const Form_Producer = () => {
             const response = await axios.get(
                'https://tiys.herokuapp.com/api/pois'
             );
-            console.log(response.data);
+            // console.log(response.data);
             setIsLoading(false);
             setCoordinates(response.data);
          } catch (error) {
@@ -227,13 +229,28 @@ const Form_Producer = () => {
       return accumulator;
    }, {});
 
-   const handleNavigate = () => {
-      navigate(
-         `/map_producer?${Object.entries(poiidMap)
-            .map(([key, value]) => `${key}=${value}`)
-            .join('&')}`,
-         { state: { token: location.state.token } }
-      );
+   const handleNavigate = async () => {
+      const getNewRouteIdRes = await axios.get('https://tiys.herokuapp.com/api/routes/getnewid/');
+      const userRouteData = await axios.post('https://tiys.herokuapp.com/api/routes', {
+         routeid: getNewRouteIdRes.data,
+         description: 'Private Route',
+         pois: poiid,
+         evaluation_grade: '0',
+         experience_level: selectedLevelId,
+         theme: themeName,
+         imgurl: '',
+         access: 'private',
+         email: email
+      });
+      // navigate(
+      //    `/map_producer?${Object.entries(poiidMap)
+      //       .map(([key, value]) => `${key}=${value}`)
+      //       .join('&')}`,
+      //    { state: { token: location.state.token } }
+      // );
+      navigate(`/map_builder?routeId=${getNewRouteIdRes.data}`, {
+         state: { token: location.state.token },
+      });
    };
 
    //POIs Grades array
@@ -284,7 +301,7 @@ const Form_Producer = () => {
                      objArray={formTheme.map((theme) => (
                         <Button
                            key={theme.themeid}
-                           onClick={() => setSelectedTheme(theme.themeid)}
+                           onClick={() => {setSelectedTheme(theme.themeid); setSelectedThemeName(theme.theme)}}
                            value={theme}
                            variant={
                               themeSelectedId === theme.themeid
@@ -434,12 +451,12 @@ const Form_Producer = () => {
                component='div'
                sx={
                   isSmallScreen
-                     ? { fontSize: '1rem', mb: 1 }
+                     ? { fontSize: '1rem', mb: 1, maxWidth: '90%', textAlign: 'center' }
                      : { fontSize: '1.25rem' }
                }
             >
                <span>
-                  <b> Choose the POIs you want to visit: </b>
+                  <b> Choose the POIs you want to visit<br/> (at least 3): </b>
                </span>
             </Typography>
          </div>

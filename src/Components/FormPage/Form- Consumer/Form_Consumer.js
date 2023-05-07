@@ -24,7 +24,6 @@ const arImgs = [
 
 const Form_Consumer = () => {
   const [formTheme, setFormTheme] = useState("");
-  // const [displayPage, setDisplayPage] = useState(false);
   const [themeSelectedId, setThemeSelectedId] = useState("");
   const [selectedLevelId, setSelectedLevelId] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
@@ -40,7 +39,6 @@ const Form_Consumer = () => {
   const location = useLocation();
 
   useEffect(() => {
-    console.log(location);
     if (!location.state) {
       navigate("/");
     } else {
@@ -62,7 +60,7 @@ const Form_Consumer = () => {
 
   useEffect(() => {
     if (routeChosen) {
-      navigate(`/biyalik_map?routeId=${routeChosen}`, {
+      navigate(`/map_builder?routeId=${routeChosen}`, {
         state: { token: location.state.token },
       });
     }
@@ -90,7 +88,7 @@ const Form_Consumer = () => {
       try {
         // Make an API request to fetch the routes data
         const response = await axios.get(
-          "https://tiys.herokuapp.com/api/routes"
+          "https://tiys.herokuapp.com/api/routes/users/admin@admin.com"
         );
         setIsLoading(false);
         setRoutes(response.data);
@@ -106,7 +104,6 @@ const Form_Consumer = () => {
           });
           // Update the state with the filtered data
           setFilteredData(filtered);
-          console.log(`filtered: ${filtered.length}`);
         } else {
           //If either theme or level is not selected, set filtered data to null
           setFilteredData(null);
@@ -129,7 +126,6 @@ const Form_Consumer = () => {
   //Redirect to chosen route on the map
   const chooseRoute = (routeid) => {
     if (selectedLevelId && themeSelectedId) {
-      console.log(routeid);
       setRouteChosen(routeid);
       setIsFormValid(true);
     } else {
@@ -156,9 +152,9 @@ const Form_Consumer = () => {
       <NavBar />
       <Typography component="div" className={styles.title}>
         <h1 style={!isSmallScreen ? {} : { fontSize: "25px" }}>
-          Choose Your Tour{" "}
-        </h1>{" "}
-      </Typography>{" "}
+          Choose Your Tour
+        </h1>
+      </Typography>
       <Box component="div" className={styles.theme_div}>
         <Typography
           sx={
@@ -168,10 +164,11 @@ const Form_Consumer = () => {
           }
         >
           <span>
-            <b> Choose Tour Theme: </b>{" "}
-          </span>{" "}
+            <b>Choose Tour Theme:</b>
+          </span>
         </Typography>
-        {/* Render themes through map */}{" "}
+
+        {/* Render themes through map */}
         <Box
           component="div"
           className={styles.themes}
@@ -192,34 +189,41 @@ const Form_Consumer = () => {
         >
           {isSmallScreen ? (
             <Grid
-              objArray={formTheme.map((theme) => (
-                <Button
-                  key={theme.themeid}
-                  onClick={() => setSelectedTheme(theme.themeid)}
-                  value={theme}
-                  variant={
-                    themeSelectedId === theme.themeid ? "contained" : "outlined"
-                  }
-                  sx={
-                    !isSmallScreen
-                      ? {
-                          borderRadius: "20px",
-                          height: "30px",
-                          marginLeft: 1,
-                          marginTop: 2,
-                          marginBottom: 1,
-                        }
-                      : {
-                          marginLeft: 1.5,
-                          marginBottom: 1,
-                          height: "30px",
-                          borderRadius: "20px",
-                        }
-                  }
-                >
-                  {theme.theme}{" "}
-                </Button>
-              ))}
+              objArray={formTheme
+                .map((theme, index) => ({
+                  ...theme,
+                  id: `theme_${index}`,
+                }))
+                .map((theme) => (
+                  <Button
+                    key={theme.themeid}
+                    onClick={() => setSelectedTheme(theme.themeid)}
+                    value={theme}
+                    variant={
+                      themeSelectedId === theme.themeid
+                        ? "contained"
+                        : "outlined"
+                    }
+                    sx={
+                      !isSmallScreen
+                        ? {
+                            borderRadius: "20px",
+                            height: "30px",
+                            marginLeft: 1,
+                            marginTop: 2,
+                            marginBottom: 1,
+                          }
+                        : {
+                            marginLeft: 1.5,
+                            marginBottom: 1,
+                            height: "30px",
+                            borderRadius: "20px",
+                          }
+                    }
+                  >
+                    {theme.theme}
+                  </Button>
+                ))}
             />
           ) : (
             formTheme.map((theme) => (
@@ -247,12 +251,12 @@ const Form_Consumer = () => {
                       }
                 }
               >
-                {theme.theme}{" "}
+                {theme.theme}
               </Button>
             ))
-          )}{" "}
-        </Box>{" "}
-      </Box>{" "}
+          )}
+        </Box>
+      </Box>
       <Box component="div" className={styles.AR_exp_div}>
         <Typography
           sx={
@@ -262,11 +266,10 @@ const Form_Consumer = () => {
           }
         >
           <span>
-            <b> Choose AR Experience: </b>{" "}
-          </span>{" "}
-        </Typography>{" "}
+            <b>Choose AR Experience:</b>
+          </span>
+        </Typography>
         <div className={styles.ar_imgs}>
-          {" "}
           {arImgs.map((arImg) => (
             <div key={arImg.id}>
               <img
@@ -284,13 +287,13 @@ const Form_Consumer = () => {
                 height="150"
               />
               <div className={styles.arlevel_name}>
-                <span> {arImg.name} </span>{" "}
-              </div>{" "}
+                <span>{arImg.name}</span>
+              </div>
             </div>
-          ))}{" "}
-        </div>{" "}
-      </Box>{" "}
-      {/* Routes List */}{" "}
+          ))}
+        </div>
+      </Box>
+      {/* Routes List */}
       <Box>
         <div className={styles.routes_title}>
           <Typography
@@ -307,21 +310,20 @@ const Form_Consumer = () => {
             }
           >
             <span>
-              <b> Available Routes: </b>{" "}
-            </span>{" "}
-          </Typography>{" "}
-        </div>{" "}
-      </Box>{" "}
+              <b>Available Routes:</b>
+            </span>
+          </Typography>
+        </div>
+      </Box>
       {!filteredData ? (
         <div className={styles.routes_imgs}>
-          {" "}
           {routes.map((route) => (
             <div
               style={{ cursor: "pointer" }}
               key={route.routeid}
               onClick={() => chooseRoute(route.routeid)}
             >
-              <img src={route.imgurl} alt={route.description} />{" "}
+              <img src={route.imgurl} alt={route.description} />
               <Typography
                 component="p"
                 sx={
@@ -334,25 +336,24 @@ const Form_Consumer = () => {
                     : { fontSize: "0.8rem", fontStyle: "italic" }
                 }
               >
-                {route.description}{" "}
-              </Typography>{" "}
+                {route.description}
+              </Typography>
               <div className={styles.star}>
                 <img src={Star} alt="rank" />
-                <span> {route.evaluation_grade.toFixed(1)} </span>{" "}
-              </div>{" "}
+                <span>{route.evaluation_grade.toFixed(1)}</span>
+              </div>
             </div>
-          ))}{" "}
+          ))}
         </div>
       ) : (
         <div className={styles.routes_imgs}>
-          {" "}
           {filteredData.map((route) => (
             <div
               style={{ cursor: "pointer" }}
               key={route.routeid}
               onClick={(e) => chooseRoute(route.routeid)}
             >
-              <img src={route.imgurl} alt={route.description} />{" "}
+              <img src={route.imgurl} alt={route.description} />
               <Typography
                 component="p"
                 sx={
@@ -365,16 +366,16 @@ const Form_Consumer = () => {
                     : { fontSize: "0.8rem", fontStyle: "italic" }
                 }
               >
-                {route.description}{" "}
-              </Typography>{" "}
+                {route.description}
+              </Typography>
               <div className={styles.star}>
                 <img src={Star} alt="rank" />
-                <span> {route.evaluation_grade.toFixed(1)} </span>{" "}
-              </div>{" "}
+                <span>{route.evaluation_grade.toFixed(1)}</span>
+              </div>
             </div>
-          ))}{" "}
+          ))}
         </div>
-      )}{" "}
+      )}
     </>
   );
 };

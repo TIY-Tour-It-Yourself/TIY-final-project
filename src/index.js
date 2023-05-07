@@ -8,8 +8,6 @@ import { Routes, Route } from "react-router-dom";
 import RegisterPage from "./Pages/RegisterPage";
 import DashboardPage from "./Pages/DashboardPage";
 import FormConsumerPage from "./Pages/FormConsumerPage";
-import TourCarousel from "./Components/SuggestionsPage/TourCarousel";
-import TourPage from "./Components/SuggestionsPage/TourPage";
 import NotFound from "./Components/NotFoundPage/NotFound";
 import InteractiveMapPage from "./Pages/InteractiveMapPage";
 import MapProducerPage from "./Pages/MapProducerPage";
@@ -25,6 +23,9 @@ import Add_Pois from "./Components/AdminPage/PoisAdmin/Add_Poi";
 import Update_Poi from "./Components/AdminPage/PoisAdmin/Update_Poi";
 import Route_Table from "./Components/AdminPage/RouteAdmin/Route_Table";
 import Add_Route from "./Components/AdminPage/RouteAdmin/Add_Route";
+import ARManagement from "./Components/ARPage/ARManagement";
+import ToursPage from "./Pages/ToursPage";
+import MapBuilderPage from './Pages/MapBuilderPage';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -42,12 +43,14 @@ root.render(
           <Route path="/form_consumer" element={<FormConsumerPage />} />{" "}
           <Route path="/form_producer" element={<FormProducerPage />} />{" "}
           <Route path="/map_producer" element={<MapProducerPage />} />{" "}
-          <Route path="/biyalik_map" element={<BiyalikMapPage />} />{" "}
+          <Route path='/map_builder' element={<MapBuilderPage />} />
           <Route path="/evaluations" element={<Evaluations />} />{" "}
           <Route path="/review_form" element={<ReviewForm />} />{" "}
           <Route path="/admin" element={<Admin />} />{" "}
+          <Route path="/ar_page" element={<ARManagement />} />
           <Route path="/pois_table" element={<Pois_Table />} />{" "}
           <Route path="/add_pois" element={<Add_Pois />} />{" "}
+          <Route path="/tours_history" element={<ToursPage />} />
           <Route path="/update_poi" element={<Update_Poi />} />{" "}
           <Route path="/route_table" element={<Route_Table />} />{" "}
           <Route path="/add_route" element={<Add_Route />} />{" "}
