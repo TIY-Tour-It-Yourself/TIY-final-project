@@ -240,7 +240,7 @@ const Tours = () => {
                <div>{tour.theme}</div>
                <div>AR level: {tour.experience_level}</div>
                <div>{tour.duration}</div> 
-               <div>Rank: {tour.evaluation_grade}</div>
+               <div>Rank: {tour.evaluation_grade.toFixed(2)}</div>
                <div className={styles.align_right}>
                   <Button sx={{ fontSize: '10px', borderRadius: '20px' }} variant='outlined' onClick={() => openRoute(tour.routeid)}>Open Tour</Button>
                </div>
@@ -262,7 +262,7 @@ const Tours = () => {
                     <div><b>Theme: </b>{tour.theme}</div>
                     <div><b>AR level: </b>{tour.experience_level}</div>
                     <div><b>Duration: </b>{tour.duration}</div> 
-                    <div><b>Rank: </b>{tour.evaluation_grade}</div>
+                    <div><b>Rank: </b>{tour.evaluation_grade.toFixed(2)}</div>
                     <div className={styles.align_right}>
                            <Button sx={{ fontSize: '10px', borderRadius: '20px' }} variant='outlined' onClick={() => openRoute(tour.routeid)}>Open Tour</Button>
                      </div>
