@@ -118,11 +118,17 @@ const Form_Producer = () => {
 
    //Display unfiltered POIs
    useEffect(() => {
+      let newLevelId = 0;
       if (themeSelectedId && selectedLevelId) {
+         if (selectedLevelId === 1) {
+            newLevelId = 2;
+         } else {
+            newLevelId = selectedLevelId;
+         }
          let filtered = coordinates.filter((coordinate) => {
             return (
                coordinate.theme.themeid === themeSelectedId &&
-               coordinate.arid.level === selectedLevelId
+               coordinate.arid.level === newLevelId
             );
          });
          setFilteredData(filtered);
@@ -132,8 +138,12 @@ const Form_Producer = () => {
    }, [themeSelectedId, selectedLevelId, coordinates]);
 
    useEffect(() => {
-      // if (selectedRadius && userLocation) {
-         if (themeSelectedId && selectedLevelId && selectedRadius && userLocation) {
+      if (
+         themeSelectedId &&
+         selectedLevelId &&
+         selectedRadius &&
+         userLocation
+      ) {
          const filtered = coordinates.filter((coordinate) => {
             // Calculate the distance between user and POI using Haversine formula
             const distance = calcDistance(
@@ -149,15 +159,20 @@ const Form_Producer = () => {
             );
          });
          setFilteredData(filtered);
-         console.log(`filtered: ${filtered.length}`);
       }
-   }, [themeSelectedId, selectedLevelId, selectedRadius, userLocation, coordinates]);
+   }, [
+      themeSelectedId,
+      selectedLevelId,
+      selectedRadius,
+      userLocation,
+      coordinates,
+   ]);
 
    // -------------------------------------------------
    // Function to calculate the distance between two points using Haversine formula
    const calcDistance = (lat1, lon1, lat2, lon2) => {
       const R = 6371 * 1000; // Radius of the earth in km
-      const dLat = deg2rad(lat2 - lat1); 
+      const dLat = deg2rad(lat2 - lat1);
       const dLon = deg2rad(lon2 - lon1);
       const a =
          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
@@ -203,23 +218,23 @@ const Form_Producer = () => {
    //Update array according to filter and selection
    const handlePOISelection = (poi) => {
       if (themeSelectedId && selectedLevelId) {
-        // Check if POI is already selected
-        const poiIndex = selectedPOIs.indexOf(poi);
-        if (poiIndex === -1) {
-          // POI not already selected - add to array
-          setSelectedPOIs([...selectedPOIs, poi]);
-        } else {
-          // POI already selected - remove from array
-          const updatedPOIs = [...selectedPOIs];
-          updatedPOIs.splice(poiIndex, 1);
-          setSelectedPOIs(updatedPOIs);
-          setIsFormValid(true);
-        }
+         // Check if POI is already selected
+         const poiIndex = selectedPOIs.indexOf(poi);
+         if (poiIndex === -1) {
+            // POI not already selected - add to array
+            setSelectedPOIs([...selectedPOIs, poi]);
+         } else {
+            // POI already selected - remove from array
+            const updatedPOIs = [...selectedPOIs];
+            updatedPOIs.splice(poiIndex, 1);
+            setSelectedPOIs(updatedPOIs);
+            setIsFormValid(true);
+         }
       } else {
-        alert('Theme and AR Experience must be chosen.');
-        setIsFormValid(false);
+         alert('Theme and AR Experience must be chosen.');
+         setIsFormValid(false);
       }
-    };
+   };
 
    const poiid = selectedPOIs ? selectedPOIs.map((item) => item.poiid) : [];
 
@@ -230,18 +245,23 @@ const Form_Producer = () => {
    }, {});
 
    const handleNavigate = async () => {
-      const getNewRouteIdRes = await axios.get('https://tiys.herokuapp.com/api/routes/getnewid/');
-      const userRouteData = await axios.post('https://tiys.herokuapp.com/api/routes', {
-         routeid: getNewRouteIdRes.data,
-         description: 'Private Route',
-         pois: poiid,
-         evaluation_grade: '0',
-         experience_level: selectedLevelId,
-         theme: themeName,
-         imgurl: '',
-         access: 'private',
-         email: email
-      });
+      const getNewRouteIdRes = await axios.get(
+         'https://tiys.herokuapp.com/api/routes/getnewid/'
+      );
+      const userRouteData = await axios.post(
+         'https://tiys.herokuapp.com/api/routes',
+         {
+            routeid: getNewRouteIdRes.data,
+            description: 'Private Route',
+            pois: poiid,
+            evaluation_grade: '0',
+            experience_level: selectedLevelId,
+            theme: themeName,
+            imgurl: '',
+            access: 'private',
+            email: email,
+         }
+      );
       // navigate(
       //    `/map_producer?${Object.entries(poiidMap)
       //       .map(([key, value]) => `${key}=${value}`)
@@ -301,7 +321,10 @@ const Form_Producer = () => {
                      objArray={formTheme.map((theme) => (
                         <Button
                            key={theme.themeid}
-                           onClick={() => {setSelectedTheme(theme.themeid); setSelectedThemeName(theme.theme)}}
+                           onClick={() => {
+                              setSelectedTheme(theme.themeid);
+                              setSelectedThemeName(theme.theme);
+                           }}
                            value={theme}
                            variant={
                               themeSelectedId === theme.themeid
@@ -451,12 +474,21 @@ const Form_Producer = () => {
                component='div'
                sx={
                   isSmallScreen
-                     ? { fontSize: '1rem', mb: 1, maxWidth: '90%', textAlign: 'center' }
+                     ? {
+                          fontSize: '1rem',
+                          mb: 1,
+                          maxWidth: '90%',
+                          textAlign: 'center',
+                       }
                      : { fontSize: '1.25rem' }
                }
             >
                <span>
-                  <b> Choose the POIs you want to visit<br/> (at least 3): </b>
+                  <b>
+                     {' '}
+                     Choose the POIs you want to visit
+                     <br /> (at least 3):{' '}
+                  </b>
                </span>
             </Typography>
          </div>
@@ -531,32 +563,33 @@ const Form_Producer = () => {
                {filteredData.map((poi) => {
                   const isSelected = selectedPOIs.includes(poi);
                   return (
-                  <div className={isSelected ? styles.border : ''}
-                     style={{ cursor: 'pointer', position: 'relative' }}
-                     key={poi.poiid}
-                     value={JSON.stringify(poi.coordinates)}
-                     onClick={() => handlePOISelection(poi)}
-                  >
-                     <div className={styles.star}>
-                        <img src={Star} alt='rank' />
-                        <span>{poi.grade.toFixed(1)}</span>
-                     </div>
-                     <img src={Location} alt={poi.name} />
-                     <Typography
-                        component='p'
-                        sx={
-                           !isSmallScreen
-                              ? {
-                                   fontStyle: 'italic',
-                                   fontSize: '0.9rem',
-                                   ml: 1.5,
-                                }
-                              : { fontSize: '0.8rem', fontStyle: 'italic' }
-                        }
+                     <div
+                        className={isSelected ? styles.border : ''}
+                        style={{ cursor: 'pointer', position: 'relative' }}
+                        key={poi.poiid}
+                        value={JSON.stringify(poi.coordinates)}
+                        onClick={() => handlePOISelection(poi)}
                      >
-                        {poi.name}
-                     </Typography>
-                  </div>
+                        <div className={styles.star}>
+                           <img src={Star} alt='rank' />
+                           <span>{poi.grade.toFixed(1)}</span>
+                        </div>
+                        <img src={Location} alt={poi.name} />
+                        <Typography
+                           component='p'
+                           sx={
+                              !isSmallScreen
+                                 ? {
+                                      fontStyle: 'italic',
+                                      fontSize: '0.9rem',
+                                      ml: 1.5,
+                                   }
+                                 : { fontSize: '0.8rem', fontStyle: 'italic' }
+                           }
+                        >
+                           {poi.name}
+                        </Typography>
+                     </div>
                   );
                })}
             </div>

@@ -28,8 +28,10 @@ const MapBuilder = (props) => {
    const [poisCoordinatesData, setPoisCoordinatesData] = useState([]);
    const [isNamesLoaded, setIsNamesLoaded] = useState(false);
    const [isURLsLoaded, setIsURLsLoaded] = useState(false);
+   const [isARLevelLoaded, setIsARLevelLoaded] = useState(false);
    const [locationName, setLocationName] = useState([]);
    const [ARURLArray, setARURLArray] = useState([]);
+   const [arLevels, setARLevels] = useState([]);
    const [poisNames, setPoisNames] = useState([]);
    const [poisIdNums, setPoisIdNums] = useState([]);
    const [showForm, setShowForm] = useState(false);
@@ -153,6 +155,7 @@ const MapBuilder = (props) => {
                const filteredPois = poisData.filter((poi) =>
                   poisIdNums.includes(poi.poiid)
                );
+               // console.log(filteredPois[0].arid.level);
                setRoutePois(filteredPois);
             } catch (error) {
                console.error(error);
@@ -165,15 +168,22 @@ const MapBuilder = (props) => {
    useEffect(() => {
       if (routePois.length > 0) {
          const arURLs = routePois.map((arElement) => arElement.arid.url);
+         // const arElementsLevels = routePois.map(
+         //    (arElement) => arElement.arid.level
+         // );
 
          setARURLArray(arURLs);
+         // setARLevels(arElementsLevels);
          setIsURLsLoaded(true);
+         // setIsARLevelLoaded(true);
       }
    }, [routePois]);
 
    useEffect(() => {
+      // console.log(ARURLArray);
       if (
          email &&
+         experienceLevel &&
          poisLatData.length > 0 &&
          poisLngData.length > 0 &&
          routePois.length > 0 &&
@@ -181,7 +191,14 @@ const MapBuilder = (props) => {
       ) {
          initializeMap();
       }
-   }, [email, poisLatData, poisLngData, routePois, ARURLArray]);
+   }, [
+      email,
+      poisLatData,
+      poisLngData,
+      routePois,
+      ARURLArray,
+      experienceLevel,
+   ]);
 
    //  useEffect(() => {
    // navigate(`http://ar_management.html?lat=${selectedARPoi.coordinates.lat}&lng=${selectedARPoi.coordinates.lng}&desc=${selectedARPoi.description}&img=${selectedARPoi.arid.url}`);
@@ -308,15 +325,15 @@ const MapBuilder = (props) => {
 
                // Show the alert message
                alert('Hope you enjoyed your tour!');
-               // axios.post("https://tiys.herokuapp.com/api/tours", {
-               //   description: routeDescription,
-               //   duration: "00:00:00",
-               //   email: email,
-               //   evaluation_grade: grade,
-               //   experience_level: experienceLevel,
-               //   routeid: routeId,
-               //   theme: theme,
-               // });
+               axios.post('https://tiys.herokuapp.com/api/tours', {
+                  description: routeDescription,
+                  duration: totalTime,
+                  email: email,
+                  evaluation_grade: grade,
+                  experience_level: experienceLevel,
+                  routeid: routeId,
+                  theme: theme,
+               });
             });
 
             let savedRoute;
@@ -772,9 +789,13 @@ const MapBuilder = (props) => {
                // </button>
                const infoWindow = new window.google.maps.InfoWindow({
                   content: `<div style="display: flex; justify-content: center; flex-direction: column; margin-left: 22px;">
-                  <div style="margin: 0 auto;"><h4>${locationName[index]}</h4></div>
-                  <div style="display: flex; margin-left: 15px; justify-content: center;">
-                  <div style="display: flex; flex-direction: column; align-items: center; margin-right: 10px;">
+                  <div style="margin: 0 auto;"><h4>${
+                     locationName[index]
+                  }</h4></div>
+                   ${
+                      experienceLevel > 1
+                         ? `<div style="display: flex; margin-left: 15px; justify-content: center;">
+                 <div style="display: flex; flex-direction: column; align-items: center; margin-right: 10px;">
                     <a href="${ARURLArray[index]}" target="_blank" style="text-decoration: none;">
                       <div>
                         <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
@@ -783,8 +804,10 @@ const MapBuilder = (props) => {
                         <span style="text-decoration: none; font-size: small;">Click Me</span>
                       </div>
                     </a> 
-                  </div>
-                  <div style="display: flex; flex-direction: column; align-items: center;">
+                  </div> `
+                         : ''
+                   }
+                  <div style="display: flex; flex-direction: column; margin-right: 6px; align-items: center;">
                     <button id="add-review-button" style="border: none; background-color: transparent;">
                       <img src=${ranking} width='40px' height='40px' alt="Add Review" />
                       <div style="margin-top: 5px;">
@@ -831,8 +854,8 @@ const MapBuilder = (props) => {
             <GoogleMap />
          )}
          {showForm && (
-            <div className='lightbox'>
-               <div className='lightbox-content'>
+            <div className={styles.lightbox}>
+               <div className={styles.lightbox_content}>
                   <button className='close-btn' onClick={handleCancel}>
                      X
                   </button>
