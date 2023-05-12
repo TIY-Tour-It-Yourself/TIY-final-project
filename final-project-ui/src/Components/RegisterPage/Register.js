@@ -57,20 +57,19 @@ const Register = (props) => {
                const token = response.data;
                setIsFormValid(true);
                if (response.status === 200) {
-                  navigate(`/dashboard`, { state: { token }});
+                  navigate(`/dashboard`, { state: { token } });
                } else {
                   console.log('Status is not 200');
                }
             })
             .catch((err) => {
-               console.log(err.response.data.errors[0])
+               console.log(err.response.data.errors[0]);
                if (err.response.data.errors[0].msg === 'User already exists') {
                   alert('Email already exists.');
                } else {
                   alert('Invalid Credentials.');
                }
             });
-
       } else {
          alert('All fields are required.');
          setIsFormValid(false);
@@ -198,8 +197,11 @@ const Register = (props) => {
                   </Button>
                </FormControl>
             </form>
-            <Typography style={{ fontSize: 'small' }} sx={{ mt: 2, mb: 1 }}>
-               <b>Already Have An Account?</b>{' '}
+            <Typography
+               style={{ fontSize: 'small' }}
+               sx={{ mt: 2, mb: 1, paddingTop: 1, paddingBottom: 2 }}
+            >
+               <b>Already Have An Account? </b>
                <Link
                   href='/login'
                   sx={{
@@ -212,12 +214,6 @@ const Register = (props) => {
                   Sign In
                </Link>
             </Typography>
-            <Divider title='Sign Up With' />
-            <div className={styles.flexbox}>
-               <a href='#'>
-                  <div className={styles.google_icon}></div>
-               </a>
-            </div>
          </PageContainer>
       </>
    );
