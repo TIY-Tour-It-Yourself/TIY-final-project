@@ -8,6 +8,7 @@ import producer from './card_images/producer.jpg';
 import { useTheme } from '@mui/material/styles';
 import axios from 'axios';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import Button from '@mui/material/Button';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const cards = [
@@ -45,11 +46,11 @@ const Dashboard = () => {
    }, [location.state]);
 
    const handleNavigation = (title) => {
-      if(title === 'Choose Your Tour')
+      if (title === 'Choose Your Tour')
          navigate('/form_consumer', { state: { token: location.state.token } });
-      if(title === 'Build Your Tour')
+      if (title === 'Build Your Tour')
          navigate('/form_producer', { state: { token: location.state.token } });
-      if(title === 'Tours History')
+      if (title === 'Tours History')
          navigate('/tours_history', { state: { token: location.state.token } });
    };
 
@@ -85,14 +86,26 @@ const Dashboard = () => {
          >
             {cards.map((card) => (
                <div key={card.id}>
-               <p className={styles.box_title}>{card.title}</p>
-               <div className={styles.card}>
-                  <a onClick={() => handleNavigation(card.title)}>
-                  <img style={{ cursor: 'pointer', borderRadius: '25px'}} src={card.src}/>
-                  </a>
+                  <p className={styles.box_title}>{card.title}</p>
+                  <div className={styles.card}>
+                     <a onClick={() => handleNavigation(card.title)}>
+                        <img
+                           style={{ cursor: 'pointer', borderRadius: '25px' }}
+                           src={card.src}
+                        />
+                     </a>
+                  </div>
                </div>
-               </div>
-            ))} 
+            ))}
+            <Button
+               onClick={() =>
+                  navigate('/res_dashboard', {
+                     state: { token: location.state.token },
+                  })
+               }
+            >
+               Researcher Page
+            </Button>
          </Container>
       </>
    );

@@ -118,8 +118,6 @@ const MapProducer = () => {
       }
    }, [poiDataArray]);
 
-   // console.log(locations);
-
    //Open AR Element from ARManagement component
    const openARElement = (poi) => {
       console.log(`function of AR: ${poi}`);
@@ -201,13 +199,13 @@ const MapProducer = () => {
             // Add media query to update marginTop if screen width is greater than 400px
             const mediaQuery = window.matchMedia('(min-width: 600px)');
 
-            function handleMediaQuery(mediaQuery) {
+            const handleMediaQuery = (mediaQuery) => {
                if (mediaQuery.matches) {
                   timerDiv.style.marginTop = '100px';
                } else {
                   timerDiv.style.marginTop = '52px';
                }
-            }
+            };
 
             // Call the function once to set the initial marginTop
             handleMediaQuery(mediaQuery);

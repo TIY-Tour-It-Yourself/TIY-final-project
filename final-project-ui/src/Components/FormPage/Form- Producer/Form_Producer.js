@@ -120,7 +120,7 @@ const Form_Producer = () => {
    useEffect(() => {
       let newLevelId = 0;
       if (themeSelectedId && selectedLevelId) {
-         if (selectedLevelId === 1) {
+         if (selectedLevelId === 1 || selectedLevelId === 3) {
             newLevelId = 2;
          } else {
             newLevelId = selectedLevelId;
@@ -265,12 +265,15 @@ const Form_Producer = () => {
       // navigate(
       //    `/map_producer?${Object.entries(poiidMap)
       //       .map(([key, value]) => `${key}=${value}`)
-      //       .join('&')}`,
+      //       .join('&')}&ARLevel=${selectedLevelId}`,
       //    { state: { token: location.state.token } }
       // );
-      navigate(`/map_builder?routeId=${getNewRouteIdRes.data}`, {
-         state: { token: location.state.token },
-      });
+      navigate(
+         `/map_builder?routeId=${getNewRouteIdRes.data}&ARLevel=${selectedLevelId}`,
+         {
+            state: { token: location.state.token },
+         }
+      );
    };
 
    //POIs Grades array

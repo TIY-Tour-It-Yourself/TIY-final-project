@@ -242,6 +242,7 @@ const MapBuilder = (props) => {
                {
                   center: { lat: poisLatData[0], lng: poisLngData[0] },
                   zoom: 12,
+                  disableDefaultUI: true,
                }
             );
             // Create the start navigation button
@@ -283,9 +284,9 @@ const MapBuilder = (props) => {
             timerDiv.style.marginBottom = '30px';
 
             // Add the timer element to the map controls
-            map.controls[window.google.maps.ControlPosition.TOP_CENTER].push(
-               timerDiv
-            );
+            // map.controls[window.google.maps.ControlPosition.TOP_CENTER].push(
+            //    timerDiv
+            // );
 
             // Add media query to update marginTop if screen width is greater than 400px
             const mediaQuery = window.matchMedia('(min-width: 600px)');
@@ -374,17 +375,6 @@ const MapBuilder = (props) => {
                startNavigationButton.style.color = 'grey';
                startNavigationButton.style.cursor = 'default';
                isNavigationStarted = true;
-
-               // axios
-               //   .post("/api/navigation", {
-               //     time: totalTime,
-               //   })
-               //   .then(function (response) {
-               //     console.log(response.data);
-               //   })
-               //   .catch(function (error) {
-               //     console.log(error);
-               //   });
             });
 
             const resetButton = document.createElement('button');
@@ -404,7 +394,6 @@ const MapBuilder = (props) => {
                   if (status == window.google.maps.DirectionsStatus.OK) {
                      directionsRenderer.setDirections(response);
                      updateDurationDiv();
-                     //  updateDirectionsDiv(response, userPosition);
                   } else {
                      console.log('Directions request failed: ' + status);
                   }
@@ -506,147 +495,163 @@ const MapBuilder = (props) => {
 
             // // ***Navigation Instruction******
 
-            // // Create an empty div to hold the navigation instructions
-            // const directionsDiv = document.createElement('div');
-            // directionsDiv.style.backgroundColor = 'white';
-            // directionsDiv.style.padding = '5px';
-            // directionsDiv.style.borderRadius = '5px';
-            // directionsDiv.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.3)';
-            // directionsDiv.style.fontSize = '16px';
-            // directionsDiv.style.maxHeight = '300px';
-            // directionsDiv.style.width = '300px';
-            // directionsDiv.style.overflowY = 'auto';
-            // directionsDiv.style.marginTop = '120px';
+            // Create an empty div to hold the navigation instructions
+            const directionsDiv = document.createElement('div');
+            directionsDiv.style.backgroundColor = 'white';
+            directionsDiv.style.padding = '5px';
+            directionsDiv.style.borderRadius = '5px';
+            directionsDiv.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.3)';
+            directionsDiv.style.fontSize = '16px';
+            directionsDiv.style.maxHeight = '300px';
+            directionsDiv.style.width = '300px';
+            directionsDiv.style.overflowY = 'auto';
+            directionsDiv.style.marginTop = '120px';
 
-            // // // Add the directionsDiv to the map controls
-            // // map.controls[window.google.maps.ControlPosition.TOP_CENTER].push(
-            // //   directionsDiv
-            // // );
+            // Create a parent container element to hold the timer and directions elements
+            const containerDiv = document.createElement('div');
+            containerDiv.style.display = 'flex';
+            containerDiv.style.flexDirection = 'column';
+            containerDiv.style.alignItems = 'center';
+            timerDiv.style.marginBottom = '-100px';
 
-            // // Create a parent container element to hold the timer and directions elements
-            // const containerDiv = document.createElement('div');
-            // containerDiv.style.display = 'flex';
-            // containerDiv.style.flexDirection = 'column';
-            // containerDiv.style.alignItems = 'center';
-            // timerDiv.style.marginBottom = '-100px';
+            // Add the timer element to the container
+            containerDiv.appendChild(timerDiv);
 
-            // // Add the timer element to the container
-            // containerDiv.appendChild(timerDiv);
+            // Add the directions element to the container
+            containerDiv.appendChild(directionsDiv);
 
-            // // Add the directions element to the container
-            // containerDiv.appendChild(directionsDiv);
+            // Add the container to the map controls
+            map.controls[window.google.maps.ControlPosition.TOP_CENTER].push(
+               containerDiv
+            );
 
-            // // Add the container to the map controls
-            // map.controls[window.google.maps.ControlPosition.TOP_CENTER].push(
-            //    containerDiv
-            // );
+            // const stepDisplay = new window.google.maps.InfoWindow();
+            let currentStep = 0;
+            let currentLeg = 0;
+            let userLocationMarker = null;
 
-            // function updateDirectionsDiv(response, userPosition) {
-            //    // Clear the previous directions from the div
-            //    directionsDiv.innerHTML = '';
+            const showSteps = (directionResult) => {
+               let route = directionResult.routes[0];
 
-            //    const route = response.routes[0];
-            //    const legs = route.legs;
+               trackUserLocation(route);
+            };
 
-            //    // Add the first instruction outside of the loop
-            //    const firstStep = legs[0].steps[0];
-            //    const firstInstruction = firstStep.instructions;
-            //    const firstDistance = firstStep.distance.text;
-            //    const firstDuration = firstStep.duration.text;
-            //    const firstInstructionDiv = document.createElement('div');
-            //    firstInstructionDiv.innerHTML = `<b>${firstInstruction}</b> (${firstDistance}, ${firstDuration})`;
-            //    directionsDiv.appendChild(firstInstructionDiv);
+            const trackUserLocation = (route) => {
+               // Get the user's location using the browser's geolocation capabilities or any other method
+               navigator.geolocation.watchPosition(
+                  (position) => {
+                     let userLocation = new window.google.maps.LatLng(
+                        position.coords.latitude,
+                        position.coords.longitude
+                     );
 
-            //    // Find the current leg and step based on the user's current position
-            //    let currentLegIndex = 0;
-            //    let currentStepIndex = 0;
-            //    for (let i = 0; i < legs.length; i++) {
-            //       const steps = legs[i].steps;
-            //       for (let j = 0; j < steps.length; j++) {
-            //          const step = steps[j];
-            //          const stepStart = step.start_location;
-            //          const stepEnd = step.end_location;
-            //          if (isPositionOnStep(userPosition, stepStart, stepEnd)) {
-            //             currentLegIndex = i;
-            //             currentStepIndex = j;
-            //             break;
-            //          }
-            //       }
-            //    }
+                     // Update the user's location marker on the map
+                     if (userLocationMarker) {
+                        userLocationMarker.setPosition(userLocation);
+                     } else {
+                        userLocationMarker = new window.google.maps.Marker({
+                           position: userLocation,
+                           map: map,
+                           icon: 'user-marker.png', // Replace with your custom user marker icon
+                        });
+                     }
 
-            //    // Loop through the remaining steps of the current leg and add the instructions to the div
-            //    for (
-            //       let j = currentStepIndex;
-            //       j < legs[currentLegIndex].steps.length;
-            //       j++
-            //    ) {
-            //       const step = legs[currentLegIndex].steps[j];
-            //       const instruction = step.instructions;
-            //       const distance = step.distance.text;
-            //       const duration = step.duration.text;
+                     let currentLegSteps = route.legs[currentLeg].steps;
 
-            //       // Create a new div for each instruction and add it to the directionsDiv
-            //       const instructionDiv = document.createElement('div');
-            //       instructionDiv.innerHTML = `<b>${instruction}</b> (${distance}, ${duration})`;
-            //       directionsDiv.appendChild(instructionDiv);
-            //    }
-            // }
+                     // Find the closest step to the user's location in the current leg
+                     let closestStep = findClosestStep(
+                        userLocation,
+                        currentLegSteps
+                     );
+                     if (closestStep !== null) {
+                        currentStep = closestStep;
+                     }
 
-            // // Helper function to check if a position is on a step of the route
-            // function isPositionOnStep(position, stepStart, stepEnd) {
-            //    const positionLat = position.lat();
-            //    const positionLng = position.lng();
-            //    const stepStartLat = stepStart.lat();
-            //    const stepStartLng = stepStart.lng();
-            //    const stepEndLat = stepEnd.lat();
-            //    const stepEndLng = stepEnd.lng();
+                     // Update the instructions based on the current step
+                     let currentStepInstructions =
+                        currentLegSteps[currentStep].instructions;
+                     let currentStepDistance =
+                        currentLegSteps[currentStep].distance.text;
+                     let currentStepDuration =
+                        currentLegSteps[currentStep].duration.text;
 
-            //    // Check if the position is within the bounding box of the step
-            //    const minLat = Math.min(stepStartLat, stepEndLat);
-            //    const maxLat = Math.max(stepStartLat, stepEndLat);
-            //    const minLng = Math.min(stepStartLng, stepEndLng);
-            //    const maxLng = Math.max(stepStartLng, stepEndLng);
-            //    if (
-            //       positionLat < minLat ||
-            //       positionLat > maxLat ||
-            //       positionLng < minLng ||
-            //       positionLng > maxLng
-            //    ) {
-            //       return false;
-            //    }
+                     directionsDiv.innerHTML = `<b>${currentStepInstructions}</b> (${currentStepDistance}, ${currentStepDuration})`;
 
-            //    // Check if the position is close enough to the step
-            //    const stepLength = new window.google.maps.LatLng(
-            //       stepStartLat,
-            //       stepStartLng
-            //    ).distanceTo(
-            //       new window.google.maps.LatLng(stepEndLat, stepEndLng)
-            //    );
-            //    const distanceToStart = new window.google.maps.LatLng(
-            //       positionLat,
-            //       positionLng
-            //    ).distanceTo(
-            //       new window.google.maps.LatLng(stepStartLat, stepStartLng)
-            //    );
-            //    const distanceToEnd = new window.google.maps.LatLng(
-            //       positionLat,
-            //       positionLng
-            //    ).distanceTo(
-            //       new window.google.maps.LatLng(stepEndLat, stepEndLng)
-            //    );
-            //    const buffer = stepLength * 0.1; // 10% buffer
-            //    return (
-            //       distanceToStart < stepLength + buffer &&
-            //       distanceToEnd < stepLength + buffer
-            //    );
-            // }
+                     // Check if the user has reached the end of the current leg
+                     if (currentStep === currentLegSteps.length - 1) {
+                        if (currentLeg === route.legs.length - 1) {
+                           // The user has reached the end of the route
+                           return;
+                        }
 
-            // Arrow location marker
-            directionsService.route(request, function(response, status) {
+                        // Move on to the next leg
+                        currentLeg++;
+                        currentStep = 0;
+                     }
+                  },
+                  (error) => {
+                     console.log("Error retrieving user's location:", error);
+                  },
+                  {
+                     enableHighAccuracy: true,
+                  }
+               );
+            };
+
+            const findClosestStep = (userLocation, steps) => {
+               var closestStep = null;
+               var closestDistance = Infinity;
+
+               for (var i = 0; i < steps.length; i++) {
+                  var step = steps[i].start_point;
+                  var distance = window.google.maps.geometry.spherical.computeDistanceBetween(
+                     userLocation,
+                     step
+                  );
+
+                  if (distance < closestDistance) {
+                     closestDistance = distance;
+                     closestStep = i;
+                  }
+               }
+
+               return closestStep;
+            };
+
+            //Build Route for AR Experience Level #3
+            const buildThirdLevelRoute = (route) => {
+               const distances = [];
+               for (
+                  let j = 1;
+                  j < route.routes[0].legs[j].steps.length / 2;
+                  j++
+               ) {
+                  const distPoint = route.routes[0].legs[j].steps[j];
+                  distances.push(distPoint);
+                  console.log(distPoint.start_point.lat());
+                  console.log(distPoint.start_point.lng());
+               }
+
+               distances.forEach((step, index) => {
+                  const marker = new window.google.maps.Marker({
+                     position: {
+                        lat: step.start_point.lat(),
+                        lng: step.start_point.lng(),
+                     },
+                     map: map,
+                  });
+               });
+            };
+
+            directionsService.route(request, (response, status) => {
                if (status == window.google.maps.DirectionsStatus.OK) {
                   directionsRenderer.setDirections(response);
                   updateDurationDiv();
+                  showSteps(response);
 
+                  if (experienceLevel === 3) {
+                     buildThirdLevelRoute(response);
+                  }
                   // Get the first step in the route
                   let nextStep = response.routes[0].legs[0].steps[0];
 
@@ -762,10 +767,10 @@ const MapBuilder = (props) => {
             window.google.maps.event.addListener(
                directionsRenderer,
                'directions_changed',
-               function() {
+               () => {
                   savedRoute = directionsRenderer.getDirections();
                   updateDurationDiv();
-                  // updateDirectionsDiv(savedRoute, userPosition);
+                  showSteps(savedRoute);
                }
             );
 

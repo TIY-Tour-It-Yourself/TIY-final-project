@@ -7,7 +7,7 @@ import { TextField, Button, FormControl, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
- 
+
 const Account = () => {
    const [activeImage, setActiveImage] = useState(null);
    const [activeLink, setActiveLink] = useState(null);
@@ -36,7 +36,7 @@ const Account = () => {
                },
             })
             .then((response) => {
-               console.log(response.data);
+               // console.log(response.data);
                setFname(response.data.fname);
                setEmail(response.data.email);
             })
@@ -54,11 +54,11 @@ const Account = () => {
             .put('https://tiys.herokuapp.com/api/users', {
                fname,
                password,
-               email
+               email,
             })
             .then((response) => {
-               console.log(response);
-               setIsUpdated(true); 
+               // console.log(response);
+               setIsUpdated(true);
             })
             .catch((error) => {
                console.log(error);
