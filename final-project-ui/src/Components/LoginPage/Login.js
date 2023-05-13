@@ -40,7 +40,6 @@ const Login = () => {
                }
             );
             const token = response.data.token;
-            console.log('response token: ', token);
             setIsFormValid(true);
 
             // RememberMe Logic
@@ -53,7 +52,8 @@ const Login = () => {
 
             if (response.status === 200) {
                if (isTokenValid(token)) {
-                  navigate('/dashboard', { state: { token } });
+                  handleNavigate(token);
+                  // navigate('/dashboard', { state: { token } });
                } else {
                   // Handle invalid token
                   alert('Invalid token. Please log in again.');
@@ -79,7 +79,6 @@ const Login = () => {
 
    useEffect(() => {
       const token = localStorage.getItem('token');
-
       if (token && isTokenValid(token)) {
          handleNavigate(token);
       }
