@@ -60,7 +60,7 @@ const NavBar = ({ activeImage, activeLink }) => {
          src: calendar,
          src_clicked: calendar_clicked,
          url: '/events',
-      }
+      },
    ]);
 
    const [avatar, setAvatar] = useState(null);
@@ -117,10 +117,11 @@ const NavBar = ({ activeImage, activeLink }) => {
 
    const openSettingsPage = (event) => {
       navigate('/user_settings', { state: { token: location.state.token } });
-   }
+   };
    const handleLogout = (event) => {
+      localStorage.removeItem('token');
       navigate('/');
-   }
+   };
 
    const handleButtonClick = (newLink) => {
       if (links.filter((link) => link.title === newLink.title)) {
@@ -251,22 +252,18 @@ const NavBar = ({ activeImage, activeLink }) => {
                      onClick={handleCloseUserMenu}
                      onClose={handleCloseUserMenu}
                   >
-                  {/* <MenuItem onClick={handleCloseUserMenu}>
-                     <Avatar /> My account
-                  </MenuItem>
-                  <Divider /> */}
-                  <MenuItem onClick={openSettingsPage}>
-                     <ListItemIcon>
-                        <Settings fontSize="small" />
-                     </ListItemIcon>
-                     Settings
-                  </MenuItem>
-                  <MenuItem onClick={handleLogout}>
-                     <ListItemIcon>
-                        <Logout fontSize="small" />
-                     </ListItemIcon>
-                     Logout
-                  </MenuItem>
+                     <MenuItem onClick={openSettingsPage}>
+                        <ListItemIcon>
+                           <Settings fontSize='small' />
+                        </ListItemIcon>
+                        Settings
+                     </MenuItem>
+                     <MenuItem onClick={handleLogout}>
+                        <ListItemIcon>
+                           <Logout fontSize='small' />
+                        </ListItemIcon>
+                        Logout
+                     </MenuItem>
                   </Menu>
                </Box>
             </Toolbar>

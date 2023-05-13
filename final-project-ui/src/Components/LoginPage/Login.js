@@ -12,6 +12,7 @@ import PageContainer from '../Additionals/Container/PageContainer';
 import Divider from '../Additionals/Divider/Divider';
 import { Link, useNavigate } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
+import jwt from 'jsonwebtoken';
 
 const clientId =
    '302369383157-cc2iquq6s2e2ihq879qlfes2kbrc2f2e.apps.googleusercontent.com';
@@ -24,9 +25,6 @@ const Login = () => {
    const [isDirty, setIsDirty] = useState(false);
    const [isFormValid, setIsFormValid] = useState(false);
    const [is_accessible, setIsAccessible] = useState('');
-   const [logged, setIsLogged] = useState(false);
-   const [data, setData] = useState({});
-   const [picture, setPicture] = useState('');
    const navigate = useNavigate();
 
    const handleSubmit = async (e) => {
@@ -42,23 +40,24 @@ const Login = () => {
                }
             );
             const token = response.data.token;
+            console.log('response token: ', token);
             setIsFormValid(true);
 
             // RememberMe Logic
             if (rememberMe) {
-               console.log(rememberMe);
                localStorage.setItem('token', token);
-               console.log('success');
             } else {
                localStorage.removeItem('token', token);
-               console.log('failure');
+               console.log('Failed at receiving user token.');
             }
 
             if (response.status === 200) {
-               // console.log('line 57: ', token);
-               // if (token) {
-               navigate(`/dashboard`, { state: { token } });
-               // }
+               if (isTokenValid(token)) {
+                  navigate('/dashboard', { state: { token } });
+               } else {
+                  // Handle invalid token
+                  alert('Invalid token. Please log in again.');
+               }
             } else {
                console.log('Status is not 200');
             }
@@ -78,11 +77,32 @@ const Login = () => {
       }
    };
 
+   useEffect(() => {
+      const token = localStorage.getItem('token');
+
+      if (token && isTokenValid(token)) {
+         handleNavigate(token);
+      }
+   }, []);
+
+   const handleNavigate = (token) => {
+      navigate('/dashboard', { state: { token } });
+   };
+
    const isTokenValid = (token) => {
-      // Implement your token validation logic here
-      // Check if the token is present, not expired, and valid
-      // You can decode the token and check its expiration date, signature, etc.
-      // Return true if the token is valid, otherwise return false
+      try {
+         const decodedToken = jwt.decode(token);
+
+         // Check if the token is expired
+         const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+
+         if (decodedToken.exp < currentTime) {
+            return false; // Token has expired
+         }
+         return true; // Token is valid
+      } catch (error) {
+         return false; // Token is invalid or has an error
+      }
    };
 
    const handleRememberMeChange = (event) => {
