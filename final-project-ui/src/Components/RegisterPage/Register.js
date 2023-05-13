@@ -53,8 +53,7 @@ const Register = (props) => {
                is_accessible,
             })
             .then((response) => {
-               console.log(response.data);
-               const token = response.data;
+               const token = response.data.token;
                setIsFormValid(true);
                if (response.status === 200) {
                   navigate(`/dashboard`, { state: { token } });

@@ -37,7 +37,7 @@ const Dashboard = () => {
                },
             })
             .then((response) => {
-               // console.log(response.data);   //user's data
+               // console.log(response.data);
             })
             .catch((error) => {
                console.error('Error fetching user: ', error);

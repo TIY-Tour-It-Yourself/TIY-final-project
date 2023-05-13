@@ -63,6 +63,7 @@ const MapBuilder = (props) => {
                   },
                })
                .then((response) => {
+                  console.log(response.data);
                   setEmail(response.data.email);
                })
                .catch((error) => {
@@ -245,6 +246,7 @@ const MapBuilder = (props) => {
                   disableDefaultUI: true,
                }
             );
+
             // Create the start navigation button
             const startNavigationButton = document.createElement('button');
             startNavigationButton.textContent = 'Start';
@@ -628,10 +630,11 @@ const MapBuilder = (props) => {
                ) {
                   const distPoint = route.routes[0].legs[j].steps[j];
                   distances.push(distPoint);
-                  console.log(distPoint.start_point.lat());
-                  console.log(distPoint.start_point.lng());
+                  // console.log(distPoint.start_point.lat());
+                  // console.log(distPoint.start_point.lng());
                }
 
+               //TBD: need to set a new AR elements array with 3d elements
                distances.forEach((step, index) => {
                   const marker = new window.google.maps.Marker({
                      position: {
@@ -639,6 +642,34 @@ const MapBuilder = (props) => {
                         lng: step.start_point.lng(),
                      },
                      map: map,
+                     icon: `https://cdn.glitch.global/e974619b-5809-4dcb-bd75-55d296fd7ad8/fireworks.png?v=1683993759744`,
+                  });
+                  const infoWindow = new window.google.maps.InfoWindow({
+                     content: `<div style="display: flex; justify-content: center; flex-direction: column; margin-left: 22px;">
+                     <div style="margin: 0 auto;"><h3 style="color: #D25380;">Surprise!</h3></div>
+                     <div style="display: flex; margin-left: 15px; justify-content: center;">
+                     <div style="display: flex; flex-direction: column; align-items: center; margin-right: 10px;">
+                        <a href="${ARURLArray[index]}" target="_blank" style="text-decoration: none;">
+                           <div>
+                              <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
+                           </div>
+                           <div style="margin-top: 7px;">
+                              <span style="text-decoration: none; font-size: small;">Click Me</span>
+                           </div>
+                        </a> 
+                     </div> `,
+                  });
+
+                  infoWindow.addListener('domready', () => {
+                     //Open AR Element
+                     // const addARButton = document.querySelector("#open-ar-element");
+                     // addARButton.addEventListener("click", () => {
+                     //   openARElement(poi);
+                     // });
+                  });
+
+                  marker.addListener('click', () => {
+                     infoWindow.open(map, marker); // open the info window when the marker is clicked
                   });
                });
             };

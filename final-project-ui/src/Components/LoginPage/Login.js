@@ -11,6 +11,7 @@ import styles from './Login.module.css';
 import PageContainer from '../Additionals/Container/PageContainer';
 import Divider from '../Additionals/Divider/Divider';
 import { Link, useNavigate } from 'react-router-dom';
+import jwt_decode from 'jwt-decode';
 
 const clientId =
    '302369383157-cc2iquq6s2e2ihq879qlfes2kbrc2f2e.apps.googleusercontent.com';
@@ -77,6 +78,13 @@ const Login = () => {
       }
    };
 
+   const isTokenValid = (token) => {
+      // Implement your token validation logic here
+      // Check if the token is present, not expired, and valid
+      // You can decode the token and check its expiration date, signature, etc.
+      // Return true if the token is valid, otherwise return false
+   };
+
    const handleRememberMeChange = (event) => {
       setRememberMe(event.target.checked);
       console.log(rememberMe);
@@ -84,9 +92,9 @@ const Login = () => {
 
    //TBD: need to finish
    const onSuccess = async (res) => {
-      console.log('login successful: ', res.credential);
-      // const details = jwt_decode(res.credential);
-      // // console.log(details);
+      // console.log('login successful: ', res.credential);
+      const details = jwt_decode(res.credential);
+      console.log(details);
       // const response = await axios.post(`...`, {
       //    email,
       //    name,

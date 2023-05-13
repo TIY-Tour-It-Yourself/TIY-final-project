@@ -75,7 +75,7 @@ const MapProducer = () => {
                },
             })
             .then((response) => {
-               // console.log(response.data);
+               console.log(response.data);
                setEmail(response.data.email);
             })
             .catch((error) => {
