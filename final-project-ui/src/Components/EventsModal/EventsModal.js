@@ -9,7 +9,7 @@ import { Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-const EventsModal = (props) => {
+const EventsModal = ({ handleCloseModal }) => {
    const [open, setOpen] = useState(true);
    const navigate = useNavigate();
    const location = useLocation();
@@ -36,11 +36,8 @@ const EventsModal = (props) => {
       }
    }, [location.state]);
 
-   const handleCloseModal = () => {
-      console.log('back');
-      setOpen(false);
-      navigate(-1);
-      // navigate('/form_producer', { state: { token: location.state.token } });
+   const handleClose = () => {
+      handleCloseModal();
    };
 
    //Modal Style
@@ -120,7 +117,7 @@ const EventsModal = (props) => {
                      <Button
                         variant='outlined'
                         sx={{ fontWeight: 'bold', borderRadius: '17px' }}
-                        onClick={handleCloseModal}
+                        onClick={handleClose}
                      >
                         Close
                      </Button>

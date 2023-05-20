@@ -26,7 +26,6 @@ const Form_Producer = () => {
    const [formState, setFormState] = useState(true);
    const previousFormState = usePrevious(formState);
    const [eventModalOpen, setEventModalOpen] = useState(false);
-
    const [formTheme, setFormTheme] = useState('');
    const [themeName, setSelectedThemeName] = useState('');
    const [themeSelectedId, setThemeSelectedId] = useState('');
@@ -50,7 +49,6 @@ const Form_Producer = () => {
    const location = useLocation();
 
    useEffect(() => {
-      // console.log('form');
       if (!location.state) {
          navigate('/');
       } else {
@@ -73,7 +71,7 @@ const Form_Producer = () => {
 
    useEffect(() => {
       // Logic to handle closing the event modal
-      if (!eventModalOpen) {
+      if (eventModalOpen) {
          setFormState(previousFormState);
       }
    }, [eventModalOpen, previousFormState]);
@@ -181,13 +179,11 @@ const Form_Producer = () => {
       coordinates,
    ]);
 
+   //Open Events Modal
    const handleOpenModal = () => {
-      console.log('here!!!');
-      // setShowModal(true);
-      navigate('/events_choice', { state: { token: location.state.token } });
+      setEventModalOpen(true);
    };
 
-   // -------------------------------------------------
    // Function to calculate the distance between two points using Haversine formula
    const calcDistance = (lat1, lon1, lat2, lon2) => {
       const R = 6371 * 1000; // Radius of the earth in km
@@ -210,21 +206,18 @@ const Form_Producer = () => {
 
    const handleRadiusChange = (event) => {
       const value = Number(event.target.value);
-      console.log('Selected radius:', value);
       setSelectedRadius(value);
       setRadius(value);
    };
 
    //While data hasn't become an array yet- keep loading
    if (!Array.isArray(formTheme) || !Array.isArray(coordinates)) {
-      // return <div> Loading... </div>;
       return <LoadingBar />;
    }
 
    const setSelectedTheme = (value) => {
       if (themeSelectedId !== '') {
          setThemeSelectedId(value);
-         // themeSelected.backgroundColor = '#BAD7E9';
       } else {
          setThemeSelectedId(value);
       }
@@ -300,9 +293,6 @@ const Form_Producer = () => {
          console.log(error);
       }
    };
-
-   //POIs Grades array
-   // const grades = coordinates.map((coord) => coord.grade);
 
    return (
       <>
@@ -522,12 +512,15 @@ const Form_Producer = () => {
                      backgroundColor: '#EBB02D',
                      borderRadius: '20px',
                   }}
-                  // onClick={handleOpenModal}
-                  onClick={() => setEventModalOpen(true)}
+                  onClick={handleOpenModal}
                >
                   Events List
                </Button>
-               {/* {eventModalOpen && <EventsModal />} */}
+               {eventModalOpen && (
+                  <EventsModal
+                     handleCloseModal={() => setEventModalOpen(false)}
+                  />
+               )}
             </Box>
          </div>
          {/* POIs List */}
