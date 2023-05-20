@@ -37,10 +37,6 @@ function ReviewForm(props) {
       }
    }, [poiData]);
 
-   const handleChangeRating = (value) => {
-      setRating(value);
-   };
-
    const handleSubmit = (event) => {
       event.preventDefault();
       const newgrade = rating; // You can replace this with the actual rating value
@@ -55,10 +51,6 @@ function ReviewForm(props) {
             console.error(error);
          });
       props.onCancel(); // close the modal
-   };
-
-   const handleCancel = () => {
-      window.history.back();
    };
 
    return (

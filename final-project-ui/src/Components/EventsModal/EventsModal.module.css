@@ -1,0 +1,46 @@
+.modal > div {
+   margin-top: 3%;
+   text-align: center;
+}
+
+ol > li::marker {
+   font-weight: bold;
+   color: rgb(15, 77, 139);
+}
+
+ol > li {
+   font-size: 1.2rem;
+}
+
+.third {
+   color: #0081c9;
+}
+
+.event_card {
+   width: 422px;
+   height: 280px;
+   border-radius: 15px;
+   background-image: url('./images/schedule_events.jpg');
+   background-repeat: no-repeat;
+}
+
+.inner_card {
+   width: 180px;
+   height: 240px;
+   border-radius: 15px;
+   position: relative;
+   left: 235px;
+   top: 20px;
+   background-color: white;
+}
+
+@media (max-width: 600px) {
+   .inner_card {
+      width: 220px;
+      height: 200px;
+      border-radius: 15px;
+      position: relative;
+      left: 15px;
+      top: 70px;
+   }
+}

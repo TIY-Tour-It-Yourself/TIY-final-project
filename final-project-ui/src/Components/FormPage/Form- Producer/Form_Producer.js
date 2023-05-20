@@ -7,13 +7,14 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import NavBar from '../../Additionals/NavBar/NavBar';
 import Grid from '../../Additionals/Grid/Grid';
 import LoadingBar from '../../Additionals/LoadingBar/LoadingBar';
+import EventsModal from '../../EventsModal/EventsModal';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import ARFirstLevel from './ar_imgs/boy_with_mobile_level_2.jpg';
 import ARSecondLevel from './ar_imgs/ar_img_1.jpg';
 import ARThirdLevel from './ar_imgs/ar_level_3_elephant.png';
-import Bialik from './routes_imgs/tour_bialik.jpg';
 import Location from './routes_imgs/pin_red.png';
 import Star from './pois_imgs/star_32.png';
+import usePrevious from './usePrevious';
 
 const arImgs = [
    { id: 1, name: 'Intermediate', src: ARFirstLevel },
@@ -22,6 +23,10 @@ const arImgs = [
 ];
 
 const Form_Producer = () => {
+   const [formState, setFormState] = useState(true);
+   const previousFormState = usePrevious(formState);
+   const [eventModalOpen, setEventModalOpen] = useState(false);
+
    const [formTheme, setFormTheme] = useState('');
    const [themeName, setSelectedThemeName] = useState('');
    const [themeSelectedId, setThemeSelectedId] = useState('');
@@ -45,6 +50,7 @@ const Form_Producer = () => {
    const location = useLocation();
 
    useEffect(() => {
+      // console.log('form');
       if (!location.state) {
          navigate('/');
       } else {
@@ -64,6 +70,13 @@ const Form_Producer = () => {
             });
       }
    }, [location.state]);
+
+   useEffect(() => {
+      // Logic to handle closing the event modal
+      if (!eventModalOpen) {
+         setFormState(previousFormState);
+      }
+   }, [eventModalOpen, previousFormState]);
 
    //Get Themes from DB
    useEffect(() => {
@@ -116,7 +129,7 @@ const Form_Producer = () => {
       filterData();
    }, []);
 
-   //Display unfiltered POIs
+   //Display filtered POIs
    useEffect(() => {
       let newLevelId = 0;
       if (themeSelectedId && selectedLevelId) {
@@ -167,6 +180,12 @@ const Form_Producer = () => {
       userLocation,
       coordinates,
    ]);
+
+   const handleOpenModal = () => {
+      console.log('here!!!');
+      // setShowModal(true);
+      navigate('/events_choice', { state: { token: location.state.token } });
+   };
 
    // -------------------------------------------------
    // Function to calculate the distance between two points using Haversine formula
@@ -245,35 +264,41 @@ const Form_Producer = () => {
    }, {});
 
    const handleNavigate = async () => {
-      const getNewRouteIdRes = await axios.get(
-         'https://tiys.herokuapp.com/api/routes/getnewid/'
-      );
-      const userRouteData = await axios.post(
-         'https://tiys.herokuapp.com/api/routes',
-         {
-            routeid: getNewRouteIdRes.data,
-            description: 'Private Route',
-            pois: poiid,
-            evaluation_grade: '0',
-            experience_level: selectedLevelId,
-            theme: themeName,
-            imgurl: '',
-            access: 'private',
-            email: email,
-         }
-      );
-      // navigate(
-      //    `/map_producer?${Object.entries(poiidMap)
-      //       .map(([key, value]) => `${key}=${value}`)
-      //       .join('&')}&ARLevel=${selectedLevelId}`,
-      //    { state: { token: location.state.token } }
-      // );
-      navigate(
-         `/map_builder?routeId=${getNewRouteIdRes.data}&ARLevel=${selectedLevelId}`,
-         {
-            state: { token: location.state.token },
-         }
-      );
+      try {
+         const getNewRouteIdRes = await axios.get(
+            'https://tiys.herokuapp.com/api/routes/getnewid/'
+         );
+         // console.log(themeName);
+         const userRouteData = await axios
+            .post('https://tiys.herokuapp.com/api/routes', {
+               routeid: getNewRouteIdRes.data,
+               description: 'Private Route',
+               pois: poiid,
+               evaluation_grade: 0,
+               experience_level: selectedLevelId,
+               theme: themeName,
+               imgurl: '',
+               access: 'private',
+               email: email,
+            })
+            .then((response) => {
+               // console.log(response.data.token);
+               return response.data.token;
+            })
+            .catch((error) => {
+               console.log(error);
+               throw error;
+            });
+
+         navigate(
+            `/map_builder?routeId=${getNewRouteIdRes.data}&ARLevel=${selectedLevelId}`,
+            {
+               state: { token: location.state.token },
+            }
+         );
+      } catch (error) {
+         console.log(error);
+      }
    };
 
    //POIs Grades array
@@ -358,7 +383,10 @@ const Form_Producer = () => {
                   formTheme.map((theme) => (
                      <Button
                         key={theme.themeid}
-                        onClick={() => setSelectedTheme(theme.themeid)}
+                        onClick={() => {
+                           setSelectedTheme(theme.themeid);
+                           setSelectedThemeName(theme.theme);
+                        }}
                         value={theme}
                         variant={
                            themeSelectedId === theme.themeid
@@ -469,6 +497,37 @@ const Form_Producer = () => {
                   />
                   <div style={{ width: '5rem', textAlign: 'left' }}>8km</div>
                </div>
+               <div className={styles.events_div}>
+                  <Typography
+                     component='span'
+                     sx={
+                        isSmallScreen
+                           ? { fontSize: '1.05rem', mb: 1 }
+                           : { fontSize: '1.25rem' }
+                     }
+                  >
+                     <b>Add Events:</b>
+                  </Typography>
+               </div>
+               <Button
+                  variant='contained'
+                  sx={{
+                     ':hover': {
+                        bgcolor: '#EBB02D',
+                        color: 'white',
+                     },
+                     mt: 1,
+                     mb: 2,
+                     color: 'white',
+                     backgroundColor: '#EBB02D',
+                     borderRadius: '20px',
+                  }}
+                  // onClick={handleOpenModal}
+                  onClick={() => setEventModalOpen(true)}
+               >
+                  Events List
+               </Button>
+               {/* {eventModalOpen && <EventsModal />} */}
             </Box>
          </div>
          {/* POIs List */}
@@ -488,9 +547,8 @@ const Form_Producer = () => {
             >
                <span>
                   <b>
-                     {' '}
                      Choose the POIs you want to visit
-                     <br /> (at least 3):{' '}
+                     <br /> (at least 3):
                   </b>
                </span>
             </Typography>

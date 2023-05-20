@@ -29,7 +29,6 @@ const MapModal = () => {
 
    return (
       <div className={styles.modal}>
-         {/* <Button sx={{ border: '1px solid #2146C7', borderRadius: '20px', width: '40%'}} onClick={handleOpenModalRoutes}>Show Routes</Button> */}
          <Modal
             open={open}
             onClose={closeModal}
@@ -39,15 +38,27 @@ const MapModal = () => {
             <Box sx={style}>
                <div className={styles.container}>
                   <section className={styles.modal}>
-                     <div><h2>A Few Guiding Tips:</h2></div>
-                        <ol>
-                           <li>Follow the <span style={{color: '#379237'}}>green</span> arrow which signifies your current location and tells you which direction to go on the map.</li>
-                           <br/>
-                           <li>Each <span style={{color: 'red'}}>red</span> pin signifies a specific location of the tour. Click on it and you'll see the AR icon (from AR level: 'Advanced') and the Rank icon.</li>
-                           <br/>
-                           <li className={styles.third}>Enjoy! :)</li>
-                           <br/>
-                        </ol>
+                     <div>
+                        <h2>A Few Guiding Tips:</h2>
+                     </div>
+                     <ol>
+                        <li>
+                           Follow the{' '}
+                           <span style={{ color: '#379237' }}>green</span> arrow
+                           which signifies your current location and tells you
+                           which direction to go on the map.
+                        </li>
+                        <br />
+                        <li>
+                           Each <span style={{ color: 'red' }}>red</span> pin
+                           signifies a specific location of the tour. Click on
+                           it and you'll see the AR icon (from AR level:
+                           'Advanced') and the Rank icon.
+                        </li>
+                        <br />
+                        <li className={styles.third}>Enjoy! :)</li>
+                        <br />
+                     </ol>
                   </section>
                   <div style={{ textAlign: 'center' }}>
                      <Button

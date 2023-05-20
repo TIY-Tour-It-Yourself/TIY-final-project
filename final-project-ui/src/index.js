@@ -17,11 +17,14 @@ import ARManagementPage from './Pages/ARManagementPage';
 import MapBuilderPage from './Pages/MapBuilderPage';
 import ResearcherPage from './Pages/ResearcherPage';
 import ToursTablePage from './Pages/ToursTablePage';
+import EventsModalPage from './Pages/EventsModalPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-   <GoogleOAuthProvider clientId='302369383157-cc2iquq6s2e2ihq879qlfes2kbrc2f2e.apps.googleusercontent.com'>
+   <GoogleOAuthProvider
+      clientId={`302369383157-cc2iquq6s2e2ihq879qlfes2kbrc2f2e.apps.googleusercontent.com`}
+   >
       <React.StrictMode>
          <BrowserRouter>
             <Routes>
@@ -36,6 +39,7 @@ root.render(
                <Route path='/map_producer' element={<MapProducerPage />} />
                <Route path='/map_builder' element={<MapBuilderPage />} />
                <Route path='/ar_page' element={<ARManagementPage />} />
+               <Route path='/events_choice' element={<EventsModalPage />} />
                <Route path='/user_settings' element={<AccountPage />} />
                <Route path='/tours_history' element={<ToursPage />} />
                <Route path='*' element={<NotFoundPage />} />

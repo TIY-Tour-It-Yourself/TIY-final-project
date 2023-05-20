@@ -41,19 +41,17 @@ const Login = () => {
             );
             const token = response.data.token;
             setIsFormValid(true);
-
+            // console.log(`line 44: `, response.data);
             // RememberMe Logic
             if (rememberMe) {
                localStorage.setItem('token', token);
             } else {
                localStorage.removeItem('token', token);
-               console.log('Failed at receiving user token.');
             }
 
             if (response.status === 200) {
                if (isTokenValid(token)) {
                   handleNavigate(token);
-                  // navigate('/dashboard', { state: { token } });
                } else {
                   // Handle invalid token
                   alert('Invalid token. Please log in again.');
@@ -109,23 +107,34 @@ const Login = () => {
       console.log(rememberMe);
    };
 
-   //TBD: need to finish
    const onSuccess = async (res) => {
-      // console.log('login successful: ', res.credential);
       const details = jwt_decode(res.credential);
       console.log(details);
-      // const response = await axios.post(`...`, {
-      //    email,
-      //    name,
-      // });
-      // const token = response.data.token;
-      // setIsFormValid(true);
+      const response = await axios.post(
+         `https://tiys.herokuapp.com/api/users/gmailauth`,
+         {
+            email: details.email,
+            name: details.name,
+            picture: details.picture,
+         }
+      );
+      // .then((response) => {
+      try {
+         const token = response.data.token;
+         setIsFormValid(true);
 
-      // if (response.status == 200) {
-      //    navigate(`/dashboard`, { state: { token } });
-      // } else {
-      //    console.log('Status is not 200');
-      // }
+         if (response.status == 200) {
+            handleNavigate(token);
+            // navigate(`/dashboard`, { state: { token } });
+         } else {
+            console.log('Status is not 200');
+         }
+         // })
+      } catch (error) {
+         // .catch((error) => {
+         console.log(`User could not log in:`, error);
+      }
+      // });
    };
 
    const onFailure = (res) => {
@@ -209,21 +218,6 @@ const Login = () => {
                   </Button>
                </FormControl>
             </form>
-            {/* <Typography sx={{ mt: 0, mb: 1, mr: 1 }}>
-               <Link
-                  style={{ fontSize: '0.75rem', color: 'black' }}
-                  // Need to define navigation to retreive password
-                  href='/'
-                  sx={{
-                     textDecoration: 'none',
-                     '&:hover': {
-                        textDecoration: 'underline',
-                     },
-                  }}
-               >
-                  <b>Forgot Password?</b>
-               </Link>
-            </Typography> */}
             <Typography
                style={{ fontSize: 'small' }}
                sx={isSmallScreen ? { mb: 1 } : { mt: 2, mb: 4 }}
@@ -241,7 +235,7 @@ const Login = () => {
                   Sign Up
                </Link>
             </Typography>
-            <Divider title='Sign In With' />
+            {/* <Divider title='Sign In With' />
             <div className={styles.flexbox}>
                <div id='signInButton'>
                   <GoogleLogin
@@ -252,7 +246,7 @@ const Login = () => {
                      cookie_policy={'single_host_origin'}
                   />
                </div>
-            </div>
+            </div> */}
          </PageContainer>
       </>
    );

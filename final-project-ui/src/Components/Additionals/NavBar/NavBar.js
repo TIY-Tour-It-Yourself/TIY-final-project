@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import styles from './NavBar.module.css';
@@ -21,17 +21,21 @@ import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import Avatar from '@mui/material/Avatar';
+import difAvatar from './nav_imgs/user.png';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Settings from '@mui/icons-material/Settings';
-import Divider from '@mui/material/Divider';
 import Logout from '@mui/icons-material/Logout';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
+import LoadingBar from '../LoadingBar/LoadingBar';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 const NavBar = ({ activeImage, activeLink }) => {
+   const ref = useRef();
+   const shouldLog = useRef(true);
+   const [isLoading, setIsLoading] = useState(true);
    const [images, setImages] = useState([
       {
          id: 1,
@@ -67,9 +71,6 @@ const NavBar = ({ activeImage, activeLink }) => {
    const [anchorEl, setAnchorEl] = useState(null);
    const open = Boolean(anchorEl);
 
-   const [updatedToken, setUpdatedToken] = useState('');
-   const [anchorElNav, setAnchorElNav] = useState('');
-
    const location = useLocation();
    const navigate = useNavigate();
 
@@ -77,6 +78,9 @@ const NavBar = ({ activeImage, activeLink }) => {
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
    useEffect(() => {
+      // console.log('here');
+      // if (shouldLog.current) {
+      //    shouldLog.current = false;
       if (!location.state) {
          navigate('/');
       } else {
@@ -88,14 +92,14 @@ const NavBar = ({ activeImage, activeLink }) => {
                },
             })
             .then((response) => {
-               // console.log(response.data);
                setAvatar(response.data.avatar);
             })
             .catch((error) => {
                console.error('Error fetching user: ', error);
             });
       }
-   }, [location.state]);
+      // }
+   }, []);
 
    const links = [
       { id: 1, title: 'Settings', url: `/user_settings` },
@@ -129,10 +133,13 @@ const NavBar = ({ activeImage, activeLink }) => {
       }
    };
 
+   const handleAvatarLoad = () => {
+      setIsLoading(false); // Avatar loaded, set loading to false
+   };
+
    return (
       <AppBar
          position='fixed'
-         // style={{ backgroundColor: 'white' }}
          sx={
             isSmallScreen
                ? { top: 'auto', bottom: 0, backgroundColor: 'white' }
@@ -231,7 +238,10 @@ const NavBar = ({ activeImage, activeLink }) => {
                   {!isSmallScreen && (
                      <Tooltip title='Open Menu'>
                         <IconButton onClick={handleOpenUserMenu}>
-                           <Avatar alt='user' src={avatar} />
+                           <Avatar
+                              alt='user'
+                              src={`http://www.gravatar.com/avatar/8bb4dc936d8ec3b28fea439222e64bd0?s=200&r=pg&d=mm`}
+                           />
                         </IconButton>
                      </Tooltip>
                   )}
@@ -268,6 +278,7 @@ const NavBar = ({ activeImage, activeLink }) => {
                </Box>
             </Toolbar>
          </Container>
+         {/* )} */}
       </AppBar>
    );
 };

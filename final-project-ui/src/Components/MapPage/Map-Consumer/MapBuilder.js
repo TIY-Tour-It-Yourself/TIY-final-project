@@ -13,6 +13,7 @@ import styles from './MapBuilder.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 // import ARManagement from "../../ARPage/ARManagement";
 import ReviewForm from '../ReviewFormPage/ReviewForm';
+import { duration } from 'moment/moment';
 
 const MapBuilder = (props) => {
    const ref = useRef();
@@ -48,6 +49,8 @@ const MapBuilder = (props) => {
    const location = useLocation();
    const navigate = useNavigate();
    const [userposition, setUserPosition] = useState([]);
+   const [arelements, setArElements] = useState([]);
+   const [ThreeArElements, setThreeArElements] = useState([]);
 
    useEffect(() => {
       if (shouldLog.current) {
@@ -139,6 +142,39 @@ const MapBuilder = (props) => {
       }
    }, [email]);
 
+   //Get AR Elements from DB
+   useEffect(() => {
+      if (email) {
+         //   console.log("get pois from DB");
+         const getARElements = async () => {
+            try {
+               const response = await axios.get(
+                  'https://tiys.herokuapp.com/api/arelements'
+               );
+               setArElements(response.data);
+            } catch (error) {
+               console.log(error);
+            }
+         };
+         getARElements();
+      }
+   }, [email]);
+
+   useEffect(() => {
+      if (arelements.length > 0) {
+         const fetchData = async () => {
+            try {
+               // Get AR element
+               const filteredAr = arelements.filter((ar) => ar.level === 3);
+               setThreeArElements(filteredAr);
+            } catch (error) {
+               console.error(error);
+            }
+         };
+         fetchData();
+      }
+   }, [arelements]);
+
    useEffect(() => {
       //Get route pois' names
       if (poisNames.length > 0) {
@@ -201,17 +237,15 @@ const MapBuilder = (props) => {
       experienceLevel,
    ]);
 
-   //  useEffect(() => {
-   // navigate(`http://ar_management.html?lat=${selectedARPoi.coordinates.lat}&lng=${selectedARPoi.coordinates.lng}&desc=${selectedARPoi.description}&img=${selectedARPoi.arid.url}`);
-   // openARElement();
-   //  }, [selectedARPoi]);
-   // *********************************************
-
    //Open AR Element from ARManagement component
    const openARElement = (poi) => {
       const url = `/ar.html?lat=${poi.coordinates.lat}&lng=${poi.coordinates.lng}&desc=${poi.description}&img=${poi.arid.url}`;
-      // const url = `/ar_page?lat=${poi.coordinates.lat}&lng=${poi.coordinates.lng}&desc=${poi.description}&img=${poi.arid.url}`;
-      // window.location.href = `/ar.html?lat=${poi.coordinates.lat}&lng=${poi.coordinates.lng}&desc=${poi.description}&img=${poi.arid.url}`;
+      window.open(url, '_blank');
+   };
+
+   //Open AR Element ThirdLevel from ARManagement component
+   const openThirdLevelARElement = (stepLat, stepLng, ThreeArElements) => {
+      const url = `/ar.html?lat=${stepLat}&lng=${stepLng}&desc=${null}&img=${ThreeArElements}`;
       window.open(url, '_blank');
    };
 
@@ -244,8 +278,58 @@ const MapBuilder = (props) => {
                   center: { lat: poisLatData[0], lng: poisLngData[0] },
                   zoom: 12,
                   disableDefaultUI: true,
+                  heading: 320,
+                  tilt: 47.5,
+                  mapId: '90f87356969d889c',
+                  gestureHandling: 'greedy',
                }
             );
+
+            const buttons = [
+               [
+                  'Tilt Down',
+                  'tilt',
+                  20,
+                  window.google.maps.ControlPosition.RIGHT_CENTER,
+                  '+',
+               ],
+               [
+                  'Tilt Up',
+                  'tilt',
+                  -20,
+                  window.google.maps.ControlPosition.RIGHT_CENTER,
+                  '-',
+               ],
+            ];
+
+            buttons.forEach(([text, mode, amount, position, symbol]) => {
+               const controlDiv = document.createElement('div');
+               const controlUI = document.createElement('button');
+
+               controlUI.classList.add('ui-button');
+               controlUI.classList.add(styles['zoom-button']); // Add custom class for styling
+               controlUI.innerText = `${symbol}`;
+               controlUI.addEventListener('click', () => {
+                  adjustMap(mode, amount);
+               });
+               controlDiv.appendChild(controlUI);
+               map.controls[position].push(controlDiv);
+            });
+            const adjustMap = function(mode, amount) {
+               switch (mode) {
+                  case 'tilt':
+                     map.setTilt(map.getTilt() + amount);
+                     if (amount > 0) {
+                        map.setZoom(map.getZoom() + 1);
+                        console.log(map.getZoom());
+                     } else {
+                        map.setZoom(map.getZoom() - 1);
+                     }
+                     break;
+                  default:
+                     break;
+               }
+            };
 
             // Create the start navigation button
             const startNavigationButton = document.createElement('button');
@@ -283,7 +367,10 @@ const MapBuilder = (props) => {
             timerDiv.style.borderRadius = '5px';
             timerDiv.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.3)';
             timerDiv.style.fontSize = '16px';
-            timerDiv.style.marginBottom = '30px';
+            timerDiv.style.position = 'absolute';
+            timerDiv.style.top = '45px';
+
+            timerDiv.style.marginBottom = '10px';
 
             // Add the timer element to the map controls
             // map.controls[window.google.maps.ControlPosition.TOP_CENTER].push(
@@ -328,15 +415,23 @@ const MapBuilder = (props) => {
 
                // Show the alert message
                alert('Hope you enjoyed your tour!');
-               axios.post('https://tiys.herokuapp.com/api/tours', {
-                  description: routeDescription,
-                  duration: totalTime,
-                  email: email,
-                  evaluation_grade: grade,
-                  experience_level: experienceLevel,
-                  routeid: routeId,
-                  theme: theme,
-               });
+               axios
+                  .post('https://tiys.herokuapp.com/api/tours', {
+                     description: routeDescription,
+                     duration: totalTime,
+                     email: email,
+                     evaluation_grade: grade,
+                     experience_level: experienceLevel,
+                     pois: poisIdNums,
+                     routeid: routeId,
+                     theme: theme,
+                  })
+                  .then((response) => {
+                     console.log('Tour saved successfully:', response.data);
+                  })
+                  .catch((error) => {
+                     console.log('Error saving tour:', error);
+                  });
             });
 
             let savedRoute;
@@ -443,7 +538,8 @@ const MapBuilder = (props) => {
             durationDiv.style.borderRadius = '5px';
             durationDiv.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.3)';
             durationDiv.style.fontSize = '16px';
-            durationDiv.style.marginBottom = '60px';
+            durationDiv.style.marginBottom = '175px';
+            durationDiv.style.position = 'fixed';
 
             // Add the duration element to the map controls
             map.controls[window.google.maps.ControlPosition.BOTTOM_CENTER].push(
@@ -495,7 +591,7 @@ const MapBuilder = (props) => {
                durationDiv.appendChild(resetButton);
             };
 
-            // // ***Navigation Instruction******
+            // ***Navigation Instruction******
 
             // Create an empty div to hold the navigation instructions
             const directionsDiv = document.createElement('div');
@@ -506,15 +602,14 @@ const MapBuilder = (props) => {
             directionsDiv.style.fontSize = '16px';
             directionsDiv.style.maxHeight = '300px';
             directionsDiv.style.width = '300px';
+            directionsDiv.style.marginTop = '3.5px';
             directionsDiv.style.overflowY = 'auto';
-            directionsDiv.style.marginTop = '120px';
 
             // Create a parent container element to hold the timer and directions elements
             const containerDiv = document.createElement('div');
             containerDiv.style.display = 'flex';
             containerDiv.style.flexDirection = 'column';
             containerDiv.style.alignItems = 'center';
-            timerDiv.style.marginBottom = '-100px';
 
             // Add the timer element to the container
             containerDiv.appendChild(timerDiv);
@@ -622,20 +717,19 @@ const MapBuilder = (props) => {
 
             //Build Route for AR Experience Level #3
             const buildThirdLevelRoute = (route) => {
+               // console.log(route.routes[0].legs);
+               console.log(route.routes[0]);
                const distances = [];
-               for (
-                  let j = 1;
-                  j < route.routes[0].legs[j].steps.length / 2;
-                  j++
-               ) {
-                  const distPoint = route.routes[0].legs[j].steps[j];
-                  distances.push(distPoint);
-                  // console.log(distPoint.start_point.lat());
-                  // console.log(distPoint.start_point.lng());
+               for (let j = 1; j < route.routes[0].legs.length - 1; j++) {
+                  const leg = route.routes[0].legs[j];
+                  const middleStepIndex = Math.floor(leg.steps.length / 2);
+                  const middleStep = leg.steps[middleStepIndex];
+                  distances.push(middleStep);
                }
 
                //TBD: need to set a new AR elements array with 3d elements
                distances.forEach((step, index) => {
+                  const ThreeArElement = ThreeArElements[index].url; // Get the corresponding AR element
                   const marker = new window.google.maps.Marker({
                      position: {
                         lat: step.start_point.lat(),
@@ -649,23 +743,26 @@ const MapBuilder = (props) => {
                      <div style="margin: 0 auto;"><h3 style="color: #D25380;">Surprise!</h3></div>
                      <div style="display: flex; margin-left: 15px; justify-content: center;">
                      <div style="display: flex; flex-direction: column; align-items: center; margin-right: 10px;">
-                        <a href="${ARURLArray[index]}" target="_blank" style="text-decoration: none;">
-                           <div>
-                              <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
-                           </div>
-                           <div style="margin-top: 7px;">
-                              <span style="text-decoration: none; font-size: small;">Click Me</span>
-                           </div>
-                        </a> 
+                        <button id="open-ar-element" style="border: none; background-color: transparent;">
+                        <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
+                        <br/>
+                        <span style="text-decoration: none; font-size: small;">Click Me</span>
+                        </button>
                      </div> `,
                   });
 
                   infoWindow.addListener('domready', () => {
-                     //Open AR Element
-                     // const addARButton = document.querySelector("#open-ar-element");
-                     // addARButton.addEventListener("click", () => {
-                     //   openARElement(poi);
-                     // });
+                     // Open AR Element
+                     const addARButton = document.querySelector(
+                        '#open-ar-element'
+                     );
+                     addARButton.addEventListener('click', () => {
+                        openThirdLevelARElement(
+                           step.start_point.lat(),
+                           step.start_point.lng(),
+                           ThreeArElement
+                        );
+                     });
                   });
 
                   marker.addListener('click', () => {
@@ -674,124 +771,148 @@ const MapBuilder = (props) => {
                });
             };
 
+            //Arrow Location Marker
+            var myLocationMarker;
+            var watchPositionId;
+            var previousLocation;
+
+            function addUserLocation() {
+               myLocationMarker = new window.google.maps.Marker({
+                  clickable: false,
+                  icon: {
+                     path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                     strokeColor: '#1C6758',
+                     fillColor: '#03C988',
+                     fillOpacity: 1,
+                     scale: 4,
+                  },
+                  shadow: null,
+                  zIndex: 999,
+                  // title: genProps.pMyLocationTitle,
+                  map: map,
+               });
+
+               // Create a custom overlay for the breathing circle
+               var circleDiv = document.createElement('div');
+               circleDiv.classList.add(styles['breathing-circle']);
+               var overlay = new window.google.maps.OverlayView();
+               overlay.onAdd = function() {
+                  var panes = this.getPanes();
+                  panes.overlayLayer.appendChild(circleDiv);
+               };
+               overlay.draw = function() {
+                  var point = this.getProjection().fromLatLngToDivPixel(
+                     myLocationMarker.getPosition()
+                  );
+                  if (point) {
+                     // Adjust the position by subtracting half the width and height of the circle
+                     var circleWidth = parseInt(
+                        window.getComputedStyle(circleDiv).width,
+                        10
+                     );
+                     var circleHeight = parseInt(
+                        window.getComputedStyle(circleDiv).height,
+                        10
+                     );
+                     circleDiv.style.left = point.x - circleWidth / 2 + 'px';
+                     circleDiv.style.top = point.y - circleHeight / 2 + 'px';
+                  }
+               };
+
+               overlay.setMap(map);
+               enableWatchPosition();
+            }
+
+            function enableWatchPosition() {
+               if (navigator.geolocation) {
+                  watchPositionId = navigator.geolocation.watchPosition(
+                     locateByBrowser,
+                     handleErrorGettingLocation,
+                     {
+                        timeout: 30000,
+                        enableHighAccuracy: true,
+                        maximumAge: 1000,
+                     }
+                  );
+               }
+            }
+
+            function locateByBrowser(location) {
+               var currentLocation = new window.google.maps.LatLng(
+                  location.coords.latitude,
+                  location.coords.longitude
+               );
+
+               if (!previousLocation) {
+                  // Initialize previousLocation with the current location
+                  previousLocation = currentLocation;
+               }
+
+               myLocationMarker.setPosition(currentLocation);
+
+               // Calculate the heading/rotation angle between the previous and current locations
+               var heading = calculateHeading(
+                  previousLocation,
+                  currentLocation
+               );
+               myLocationMarker.setIcon({
+                  ...myLocationMarker.getIcon(),
+                  rotation: heading,
+               });
+
+               // Update previousLocation with the current location for the next iteration
+               previousLocation = currentLocation;
+               map.setCenter(currentLocation);
+            }
+
+            function calculateHeading(previousLocation, currentLocation) {
+               // Calculate the latitude and longitude differences between the two locations
+               var lat1 = previousLocation.lat();
+               var lon1 = previousLocation.lng();
+               var lat2 = currentLocation.lat();
+               var lon2 = currentLocation.lng();
+
+               // Convert latitude and longitude differences to radians
+               var dLat = toRadians(lat2 - lat1);
+               var dLon = toRadians(lon2 - lon1);
+
+               // Calculate the bearing/angle using the Haversine formula
+               var y = Math.sin(dLon) * Math.cos(toRadians(lat2));
+               var x =
+                  Math.cos(toRadians(lat1)) * Math.sin(toRadians(lat2)) -
+                  Math.sin(toRadians(lat1)) *
+                     Math.cos(toRadians(lat2)) *
+                     Math.cos(dLon);
+               var angle = Math.atan2(y, x);
+
+               // Convert the angle to degrees
+               var degrees = toDegrees(angle);
+
+               // Adjust the angle to be between 0 and 360 degrees
+               var heading = (degrees + 360) % 360;
+
+               return heading;
+            }
+            function toRadians(degrees) {
+               return (degrees * Math.PI) / 180;
+            }
+            function toDegrees(radians) {
+               return (radians * 180) / Math.PI;
+            }
+
+            function handleErrorGettingLocation() {
+               // Handle any errors that occur while getting the user's location
+            }
+
             directionsService.route(request, (response, status) => {
                if (status == window.google.maps.DirectionsStatus.OK) {
                   directionsRenderer.setDirections(response);
                   updateDurationDiv();
                   showSteps(response);
-
+                  addUserLocation();
                   if (experienceLevel === 3) {
                      buildThirdLevelRoute(response);
                   }
-                  // Get the first step in the route
-                  let nextStep = response.routes[0].legs[0].steps[0];
-
-                  // Create an arrow marker that points in the direction of the next step
-                  const arrowMarker = new window.google.maps.Marker({
-                     position: userPosition,
-                     icon: {
-                        path:
-                           window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                        strokeColor: '#1C6758',
-                        fillColor: '#03C988',
-                        fillOpacity: 1,
-                        scale: 4,
-                     },
-                     map,
-                  });
-
-                  // Update the arrow marker whenever the user's location changes
-                  // Get the bearing of a line between two points
-                  function getBearing(from, to) {
-                     const lat1 = from.lat();
-                     const lng1 = from.lng();
-                     const lat2 = to.lat();
-                     const lng2 = to.lng();
-                     const y = Math.sin(lng2 - lng1) * Math.cos(lat2);
-                     const x =
-                        Math.cos(lat1) * Math.sin(lat2) -
-                        Math.sin(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1);
-                     const bearing = (Math.atan2(y, x) * 180) / Math.PI;
-                     return bearing;
-                  }
-
-                  // Calculate the difference between two angles in degrees
-                  function getAngleDiff(a, b) {
-                     const diff = Math.abs(a - b) % 360;
-                     const angle = diff > 180 ? 360 - diff : diff;
-                     return angle;
-                  }
-
-                  // Update the arrow marker whenever the user's location changes
-                  navigator.geolocation.watchPosition(
-                     (position) => {
-                        const userLocation = new window.google.maps.LatLng(
-                           position.coords.latitude,
-                           position.coords.longitude
-                        );
-
-                        // Check if the user has reached the end of the current step
-                        if (
-                           window.google.maps.geometry.spherical.computeDistanceBetween(
-                              userLocation,
-                              nextStep.end_location
-                           ) < 5
-                        ) {
-                           // Move to the next step in the route
-                           nextStep = response.routes[0].legs[0].steps.find(
-                              (step) => {
-                                 return (
-                                    window.google.maps.geometry.spherical.computeDistanceBetween(
-                                       userLocation,
-                                       step.start_location
-                                    ) < 5
-                                 );
-                              }
-                           );
-
-                           // Rotate the symbol to point in the direction of the next step
-                           const bearing = getBearing(
-                              nextStep.start_location,
-                              nextStep.end_location
-                           );
-                           const angleDiff = getAngleDiff(
-                              position.coords.heading,
-                              bearing
-                           );
-                           if (angleDiff > 45) {
-                              arrowMarker.setIcon(
-                                 Object.assign({}, arrowMarker.getIcon(), {
-                                    rotation: bearing,
-                                 })
-                              );
-                           }
-                        }
-
-                        // Rotate the symbol to point in the direction of the next step
-                        arrowMarker.setIcon(
-                           Object.assign({}, arrowMarker.getIcon(), {
-                              rotation:
-                                 window.google.maps.geometry.spherical.computeHeading(
-                                    userLocation,
-                                    nextStep.end_location
-                                 ) - position.coords.heading,
-                           })
-                        );
-
-                        // Move the arrow marker to the new location and center the map
-                        arrowMarker.setPosition(userLocation);
-                        map.setCenter(userLocation);
-                     },
-                     (error) => {
-                        console.log(error);
-                     },
-                     {
-                        enableHighAccuracy: true,
-                        maximumAge: 10000,
-                     }
-                  );
-               } else {
-                  console.log('Directions request failed: ' + status);
                }
             });
 
@@ -814,15 +935,16 @@ const MapBuilder = (props) => {
                   },
                   map: map,
                });
-               // console.log(
-               //    `Marker created at (${poi.coordinates.lat}, ${poi.coordinates.lng})`
-               // );
 
-               // <button id="open-ar-element" style="border: none; background-color: transparent;">
-               //    <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
-               //    <br/>
-               //    <span style="text-decoration: none; font-size: small;">Click Me</span>
-               // </button>
+               // <a href="${ARURLArray[index]}" target="_blank" style="text-decoration: none;">
+               //        <div>
+               //          <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
+               //        </div>
+               //        <div style="margin-top: 7px;">
+               //          <span style="text-decoration: none; font-size: small;">Click Me</span>
+               //        </div>
+               //      </a>
+
                const infoWindow = new window.google.maps.InfoWindow({
                   content: `<div style="display: flex; justify-content: center; flex-direction: column; margin-left: 22px;">
                   <div style="margin: 0 auto;"><h4>${
@@ -832,16 +954,15 @@ const MapBuilder = (props) => {
                       experienceLevel > 1
                          ? `<div style="display: flex; margin-left: 15px; justify-content: center;">
                  <div style="display: flex; flex-direction: column; align-items: center; margin-right: 10px;">
-                    <a href="${ARURLArray[index]}" target="_blank" style="text-decoration: none;">
-                      <div>
-                        <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
-                      </div>
-                      <div style="margin-top: 7px;">
+                  <button id="open-ar-element" style="border: none; background-color: transparent;">
+                     <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
+                     <br/>
+                     <div style="margin-top: 5px;">
                         <span style="text-decoration: none; font-size: small;">Click Me</span>
-                      </div>
-                    </a> 
+                     </div>
+                  </button>
                   </div> `
-                         : ''
+                         : ``
                    }
                   <div style="display: flex; flex-direction: column; margin-right: 6px; align-items: center;">
                     <button id="add-review-button" style="border: none; background-color: transparent;">
@@ -865,10 +986,12 @@ const MapBuilder = (props) => {
                   });
 
                   //Open AR Element
-                  // const addARButton = document.querySelector("#open-ar-element");
-                  // addARButton.addEventListener("click", () => {
-                  //   openARElement(poi);
-                  // });
+                  const addARButton = document.querySelector(
+                     '#open-ar-element'
+                  );
+                  addARButton.addEventListener('click', () => {
+                     openARElement(poi);
+                  });
                });
 
                marker.addListener('click', () => {

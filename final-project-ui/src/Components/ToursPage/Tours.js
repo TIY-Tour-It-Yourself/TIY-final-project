@@ -277,10 +277,13 @@ const Tours = () => {
                {!isSmallScreen ? (
                   <div className={styles.container}>
                      {newTours.map((tour) => (
-                        <div key={tour.routeid} className={styles.record}>
+                        <div key={tour._id} className={styles.record}>
                            <div>{tour.description}</div>
                            <div>{tour.theme}</div>
                            <div>AR level: {tour.experience_level}</div>
+                           <div>
+                              <b>POIs: {tour.pois.length}</b>
+                           </div>
                            <div>{tour.duration}</div>
                            <div>Rank: {tour.evaluation_grade.toFixed(1)}</div>
                            <div className={styles.align_right}>
@@ -318,7 +321,7 @@ const Tours = () => {
                            <div className={styles.container}>
                               {newTours.map((tour) => (
                                  <div
-                                    key={tour.routeid}
+                                    key={tour._id}
                                     className={styles.record_mobile}
                                  >
                                     <div>
@@ -331,6 +334,9 @@ const Tours = () => {
                                     <div>
                                        <b>AR level: </b>
                                        {tour.experience_level}
+                                    </div>
+                                    <div>
+                                       <b>POIs: {tour.pois.length}</b>
                                     </div>
                                     <div>
                                        <b>Duration: </b>

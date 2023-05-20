@@ -28,21 +28,14 @@ const columns = [
       headerAlign: 'center',
       align: 'center',
    },
-   //    FOR POIS TABLE
-   //    {
-   //       field: 'longitude',
-   //       headerName: 'Longitude',
-   //       //   type: 'number',
-   //       width: 110,
-   //       sortable: true,
-   //    },
-   //    {
-   //       field: 'latitude',
-   //       headerName: 'Latitude',
-   //       //   type: 'number',
-   //       width: 110,
-   //       sortable: true,
-   //    },
+   {
+      field: 'pois',
+      headerName: 'POI Amount',
+      width: 150,
+      sortable: true,
+      headerAlign: 'center',
+      align: 'center',
+   },
    {
       field: 'evaluation_grade',
       headerName: 'Evaluation Grade',
@@ -55,7 +48,6 @@ const columns = [
    {
       field: 'duration',
       headerName: 'Tour Duration',
-      //   description: 'This column has a value getter and is not sortable.',
       sortable: true,
       width: 150,
       headerAlign: 'center',
@@ -67,6 +59,7 @@ const ToursTable = () => {
    const location = useLocation();
    const navigate = useNavigate();
    const [tours, setTours] = useState([]);
+   const [routeTheme, setRouteThemes] = useState([]);
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -107,6 +100,13 @@ const ToursTable = () => {
       getData();
    }, []);
 
+   // pois: route.pois.map((poi) => ({
+   //    name: poi.name,
+   // })),
+   // theme: route.theme.map((theme) => ({
+   //    name: theme.theme,
+   // })),
+
    return (
       <>
          <Typography
@@ -144,10 +144,11 @@ const ToursTable = () => {
                slots={{
                   toolbar: GridToolbar,
                }}
-               rows={tours.map((tour) => ({
-                  ...tour,
-                  id: tour._id,
-                  grade: tour.evaluation_grade.toFixed(2),
+               rows={tours.map((route) => ({
+                  ...route,
+                  id: route._id,
+                  pois: route.pois.length,
+                  grade: route.evaluation_grade.toFixed(2),
                }))}
                columns={columns}
                initialState={{
