@@ -53,8 +53,7 @@ const Register = (props) => {
           is_accessible,
         })
         .then((response) => {
-          console.log(response.data);
-          const token = response.data;
+          const token = response.data.token;
           setIsFormValid(true);
           if (response.status === 200) {
             navigate(`/dashboard`, { state: { token } });
@@ -161,8 +160,8 @@ const Register = (props) => {
             <Box sx={{ maxWidth: 250 }}>
               <FormControl fullWidth margin="dense">
                 <InputLabel id="select-label">
-                  Accessibility Required?
-                </InputLabel>
+                  Accessibility Required ?
+                </InputLabel>{" "}
                 <Select
                   sx={{ height: 50 }}
                   labelId="demo-simple-select-label"
@@ -173,11 +172,11 @@ const Register = (props) => {
                   onChange={(e) => setIsAccessible(e.target.value)}
                   onBlur={() => setIsDirty(true)}
                 >
-                  <MenuItem value={"yes"}>Yes</MenuItem>
-                  <MenuItem value={"no"}>No</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
+                  <MenuItem value={"yes"}> Yes </MenuItem>{" "}
+                  <MenuItem value={"no"}> No </MenuItem>{" "}
+                </Select>{" "}
+              </FormControl>{" "}
+            </Box>{" "}
             <Button
               onClick={handleSubmit}
               type="submit"
@@ -193,12 +192,15 @@ const Register = (props) => {
                 backgroundColor: "#2471A3",
               }}
             >
-              Sign Up
-            </Button>
-          </FormControl>
-        </form>
-        <Typography style={{ fontSize: "small" }} sx={{ mt: 2, mb: 1 }}>
-          <b>Already Have An Account?</b>{" "}
+              Sign Up{" "}
+            </Button>{" "}
+          </FormControl>{" "}
+        </form>{" "}
+        <Typography
+          style={{ fontSize: "small" }}
+          sx={{ mt: 2, mb: 1, paddingTop: 1, paddingBottom: 2 }}
+        >
+          <b> Already Have An Account ? </b>{" "}
           <Link
             href="/login"
             sx={{
@@ -208,16 +210,10 @@ const Register = (props) => {
               },
             }}
           >
-            Sign In
-          </Link>
-        </Typography>
-        <Divider title="Sign Up With" />
-        <div className={styles.flexbox}>
-          <a href="#">
-            <div className={styles.google_icon}></div>
-          </a>
-        </div>
-      </PageContainer>
+            Sign In{" "}
+          </Link>{" "}
+        </Typography>{" "}
+      </PageContainer>{" "}
     </>
   );
 };

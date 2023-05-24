@@ -119,6 +119,7 @@ const NavBar = ({ activeImage, activeLink }) => {
     navigate("/user_settings", { state: { token: location.state.token } });
   };
   const handleLogout = (event) => {
+    localStorage.removeItem("token");
     navigate("/");
   };
 
@@ -247,10 +248,6 @@ const NavBar = ({ activeImage, activeLink }) => {
               onClick={handleCloseUserMenu}
               onClose={handleCloseUserMenu}
             >
-              {/* <MenuItem onClick={handleCloseUserMenu}>
-                     <Avatar /> My account
-                  </MenuItem>
-                  <Divider /> */}
               <MenuItem onClick={openSettingsPage}>
                 <ListItemIcon>
                   <Settings fontSize="small" />

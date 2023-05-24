@@ -12,66 +12,6 @@ import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import { Link } from "react-router-dom";
 
-const tours = [
-  {
-    routeid: 1,
-    description: "route 1",
-    theme: "Education",
-    experience_level: "1",
-    duration: "00:50:35",
-    evaluation_grade: "4.5",
-  },
-  {
-    routeid: 2,
-    description: "route 2",
-    theme: "Sports",
-    experience_level: "2",
-    duration: "00:50:35",
-    evaluation_grade: "5",
-  },
-  {
-    routeid: 3,
-    description: "route 3",
-    theme: "Food",
-    experience_level: "3",
-    duration: "00:50:35",
-    evaluation_grade: "3.5",
-  },
-];
-
-const routes = [
-  {
-    routeid: 1,
-    email: "",
-    description: "route 1",
-    theme: "Education",
-    pois: "3",
-    experience_level: "1",
-    duration: "00:50:35",
-    evaluation_grade: "4.5",
-  },
-  {
-    routeid: 2,
-    email: "",
-    description: "route 2",
-    theme: "Sports",
-    pois: "4",
-    experience_level: "2",
-    duration: "00:50:35",
-    evaluation_grade: "5",
-  },
-  {
-    routeid: 3,
-    email: "",
-    description: "route 3",
-    theme: "Food",
-    pois: "4",
-    experience_level: "3",
-    duration: "00:50:35",
-    evaluation_grade: "3.5",
-  },
-];
-
 const Tours = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -86,10 +26,8 @@ const Tours = () => {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [openTours, setOpenTours] = useState(false);
-  // const [routes, setRoutes] = useState([]);
   const [newRoutes, setNewRoutes] = useState([]);
   const [newTours, setNewTours] = useState([]);
-  // const [tours, setTours] = useState([]);
 
   const handleOpenModalRoutes = () => setOpen(true);
   const handleOpenModalTours = () => setOpenTours(true);
@@ -109,7 +47,6 @@ const Tours = () => {
             },
           })
           .then((response) => {
-            // console.log(response.data);
             setEmail(response.data.email);
             setFullName(response.data.fname);
             setActiveImage(3);
@@ -132,7 +69,6 @@ const Tours = () => {
           const response = await axios.get(
             `https://tiys.herokuapp.com/api/tours/${email}`
           );
-          console.log(response.data);
           setNewTours(response.data);
         } catch (error) {
           console.log(error);
@@ -150,7 +86,6 @@ const Tours = () => {
           const response = await axios.get(
             `https://tiys.herokuapp.com/api/routes/users/${email}`
           );
-          console.log(response.data);
           setNewRoutes(response.data);
         } catch (error) {
           console.log(error);
@@ -292,7 +227,10 @@ const Tours = () => {
                         </div>
                         <div className={styles.align_right}>
                           <Button
-                            sx={{ fontSize: "10px", borderRadius: "20px" }}
+                            sx={{
+                              fontSize: "10px",
+                              borderRadius: "20px",
+                            }}
                             variant="outlined"
                             onClick={() => openRoute(route.routeid)}
                           >
@@ -339,7 +277,7 @@ const Tours = () => {
                   <div>{tour.theme}</div>
                   <div>AR level: {tour.experience_level}</div>
                   <div>{tour.duration}</div>
-                  <div>Rank: {tour.evaluation_grade}</div>
+                  <div>Rank: {tour.evaluation_grade.toFixed(1)}</div>
                   <div className={styles.align_right}>
                     <Button
                       sx={{ fontSize: "10px", borderRadius: "20px" }}
@@ -392,11 +330,14 @@ const Tours = () => {
                         </div>
                         <div>
                           <b>Rank: </b>
-                          {tour.evaluation_grade}
+                          {tour.evaluation_grade.toFixed(1)}
                         </div>
                         <div className={styles.align_right}>
                           <Button
-                            sx={{ fontSize: "10px", borderRadius: "20px" }}
+                            sx={{
+                              fontSize: "10px",
+                              borderRadius: "20px",
+                            }}
                             variant="outlined"
                             onClick={() => openRoute(tour.routeid)}
                           >

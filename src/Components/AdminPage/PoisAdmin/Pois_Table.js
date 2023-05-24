@@ -1,5 +1,6 @@
 import * as React from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { Button, Pagination } from "@mui/material";
 import axios from "axios";
 import Add_Pois from "./Add_Poi";
 import Update_Poi from "./Update_Poi";
@@ -7,6 +8,10 @@ import { useState, useEffect } from "react";
 import "./Pois_Table.css";
 import NavBar from "../../Additionals/NavBar/NavBar";
 import { useNavigate, useLocation } from "react-router-dom";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import Typography from "@material-ui/core/Typography";
+import { useMediaQuery } from "@material-ui/core";
 
 function MyComponent(props) {
   const [pois, setPois] = React.useState([]);
@@ -15,8 +20,22 @@ function MyComponent(props) {
   const [selectedPoi, setSelectedPoi] = useState(null);
   const [Poiid, setPoiid] = useState(0);
   const [activeImage, setActiveImage] = useState(null);
+  const [selectedRowData, setSelectedRowData] = useState([]);
+
   const location = useLocation();
   const navigate = useNavigate();
+
+  const isSmallScreen = useMediaQuery("(max-width: 600px)");
+  const pageSize = 1;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedPois = pois.slice(startIndex, endIndex);
 
   function handleAddPoi(id) {
     setAddShowForm(true);
@@ -89,12 +108,6 @@ function MyComponent(props) {
     }
   }, [selectedPoi]);
 
-  // console.log(selectedPoi);
-  function handleDelete(ids) {
-    // handle delete logic here
-    console.log("Deleting IDs:", ids);
-  }
-
   function handleAdd() {
     // handle add logic here
   }
@@ -115,7 +128,7 @@ function MyComponent(props) {
     },
     { field: "description", headerName: "Description", flex: 1 },
     { field: "address", headerName: "Address", flex: 1 },
-    { field: "grade", headerName: "Grade", flex: 1 },
+    { field: "grade", headerName: "Grade", flex: 1, type: "number" },
     {
       field: "theme.theme",
       headerName: "Theme",
@@ -128,9 +141,12 @@ function MyComponent(props) {
       flex: 0.5,
       renderCell: (params) => {
         return (
-          <button onClick={() => handleUpdate(params.row.poiid)}>
+          <Button
+            variant="contained"
+            onClick={() => handleUpdate(params.row.poiid)}
+          >
             Update{" "}
-          </button>
+          </Button>
         );
       },
     },
@@ -148,59 +164,201 @@ function MyComponent(props) {
     //   },
   ];
 
+  function handleDelete(ids) {
+    console.log("POIs deleted");
+
+    ids.forEach((id) => {
+      axios
+        .delete("https://tiys.herokuapp.com/api/pois", {
+          data: {
+            poiid: id,
+          },
+        })
+        .then((response) => {
+          console.log(`Successfully deleted POI with ID ${id}`);
+        })
+        .catch((error) => {
+          console.error(`Error deleting POI with ID ${id}:`, error);
+        });
+    });
+  }
+
   function handleDeleteSelected() {
     const selectedIDs = pois
       .filter((poi) => poi._selected)
       .map((poi) => poi._id);
     handleDelete(selectedIDs);
   }
-
+  console.log(selectedRowData);
   return (
-    <div>
-      {/* <NavBar activeImage={activeImage} /> */}
-      <div style={{ height: 500, width: "100%" }}>
-        <DataGrid
-          rows={pois.map((poi) => ({ ...poi, id: poi._id }))}
-          columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5]}
-          style={{ fontSize: "14px" }}
-          checkboxSelection
-          onSelectionModelChange={(ids) =>
-            setPois((prevPois) =>
-              prevPois.map((poi) => ({
-                ...poi,
-                _selected: ids.indexOf(poi._id) !== -1,
-              }))
-            )
-          }
-        />{" "}
-        <button onClick={handleAddPoi}> Add New Poi </button>
-        <button onClick={handleDeleteSelected}> Delete Selected </button>
-      </div>
+    <div
+      style={{
+        marginTop: "30px",
+      }}
+    >
+      {isSmallScreen ? (
+        <div>
+          {paginatedPois.map((poi) => (
+            <Card key={poi.id}>
+              <CardContent>
+                {/* <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "200px",
+                    overflow: "hidden",
+                  }}
+                >
+                  <img
+                    src={poi.avatar}
+                    alt="Avatar"
+                    style={{ maxWidth: "100%", height: "auto" }}
+                  />
+                </div> */}
+                <Typography>
+                  <b>Name:</b>
+                  {poi.name}
+                </Typography>
+                <Typography>
+                  <b>Description:</b>
+                  {poi.description}
+                </Typography>
+                <Typography>
+                  <b>Address:</b>
+                  {poi.address}
+                </Typography>
+                <Typography>
+                  <b>Coordinates:</b>
+                  <br />
+                  <b>lat:</b>
+                  {poi.coordinates.lat} <br />
+                  <b>lng:</b>
+                  {poi.coordinates.lng}
+                </Typography>
+                <Typography>
+                  {" "}
+                  <b>Arid:</b> {poi.arid.arid}{" "}
+                </Typography>
+                {/* <Typography>
+                <b>Avatar Url:</b>
+                {user.avatar}
+              </Typography> */}
+              </CardContent>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  height: "100%",
+                  marginTop: "20px",
+                  marginBottom: "40px",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={handleUpdate}
+                  style={{ flex: 1 }}
+                >
+                  Update
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => handleDelete(selectedRowData)}
+                  style={{
+                    backgroundColor: "#d91d0f",
+                    color: "white",
+                    // marginLeft: "10px",
+                    flex: 1,
+                  }}
+                >
+                  Delete User
+                </Button>
+              </div>
+            </Card>
+          ))}
+          <Pagination
+            count={Math.ceil(pois.length / pageSize)}
+            page={currentPage}
+            onChange={handlePageChange}
+          />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "20px",
+            }}
+          >
+            <Button variant="contained" onClick={handleAddPoi}>
+              Add New Poi
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div style={{ height: 500, width: "100%" }}>
+          <DataGrid
+            slots={{
+              toolbar: GridToolbar,
+            }}
+            rows={pois.map((poi) => ({
+              ...poi,
+              id: poi.poiid,
+            }))}
+            columns={columns}
+            pageSize={5}
+            rowsPerPageOptions={[5]}
+            style={{ fontSize: "14px" }}
+            checkboxSelection
+            onRowSelectionModelChange={(selectedpoi) => {
+              setSelectedRowData(selectedpoi);
+            }}
+          />
+          <Button
+            variant="contained"
+            onClick={handleAddPoi}
+            style={{
+              marginLeft: "500px",
+              marginTop: "20px",
+            }}
+          >
+            Add New Poi{" "}
+          </Button>{" "}
+          <Button
+            variant="contained"
+            onClick={() => handleDelete(selectedRowData)}
+            style={{
+              backgroundColor: "#d91d0f",
+              color: "white",
+              marginTop: "20px",
+            }}
+          >
+            Delete POI{" "}
+          </Button>{" "}
+        </div>
+      )}
       {showAddForm && (
         <div className="lightbox">
           <div className="lightbox-content" style={{ marginTop: "250px" }}>
-            <button className="close-button" onClick={handleCancelAdd}>
-              X
-            </button>
+            <Button className="close-button" onClick={handleCancelAdd}>
+              X{" "}
+            </Button>{" "}
             <Add_Pois lastRouteId={Poiid} onCancel={handleCancelAdd} />{" "}
-          </div>
+          </div>{" "}
         </div>
-      )}
+      )}{" "}
       {showUpdateForm && (
         <div className="lightbox">
           <div className="lightbox-content" style={{ marginTop: "250px" }}>
-            <button className="close-button" onClick={handleCancelUpdate}>
-              X
-            </button>
+            <Button className="close-button" onClick={handleCancelUpdate}>
+              X{" "}
+            </Button>{" "}
             <Update_Poi
-              onCancel={handleCancelUpdate}
+              onCancle={handleCancelUpdate}
               selectedPoi={selectedPoi}
-            />
-          </div>
+            />{" "}
+          </div>{" "}
         </div>
-      )}
+      )}{" "}
     </div>
   );
 }

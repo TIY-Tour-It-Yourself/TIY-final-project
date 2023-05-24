@@ -62,6 +62,11 @@ const Admin = () => {
       // state: { token: { value: location.state.token } },
     });
   };
+  const handleNavigateUsersTable = () => {
+    navigate("/users_table", {
+      // state: { token: { value: location.state.token } },
+    });
+  };
   // const handleNavigateConsumer = () => {
   //   navigate("/form_consumer", { state: { token: token } });
   // };
@@ -171,7 +176,7 @@ const Admin = () => {
           <CardActions>
             <Box sx={{ m: "0 auto" }}>
               <Button
-                // onClick={handleNavigateProducer}
+                onClick={handleNavigateUsersTable}
                 size="small"
                 style={
                   isSmallScreen

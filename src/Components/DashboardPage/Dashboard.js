@@ -8,6 +8,7 @@ import producer from "./card_images/producer.jpg";
 import { useTheme } from "@mui/material/styles";
 import axios from "axios";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import Button from "@mui/material/Button";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const cards = [
@@ -23,7 +24,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  console.log(location.state.token);
   useEffect(() => {
     if (!location.state) {
       navigate("/");
@@ -37,7 +37,7 @@ const Dashboard = () => {
           },
         })
         .then((response) => {
-          // console.log(response.data);   //user's data
+          // console.log(response.data);
         })
         .catch((error) => {
           console.error("Error fetching user: ", error);
@@ -97,6 +97,15 @@ const Dashboard = () => {
             </div>
           </div>
         ))}
+        <Button
+          onClick={() =>
+            navigate("/res_dashboard", {
+              state: { token: location.state.token },
+            })
+          }
+        >
+          Researcher Page
+        </Button>
       </Container>
     </>
   );

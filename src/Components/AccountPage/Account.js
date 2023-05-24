@@ -36,7 +36,7 @@ const Account = () => {
           },
         })
         .then((response) => {
-          console.log(response.data);
+          // console.log(response.data);
           setFname(response.data.fname);
           setEmail(response.data.email);
         })
@@ -57,7 +57,7 @@ const Account = () => {
           email,
         })
         .then((response) => {
-          console.log(response);
+          // console.log(response);
           setIsUpdated(true);
         })
         .catch((error) => {
@@ -68,7 +68,7 @@ const Account = () => {
 
   return (
     <>
-      <NavBar activeImage={activeImage} activeLink={activeLink} />{" "}
+      <NavBar activeImage={activeImage} activeLink={activeLink} />
       <PageContainer>
         <Typography
           component="div"
@@ -86,8 +86,8 @@ const Account = () => {
               : { textAlign: "center", mt: "1%", mb: "9%" }
           }
         >
-          <h1> Update Account </h1>{" "}
-        </Typography>{" "}
+          <h1>Update Account</h1>
+        </Typography>
         <form onSubmit={handleUpdate}>
           <FormControl
             sx={isSmallScreen ? { width: "100%" } : { width: "45%" }}
@@ -128,16 +128,16 @@ const Account = () => {
                 backgroundColor: "#2471A3",
               }}
             >
-              Update Info{" "}
-            </Button>{" "}
+              Update Info
+            </Button>
             {isUpdated && (
               <Typography component="div" color="primary">
-                <h4> Changed Updated Successfully. </h4>{" "}
+                <h4>Changed Updated Successfully.</h4>
               </Typography>
-            )}{" "}
-          </FormControl>{" "}
-        </form>{" "}
-      </PageContainer>{" "}
+            )}
+          </FormControl>
+        </form>
+      </PageContainer>
     </>
   );
 };

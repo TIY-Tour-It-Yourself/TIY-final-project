@@ -1,38 +1,42 @@
 @media screen and (min-width: 400px) {
-    .event_board {
-        text-align: center;
-    }
-    .event_board p {
-        background-color: rgb(235, 207, 86);
-        text-align: center;
-        width: 200px;
-        margin-left: 100px;
-        border-radius: 5px;
-        text-decoration: none;
-        color: #000;
-        background: #ffc;
-        display: block;
-        height: 10em;
-        width: 15em;
-        padding: 1em;
-        /* font-family: "Reenie Beanie"; */
-        font-size: 1rem;
-        font-weight: bold;
-        box-shadow: 10px 10px 7px rgba(0, 0, 0, 0.7);
-        position: relative;
-        z-index: 5;
-        margin-bottom: 40px;
-    }
-    .event_board :nth-child(even) p {
-        transform: rotate(4deg);
-        position: relative;
-        top: 5px;
-        background: #cfc;
-    }
-    .event_board :nth-child(odd) p {
-        transform: rotate(-3deg);
-        position: relative;
-        top: -5px;
-        background: #ccf;
-    }
+  .event_board {
+    text-align: center;
+  }
+  .event_board p {
+    background-color: rgb(235, 207, 86);
+    text-align: center;
+    width: 200px;
+    margin-left: 100px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #000;
+    background: #ffc;
+    display: block;
+    height: 10em;
+    width: 15em;
+    padding: 1em;
+    /* font-family: "Reenie Beanie"; */
+    font-size: 1rem;
+    font-weight: bold;
+    box-shadow: 10px 10px 7px rgba(0, 0, 0, 0.7);
+    position: relative;
+    z-index: 5;
+    margin-bottom: 40px;
+  }
+  .event_board :nth-child(even) p {
+    transform: rotate(4deg);
+    position: relative;
+    top: 5px;
+    background: #cfc;
+  }
+  .event_board :nth-child(odd) p {
+    transform: rotate(-3deg);
+    position: relative;
+    top: -5px;
+    background: #ccf;
+  }
+}
+
+.event_div {
+  cursor: pointer;
 }
