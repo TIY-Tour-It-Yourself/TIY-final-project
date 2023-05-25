@@ -4,7 +4,7 @@
 
 .record {
    margin-left: 100px;
-   width: 1000px;
+   width: 1200px;
    height: 50px;
    border-radius: 200px / 200px;
    margin-bottom: 10px;
@@ -23,7 +23,7 @@
 }
 
 @media (max-width: 600px) {
-   .modal{
+   .modal {
       text-align: center;
    }
 
@@ -33,10 +33,10 @@
    }
 
    .record {
-    display: none;
+      display: none;
    }
 
-   .record_mobile{
+   .record_mobile {
       text-align: left;
    }
 

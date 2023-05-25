@@ -33,8 +33,6 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 const NavBar = ({ activeImage, activeLink }) => {
-   const ref = useRef();
-   const shouldLog = useRef(true);
    const [isLoading, setIsLoading] = useState(true);
    const [images, setImages] = useState([
       {
@@ -78,27 +76,27 @@ const NavBar = ({ activeImage, activeLink }) => {
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
    useEffect(() => {
-      // console.log('here');
-      // if (shouldLog.current) {
-      //    shouldLog.current = false;
       if (!location.state) {
          navigate('/');
-      } else {
-         axios
-            .get(`https://tiys.herokuapp.com/api/auth`, {
-               headers: {
-                  'x-auth-token': location.state.token,
-                  'Content-Type': 'application/json',
-               },
-            })
-            .then((response) => {
-               setAvatar(response.data.avatar);
-            })
-            .catch((error) => {
-               console.error('Error fetching user: ', error);
-            });
       }
-      // }
+      const fetchAvatar = async () => {
+         try {
+            const response = await axios.get(
+               `https://tiys.herokuapp.com/api/auth`,
+               {
+                  headers: {
+                     'x-auth-token': location.state.token,
+                     'Content-Type': 'application/json',
+                  },
+               }
+            );
+            // console.log(response.data);
+            setAvatar(response.data.avatar);
+         } catch (error) {
+            console.error('Error fetching user: ', error);
+         }
+      };
+      fetchAvatar();
    }, []);
 
    const links = [
@@ -150,7 +148,7 @@ const NavBar = ({ activeImage, activeLink }) => {
             <Toolbar disableGutters>
                {/* Only present the following when screen is Desktop size */}
                {!isSmallScreen && (
-                  <Box sx={{ flexGrow: 1, display: { md: 'flex' } }}>
+                  <Box sx={{ flexGrow: 1 }}>
                      <div>
                         <img
                            src={logo}
@@ -170,7 +168,8 @@ const NavBar = ({ activeImage, activeLink }) => {
                      !isSmallScreen
                         ? {
                              flexGrow: 13,
-                             display: { xs: 'flex', md: 'flex' },
+                             display: { md: 'flex' },
+                             //   display: { xs: 'flex', md: 'flex' },
                              mr: 15,
                           }
                         : { display: 'none' }
@@ -278,7 +277,6 @@ const NavBar = ({ activeImage, activeLink }) => {
                </Box>
             </Toolbar>
          </Container>
-         {/* )} */}
       </AppBar>
    );
 };

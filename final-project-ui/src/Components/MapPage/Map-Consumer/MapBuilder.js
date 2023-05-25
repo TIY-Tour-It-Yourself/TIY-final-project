@@ -11,7 +11,6 @@ import arIcon from './images/ar_icon.png';
 import ranking from './images/star.png';
 import styles from './MapBuilder.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
-// import ARManagement from "../../ARPage/ARManagement";
 import ReviewForm from '../ReviewFormPage/ReviewForm';
 import { duration } from 'moment/moment';
 
@@ -66,7 +65,7 @@ const MapBuilder = (props) => {
                   },
                })
                .then((response) => {
-                  console.log(response.data);
+                  // console.log(response.data);
                   setEmail(response.data.email);
                })
                .catch((error) => {
@@ -350,6 +349,7 @@ const MapBuilder = (props) => {
             const stopNavigationButton = document.createElement('button');
             stopNavigationButton.textContent = 'Stop';
             stopNavigationButton.style.backgroundColor = '#007aff';
+            stopNavigationButton.style.marginLeft = '3px';
             stopNavigationButton.style.color = 'white';
             stopNavigationButton.style.padding = '10px';
             stopNavigationButton.style.borderRadius = '25px'; // change from "50%" to "25px"
@@ -477,6 +477,7 @@ const MapBuilder = (props) => {
             const resetButton = document.createElement('button');
             resetButton.innerText = 'Reset';
             resetButton.style.backgroundColor = '#007aff';
+            resetButton.style.marginLeft = '3px';
             resetButton.style.color = 'white';
             resetButton.style.padding = '10px';
             resetButton.style.borderRadius = '25px'; // change from "50%" to "25px"
@@ -717,8 +718,6 @@ const MapBuilder = (props) => {
 
             //Build Route for AR Experience Level #3
             const buildThirdLevelRoute = (route) => {
-               // console.log(route.routes[0].legs);
-               console.log(route.routes[0]);
                const distances = [];
                for (let j = 1; j < route.routes[0].legs.length - 1; j++) {
                   const leg = route.routes[0].legs[j];
@@ -985,13 +984,15 @@ const MapBuilder = (props) => {
                      handleAddReview(poi);
                   });
 
-                  //Open AR Element
-                  const addARButton = document.querySelector(
-                     '#open-ar-element'
-                  );
-                  addARButton.addEventListener('click', () => {
-                     openARElement(poi);
-                  });
+                  if (experienceLevel > 1) {
+                     //Open AR Element
+                     const addARButton = document.querySelector(
+                        '#open-ar-element'
+                     );
+                     addARButton.addEventListener('click', () => {
+                        openARElement(poi);
+                     });
+                  }
                });
 
                marker.addListener('click', () => {

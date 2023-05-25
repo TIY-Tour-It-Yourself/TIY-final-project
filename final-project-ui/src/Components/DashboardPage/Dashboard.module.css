@@ -4,13 +4,10 @@
 
 .card {
    border: 1px solid rgba(198, 213, 244, 0.751);
-}
-
-.card{
    border-radius: 25px;
 }
 
-.box_title{
+.box_title {
    font-weight: bold;
    font-size: 1.5rem;
    text-align: center;
@@ -27,7 +24,7 @@
       margin: 15px;
    }
 
-   .box_title{
+   .box_title {
       font-size: 1.45rem;
       margin-bottom: -4px;
    }

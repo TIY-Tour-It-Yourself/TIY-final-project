@@ -26,10 +26,11 @@ const Login = () => {
    const [isFormValid, setIsFormValid] = useState(false);
    const [is_accessible, setIsAccessible] = useState('');
    const navigate = useNavigate();
+   const theme = useTheme();
+   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
    const handleSubmit = async (e) => {
       e.preventDefault();
-
       try {
          if (email.trim().length !== 0 && password.trim().length !== 0) {
             const response = await axios.post(
@@ -41,7 +42,7 @@ const Login = () => {
             );
             const token = response.data.token;
             setIsFormValid(true);
-            // console.log(`line 44: `, response.data);
+
             // RememberMe Logic
             if (rememberMe) {
                localStorage.setItem('token', token);
@@ -83,7 +84,11 @@ const Login = () => {
    }, []);
 
    const handleNavigate = (token) => {
-      navigate('/dashboard', { state: { token } });
+      if (email === 'admin@tiy.com') {
+         navigate('/admin_dashboard', { state: { token } });
+      } else if (email === 'researcher@tiy.com') {
+         navigate('/res_dashboard', { state: { token } });
+      } else navigate('/dashboard', { state: { token } });
    };
 
    const isTokenValid = (token) => {
@@ -104,9 +109,9 @@ const Login = () => {
 
    const handleRememberMeChange = (event) => {
       setRememberMe(event.target.checked);
-      console.log(rememberMe);
    };
 
+   //Google OAuth User Connection - On success connection
    const onSuccess = async (res) => {
       const details = jwt_decode(res.credential);
       console.log(details);
@@ -118,31 +123,25 @@ const Login = () => {
             picture: details.picture,
          }
       );
-      // .then((response) => {
       try {
+         // console.log(response.data);
          const token = response.data.token;
          setIsFormValid(true);
 
          if (response.status == 200) {
             handleNavigate(token);
-            // navigate(`/dashboard`, { state: { token } });
          } else {
             console.log('Status is not 200');
          }
-         // })
       } catch (error) {
-         // .catch((error) => {
          console.log(`User could not log in:`, error);
       }
-      // });
    };
 
+   //Google OAuth User Connection - On failure connection
    const onFailure = (res) => {
       console.log('login failed: ', res);
    };
-
-   const theme = useTheme();
-   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
    //Login through Google - Takes data from Google
    useEffect(() => {
@@ -235,18 +234,19 @@ const Login = () => {
                   Sign Up
                </Link>
             </Typography>
-            {/* <Divider title='Sign In With' />
+            <Divider title='Sign In With' />
             <div className={styles.flexbox}>
                <div id='signInButton'>
                   <GoogleLogin
                      client_id={clientId}
+                     shape='circle'
                      button_text='Login'
                      onSuccess={onSuccess}
                      onFailure={onFailure}
                      cookie_policy={'single_host_origin'}
                   />
                </div>
-            </div> */}
+            </div>
          </PageContainer>
       </>
    );

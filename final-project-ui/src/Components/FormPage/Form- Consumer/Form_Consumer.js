@@ -11,10 +11,8 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import ARFirstLevel from './ar_imgs/boy_with_mobile_level_2.jpg';
 import ARSecondLevel from './ar_imgs/ar_img_1.jpg';
 import ARThirdLevel from './ar_imgs/ar_level_3_elephant.png';
-import Bialik from './routes_imgs/tour_bialik.jpg';
-import Parks from './routes_imgs/yom_kipur_garden.jpg';
-import Culinary from './routes_imgs/baklava_pic.jpg';
 import Star from './routes_imgs/star_32.png';
+import Edit from './routes_imgs/edit_rounded.png';
 
 const arImgs = [
    { id: 1, name: 'Intermediate', src: ARFirstLevel },
@@ -26,12 +24,13 @@ const Form_Consumer = () => {
    const [formTheme, setFormTheme] = useState('');
    const [themeSelectedId, setThemeSelectedId] = useState('');
    const [selectedLevelId, setSelectedLevelId] = useState('');
+   const [selectedThemeName, setSelectedThemeName] = useState('');
+   const [description, setDescription] = useState('');
    const [isFormValid, setIsFormValid] = useState(false);
    const [routeChosen, setRouteChosen] = useState('');
    const [routes, setRoutes] = useState('');
    const [filteredData, setFilteredData] = useState([]);
    const [isLoading, setIsLoading] = useState(false);
-   const [token, setToken] = useState('');
 
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -58,13 +57,12 @@ const Form_Consumer = () => {
       }
    }, [location.state]);
 
+   //Redirect to Interactive Map page
    useEffect(() => {
       if (routeChosen) {
-         navigate(`/map_builder?routeId=${routeChosen}`, {
-            state: { token: location.state.token },
-         });
+         handleMapPage(routeChosen);
       }
-   }, [routeChosen, navigate]);
+   }, [routeChosen]);
 
    //Get Themes from DB
    useEffect(() => {
@@ -124,9 +122,12 @@ const Form_Consumer = () => {
    }
 
    //Redirect to chosen route on the map
-   const chooseRoute = (routeid) => {
+   const chooseRoute = (routeId, routeDescription) => {
+      // const chooseRoute = (routeid) => {
       if (selectedLevelId && themeSelectedId) {
-         setRouteChosen(routeid);
+         setRouteChosen(routeId);
+         setDescription(routeDescription);
+         // setSelectedThemeName(routeTheme);
          setIsFormValid(true);
       } else {
          alert('Theme and AR Experience must be chosen.');
@@ -134,19 +135,40 @@ const Form_Consumer = () => {
       }
    };
 
-   const setSelectedTheme = (value) => {
-      if (themeSelectedId !== '') {
-         setThemeSelectedId(value);
-         // themeSelected.backgroundColor = '#BAD7E9';
+   const setSelectedTheme = (themeId, themeName) => {
+      if (themeSelectedId !== '' && selectedThemeName !== '') {
+         // if (themeSelectedId !== '') {
+         setThemeSelectedId(themeId);
+         setSelectedThemeName(themeName);
       } else {
-         setThemeSelectedId(value);
+         setThemeSelectedId(themeId);
+         setSelectedThemeName(themeName);
       }
    };
 
    const handleARExperience = (arId) => {
       setSelectedLevelId(arId);
    };
-   
+
+   //Redirect to Modifier Form page
+   const handleModifierForm = (routeId, routeDescription) => {
+      if (selectedLevelId && themeSelectedId) {
+         navigate(
+            `/form_modifier?routeId=${routeId}&description=${routeDescription}&theme=${selectedThemeName}`,
+            { state: { token: location.state.token } }
+         );
+      } else {
+         alert('Theme and AR Experience must be chosen.');
+      }
+   };
+
+   const handleMapPage = (routeChosen) => {
+      // `/form_modifier?routeId=${routeChosen}&description=${description}&theme=${selectedThemeName}`,
+      navigate(`/map_builder?routeId=${routeChosen}`, {
+         state: { token: location.state.token },
+      });
+   };
+
    return (
       <>
          <NavBar />
@@ -188,45 +210,54 @@ const Form_Consumer = () => {
                }
             >
                {isSmallScreen ? (
-                  <Grid objArray={formTheme.map((theme, index) => ({
-                        ...theme,
-                        id: `theme_${index}`
-                     })).map((theme) => (
-                        <Button
-                           key={theme.themeid}
-                           onClick={() => setSelectedTheme(theme.themeid)}
-                           value={theme}
-                           variant={
-                              themeSelectedId === theme.themeid
-                                 ? 'contained'
-                                 : 'outlined'
-                           }
-                           sx={
-                              !isSmallScreen
-                                 ? {
-                                      borderRadius: '20px',
-                                      height: '30px',
-                                      marginLeft: 1,
-                                      marginTop: 2,
-                                      marginBottom: 1,
-                                   }
-                                 : {
-                                      marginLeft: 1.5,
-                                      marginBottom: 1,
-                                      height: '30px',
-                                      borderRadius: '20px',
-                                   }
-                           }
-                        >
-                           {theme.theme}
-                        </Button>
-                     ))}
+                  <Grid
+                     objArray={formTheme
+                        .map((theme, index) => ({
+                           ...theme,
+                           id: `theme_${index}`,
+                        }))
+                        .map((theme) => (
+                           <Button
+                              key={theme.themeid}
+                              onClick={() =>
+                                 setSelectedTheme(theme.themeid, theme.theme)
+                              }
+                              // onClick={() => setSelectedTheme(theme.themeid)}
+                              value={theme}
+                              variant={
+                                 themeSelectedId === theme.themeid
+                                    ? 'contained'
+                                    : 'outlined'
+                              }
+                              sx={
+                                 !isSmallScreen
+                                    ? {
+                                         borderRadius: '20px',
+                                         height: '30px',
+                                         marginLeft: 1,
+                                         marginTop: 2,
+                                         marginBottom: 1,
+                                      }
+                                    : {
+                                         marginLeft: 1.5,
+                                         marginBottom: 1,
+                                         height: '30px',
+                                         borderRadius: '20px',
+                                      }
+                              }
+                           >
+                              {theme.theme}
+                           </Button>
+                        ))}
                   />
                ) : (
                   formTheme.map((theme) => (
                      <Button
                         key={theme.themeid}
-                        onClick={() => setSelectedTheme(theme.themeid)}
+                        onClick={() =>
+                           setSelectedTheme(theme.themeid, theme.theme)
+                        }
+                        // onClick={() => setSelectedTheme(theme.themeid)}
                         value={theme}
                         variant={
                            themeSelectedId === theme.themeid
@@ -318,11 +349,17 @@ const Form_Consumer = () => {
             <div className={styles.routes_imgs}>
                {routes.map((route) => (
                   <div
-                     style={{ cursor: 'pointer' }}
                      key={route.routeid}
-                     onClick={() => chooseRoute(route.routeid)}
+                     // onClick={() => chooseRoute(route.routeid)}
                   >
-                     <img src={route.imgurl} alt={route.description} />
+                     <div
+                        className={styles.route_img}
+                        onClick={() =>
+                           chooseRoute(route.routeid, route.description)
+                        }
+                     >
+                        <img src={route.imgurl} alt={route.description} />
+                     </div>
                      <Typography
                         component='p'
                         sx={
@@ -337,9 +374,22 @@ const Form_Consumer = () => {
                      >
                         {route.description}
                      </Typography>
-                     <div className={styles.star}>
-                        <img src={Star} alt='rank' />
-                        <span>{route.evaluation_grade.toFixed(1)}</span>
+                     <div className={styles.img_icons}>
+                        <div className={styles.star}>
+                           <img src={Star} alt='rank' />
+                           <span>{route.evaluation_grade.toFixed(1)}</span>
+                        </div>
+                        <div
+                           className={styles.edit}
+                           onClick={() =>
+                              handleModifierForm(
+                                 route.routeid,
+                                 route.description
+                              )
+                           }
+                        >
+                           <img src={Edit} alt='edit' width='24' height='24' />
+                        </div>
                      </div>
                   </div>
                ))}
@@ -348,11 +398,17 @@ const Form_Consumer = () => {
             <div className={styles.routes_imgs}>
                {filteredData.map((route) => (
                   <div
-                     style={{ cursor: 'pointer' }}
                      key={route.routeid}
-                     onClick={(e) => chooseRoute(route.routeid)}
+                     // onClick={(e) => chooseRoute(route.routeid)}
                   >
-                     <img src={route.imgurl} alt={route.description} />
+                     <div
+                        className={styles.route_img}
+                        onClick={(e) =>
+                           chooseRoute(route.routeid, route.description)
+                        }
+                     >
+                        <img src={route.imgurl} alt={route.description} />
+                     </div>
                      <Typography
                         component='p'
                         sx={
@@ -367,9 +423,22 @@ const Form_Consumer = () => {
                      >
                         {route.description}
                      </Typography>
-                     <div className={styles.star}>
-                        <img src={Star} alt='rank' />
-                        <span>{route.evaluation_grade.toFixed(1)}</span>
+                     <div className={styles.img_icons}>
+                        <div className={styles.star}>
+                           <img src={Star} alt='rank' />
+                           <span>{route.evaluation_grade.toFixed(1)}</span>
+                        </div>
+                        <div
+                           className={styles.edit}
+                           onClick={() =>
+                              handleModifierForm(
+                                 route.routeid,
+                                 route.description
+                              )
+                           }
+                        >
+                           <img src={Edit} alt='edit' width='24' height='24' />
+                        </div>
                      </div>
                   </div>
                ))}

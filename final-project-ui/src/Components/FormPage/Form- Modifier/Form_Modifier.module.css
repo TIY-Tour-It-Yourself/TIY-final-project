@@ -1,12 +1,3 @@
-* {
-   color: rgb(58, 81, 123);
-}
-
-.routes {
-   margin-left: 15%;
-   margin-top: 2%;
-}
-
 .title {
    text-align: center;
    padding-top: 100px;
@@ -14,7 +5,6 @@
    border: 2px solid transparent;
 }
 
-.theme_div,
 .AR_exp_div {
    margin-left: 15%;
    margin-bottom: 0;
@@ -37,65 +27,46 @@
    cursor: pointer;
 }
 
-.star {
-   max-width: max-content;
-   margin-left: 90px;
-}
-
-.edit {
-   max-width: max-content;
-   margin-left: 25px;
-   cursor: pointer;
-}
-
-.img_icons {
-   display: flex;
-}
-
-.form {
-   display: flex;
-   max-width: 80%;
-   margin: 0 auto;
-   justify-content: center;
-}
-
-.routes_title {
-   margin-left: 15%;
-   margin-top: 3%;
-}
-
-.routes_imgs {
-   display: flex;
-   flex-direction: row;
-   flex-wrap: wrap;
-   justify-content: flex-start;
-   width: 80%;
-   margin-left: 13%;
-   margin-bottom: 3%;
-}
-
-.routes_imgs > div {
-   padding: 1%;
-   text-align: center;
-}
-
-.route_img {
-   cursor: pointer;
-}
-
-div > .route_img > img {
-   border: 1px solid gray;
-   border-radius: 30px;
-   width: 180px;
-   height: 230px;
-}
-
 .arlevel_name {
    text-align: center;
 }
 
 .arlevel_name > span {
    max-width: max-content;
+}
+
+.pois_title {
+   margin-left: 15%;
+   margin-top: 3%;
+}
+
+.poi_imgs {
+   display: flex;
+   flex-wrap: wrap;
+   justify-content: flex-start;
+   width: 80%;
+   margin-left: 13%;
+   margin-bottom: 5%;
+}
+
+.poi_imgs > div {
+   padding: 1%;
+   text-align: center;
+}
+
+.poi_imgs > div > img {
+   margin-left: 14%;
+   width: 50px;
+   height: 50px;
+}
+
+.star {
+   max-width: max-content;
+   margin-left: 90px;
+}
+
+.border {
+   border: 1px #cfcfcf solid;
 }
 
 @media (max-width: 600px) {
@@ -111,11 +82,6 @@ div > .route_img > img {
       flex-direction: column;
    }
 
-   .theme_div {
-      margin-bottom: 0;
-      margin-left: 7%;
-   }
-
    .ar_imgs {
       margin: 0 auto;
       flex-direction: column;
@@ -129,36 +95,38 @@ div > .route_img > img {
       height: 120px;
    }
 
-   .routes_title {
-      margin-left: 28%;
-      margin-top: 7%;
-   }
-
-   .routes_imgs {
-      justify-content: center;
-      margin: 0 auto;
-      width: 90%;
-   }
-
-   .routes_imgs > div {
-      flex-direction: column;
-   }
-
-   .routes_imgs > div:last-child {
-      margin-bottom: 30%;
-   }
-
-   .routes_imgs > div > img {
-      max-width: max-content;
-      margin-left: 3px;
-   }
-
-   .star {
-      margin-left: 75px;
-   }
-
    .arlevel_name {
       margin-top: -7px;
       margin-bottom: 7px;
+   }
+
+   .pois_title {
+      margin-left: 7%;
+      margin-top: 6%;
+   }
+
+   .poi_imgs {
+      flex-direction: column;
+      justify-content: center;
+      margin: 0 auto;
+   }
+   .poi_imgs > div {
+      margin-left: 2.5px;
+      margin-top: 2%;
+   }
+
+   .poi_imgs > div:last-child {
+      margin-bottom: 30%;
+   }
+
+   .poi_imgs > div > img {
+      width: 45px;
+      height: 45px;
+      margin-left: 0;
+      margin: 0 auto;
+   }
+
+   .star {
+      margin-left: 60%;
    }
 }

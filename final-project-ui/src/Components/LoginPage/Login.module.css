@@ -7,19 +7,15 @@
    margin: 1rem 0 0 7rem;
 }
 
-.google_icon {
+#signInButton {
+   width: 100px !important;
+}
+
+/* .google_icon {
    background: url('../../images/icon_google.png') no-repeat;
    width: 45px;
    height: 45px;
    margin-left: 0;
-   cursor: pointer;
-}
-
-/* .facebook_icon {
-   background: url('../../images/icon_facebook.png') no-repeat;
-   width: 45px;
-   height: 45px;
-   margin-right: 2rem;
    cursor: pointer;
 } */
 

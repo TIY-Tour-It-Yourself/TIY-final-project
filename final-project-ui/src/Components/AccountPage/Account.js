@@ -22,7 +22,6 @@ const Account = () => {
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
    useEffect(() => {
-      console.log(location);
       if (!location.state) {
          navigate('/');
       } else {
