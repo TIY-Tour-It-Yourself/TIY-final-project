@@ -204,19 +204,13 @@ const MapBuilder = (props) => {
    useEffect(() => {
       if (routePois.length > 0) {
          const arURLs = routePois.map((arElement) => arElement.arid.url);
-         // const arElementsLevels = routePois.map(
-         //    (arElement) => arElement.arid.level
-         // );
 
          setARURLArray(arURLs);
-         // setARLevels(arElementsLevels);
          setIsURLsLoaded(true);
-         // setIsARLevelLoaded(true);
       }
    }, [routePois]);
 
    useEffect(() => {
-      // console.log(ARURLArray);
       if (
          email &&
          experienceLevel &&
@@ -243,8 +237,14 @@ const MapBuilder = (props) => {
    };
 
    //Open AR Element ThirdLevel from ARManagement component
-   const openThirdLevelARElement = (stepLat, stepLng, ThreeArElements) => {
-      const url = `/ar.html?lat=${stepLat}&lng=${stepLng}&desc=${null}&img=${ThreeArElements}`;
+   const openThirdLevelARElement = (
+      stepLat,
+      stepLng,
+      ThreeArElements,
+      arLevel
+   ) => {
+      // const url = `/ar.html?lat=${stepLat}&lng=${stepLng}&desc=${null}&img=${ThreeArElements}`;
+      const url = `/ar.html?lat=${stepLat}&lng=${stepLng}&desc=${null}&img=${ThreeArElements}&arLevel=${arLevel}`;
       window.open(url, '_blank');
    };
 
@@ -759,7 +759,8 @@ const MapBuilder = (props) => {
                         openThirdLevelARElement(
                            step.start_point.lat(),
                            step.start_point.lng(),
-                           ThreeArElement
+                           ThreeArElement,
+                           3
                         );
                      });
                   });

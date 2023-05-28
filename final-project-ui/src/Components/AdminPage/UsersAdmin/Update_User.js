@@ -47,35 +47,37 @@ function Update_User(props) {
   //   }
   // }, [location.state]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    //Post request - need to post data to DB to register user
-    //If all fields are filled
     if (fname && password) {
-      axios
-        .put("https://tiys.herokuapp.com/api/users", {
-          fname,
-          email,
-          password,
-        })
-        .then((response) => {
-          //   const token = response.data.token;
-          setIsFormValid(true);
-          if (response.status === 200) {
-            console.log("OK");
-          } else {
-            console.log("Status is not 200");
+      try {
+        const response = await axios.put(
+          "https://tiys.herokuapp.com/api/users",
+          {
+            fname,
+            email,
+            password,
           }
-        })
-        .catch((err) => {
-          console.log(err.response.data.errors[0]);
-          if (err.response.data.errors[0].msg === "User already exists") {
-            alert("Email already exists.");
-          } else {
-            alert("Invalid Credentials.");
-          }
-        });
+        );
+
+        // const token = response.data.token;
+        setIsFormValid(true);
+
+        if (response.status === 200) {
+          console.log("OK");
+        } else {
+          console.log("Status is not 200");
+        }
+      } catch (err) {
+        console.log(err.response.data.errors[0]);
+
+        if (err.response.data.errors[0].msg === "User already exists") {
+          alert("Email already exists.");
+        } else {
+          alert("Invalid Credentials.");
+        }
+      }
     } else {
       alert("All fields are required.");
       setIsFormValid(false);

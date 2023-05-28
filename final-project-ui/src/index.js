@@ -28,6 +28,7 @@ import UpdateRoutePage from './Pages/UpdateRoutePage';
 import RouteTablePage from './Pages/RouteTablePage';
 import UserTablePage from './Pages/UserTablePage';
 import UpdateUserPage from './Pages/UpdateUserPage';
+import ThemeCustomizationPage from './Pages/ThemeCustomizationPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -44,7 +45,7 @@ root.render(
                <Route path='/dashboard' element={<DashboardPage />} />
                <Route path='/res_dashboard' element={<ResearcherPage />} />
                <Route path='/admin' element={<AdminPage />} />
-               {/* <Route path='/pois_table' element={<PoisTablePage />} />{' '}
+               <Route path='/pois_table' element={<PoisTablePage />} />{' '}
                <Route path='/add_pois' element={<AddPoisPage />} />{' '}
                <Route path='/route_table' element={<RouteTablePage />} />{' '}
                <Route path='/users_table' element={<UserTablePage />} />{' '}
@@ -52,7 +53,7 @@ root.render(
                <Route path='/update_route' element={<UpdateRoutePage />} />{' '}
                <Route path='/update_poi' element={<UpdatePoisPage />} />{' '}
                <Route path='/update_user' element={<UpdateUserPage />} />{' '}
-               <Route path='/tours_table' element={<ToursTablePage />} /> */}
+               <Route path='/tours_table' element={<ToursTablePage />} />
                <Route path='/form_consumer' element={<FormConsumerPage />} />
                <Route path='/form_modifier' element={<FormModifierPage />} />
                <Route path='/form_producer' element={<FormProducerPage />} />
@@ -62,6 +63,10 @@ root.render(
                <Route path='/events_choice' element={<EventsModalPage />} />
                <Route path='/user_settings' element={<AccountPage />} />
                <Route path='/tours_history' element={<ToursPage />} />
+               <Route
+                  path='/theme_customization'
+                  element={<ThemeCustomizationPage />}
+               />
                <Route path='*' element={<NotFoundPage />} />
             </Routes>
          </BrowserRouter>

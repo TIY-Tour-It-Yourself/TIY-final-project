@@ -85,7 +85,7 @@ const Login = () => {
 
    const handleNavigate = (token) => {
       if (email === 'admin@tiy.com') {
-         navigate('/admin_dashboard', { state: { token } });
+         navigate('/admin', { state: { token } });
       } else if (email === 'researcher@tiy.com') {
          navigate('/res_dashboard', { state: { token } });
       } else navigate('/dashboard', { state: { token } });

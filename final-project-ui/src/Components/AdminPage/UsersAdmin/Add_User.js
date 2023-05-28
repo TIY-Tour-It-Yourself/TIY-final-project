@@ -52,7 +52,7 @@ function Add_User(props) {
   //   }
   // }, [location.state]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     //Post request - need to post data to DB to register user
@@ -64,7 +64,7 @@ function Add_User(props) {
       age.trim().length !== 0 &&
       is_accessible
     ) {
-      axios
+      await axios
         .post(`https://tiys.herokuapp.com/api/users`, {
           fname,
           email,

@@ -13,6 +13,11 @@
             init: function () {
                 this.el.addEventListener('click', e => {
                     alert(description);
+                    // //Third Level Part Implementation
+                    if (arLevel) {
+                        // console.log(`click 3rd level: ${arLevel}`);
+                        handleClick();
+                    }
                 });
             }
         });
@@ -34,11 +39,46 @@
         const latitude = urlParams.get('lat');
         const longitude = urlParams.get('lng');
         const description = urlParams.get('desc');
+        let arLevel;
+        //Third AR Level Part
+        if (urlParams.get('arLevel')) {
+            arLevel = urlParams.get('arLevel');
+        }
+
         if (imageUrl) {
             const imageElement = document.getElementById("imageUrlValue");
             imageElement.setAttribute('src', imageUrl);
             imageElement.setAttribute('gps-entity-place', `latitude:${latitude}; longitude:${longitude}`);
         }
+
+        function handleClick() {
+            // console.log('click 3rd level');
+            // //Determine the origin of the current page: Localhost or Production(Firebase)
+            // let origin = window.location.origin;
+
+            // //Send a message to the React component
+            // if (origin === 'http://localhost:3000') {
+            //     //Development environment - Need to put exact route here
+            //     window.parent.postMessage('incrementCounter', 'http://localhost:3000/theme_customization');
+            // } else {
+            //     //Production environment - Need to put exact route here
+            //     window.parent.postMessage('incrementCounter', 'https://tiy-1-b2c97.web.app/');
+            // }
+
+            // *****************************************************
+            document.addEventListener("click", (e) => {
+                /** @type HTMLInputElement */
+                // const input = document.getElementById("user-input");
+                window.parent.postMessage(
+                    {
+                        type: "button-click",
+                        message: 'incrementCounter'
+                    },
+                    "http://localhost:3000/"
+                );
+            });
+        }
+
     </script>
 </body>
 

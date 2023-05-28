@@ -12,7 +12,7 @@
   align-items: center;
 }
 
-.lightbox-content {
+.lightboxContent {
   background-color: #fff;
   margin: 0 auto;
   /* padding: 0px; */
@@ -23,6 +23,11 @@
 
 h2 {
   text-align: center;
+}
+
+.card {
+  width: 500px;
+  height: 600px;
 }
 
 @media (max-width: 768px) {
