@@ -10,6 +10,7 @@ function ReviewForm(props) {
    const [numOfPois, setNumOfPois] = useState(null);
    const [rating, setRating] = useState('');
    const poiid = props.poiValues;
+   const email = props.email;
    const [poiData, setPoiData] = useState(null);
    const [name, setName] = useState([]);
    const [isNamesLoaded, setIsNamesLoaded] = useState(false);
@@ -37,13 +38,16 @@ function ReviewForm(props) {
       }
    }, [poiData]);
 
-   const handleSubmit = (event) => {
+   const handleSubmit = async (event) => {
       event.preventDefault();
       const newgrade = rating; // You can replace this with the actual rating value
-      const newEvaluation = { poiid, newgrade };
 
-      axios
-         .put('https://tiys.herokuapp.com/api/pois/evaluate', newEvaluation)
+      const response = await axios
+         .post('https://tiys.herokuapp.com/api/grades', {
+            poiid: poiid,
+            email: email,
+            grade: newgrade,
+         })
          .then((response) => {
             // console.log(response.data); // Log the response from the server
          })

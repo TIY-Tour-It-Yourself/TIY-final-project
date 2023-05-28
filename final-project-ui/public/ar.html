@@ -15,7 +15,6 @@
                     alert(description);
                     // //Third Level Part Implementation
                     if (arLevel) {
-                        // console.log(`click 3rd level: ${arLevel}`);
                         handleClick();
                     }
                 });
@@ -52,33 +51,31 @@
         }
 
         function handleClick() {
-            // console.log('click 3rd level');
-            // //Determine the origin of the current page: Localhost or Production(Firebase)
-            // let origin = window.location.origin;
-
-            // //Send a message to the React component
-            // if (origin === 'http://localhost:3000') {
-            //     //Development environment - Need to put exact route here
-            //     window.parent.postMessage('incrementCounter', 'http://localhost:3000/theme_customization');
-            // } else {
-            //     //Production environment - Need to put exact route here
-            //     window.parent.postMessage('incrementCounter', 'https://tiy-1-b2c97.web.app/');
-            // }
-
-            // *****************************************************
-            document.addEventListener("click", (e) => {
-                /** @type HTMLInputElement */
-                // const input = document.getElementById("user-input");
-                window.parent.postMessage(
-                    {
-                        type: "button-click",
-                        message: 'incrementCounter'
-                    },
-                    "http://localhost:3000/"
-                );
+            // console.log("click");
+            let origin = window.location.origin;
+            document.getElementById('imageUrlValue').addEventListener("click", (e) => {
+                //Development environment
+                console.log("click");
+                if (origin === 'http://localhost:3000') {
+                    window.parent.postMessage(
+                        {
+                            type: "button-click",
+                            message: 'incrementCounter'
+                        },
+                        "http://localhost:3000/"
+                    );
+                    //Production environment
+                } else {
+                    window.parent.postMessage(
+                        {
+                            type: "button-click",
+                            message: 'incrementCounter'
+                        },
+                        "https://tiy-1-b2c97.web.app/"
+                    );
+                }
             });
         }
-
     </script>
 </body>
 

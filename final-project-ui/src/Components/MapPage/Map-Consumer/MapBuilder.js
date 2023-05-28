@@ -243,7 +243,6 @@ const MapBuilder = (props) => {
       ThreeArElements,
       arLevel
    ) => {
-      // const url = `/ar.html?lat=${stepLat}&lng=${stepLng}&desc=${null}&img=${ThreeArElements}`;
       const url = `/ar.html?lat=${stepLat}&lng=${stepLng}&desc=${null}&img=${ThreeArElements}&arLevel=${arLevel}`;
       window.open(url, '_blank');
    };
@@ -1014,7 +1013,7 @@ const MapBuilder = (props) => {
          ) : (
             <GoogleMap />
          )}
-         {showForm && (
+         {showForm && email && (
             <div className={styles.lightbox}>
                <div className={styles.lightbox_content}>
                   <button className='close-btn' onClick={handleCancel}>
@@ -1024,6 +1023,7 @@ const MapBuilder = (props) => {
                      showForm={showForm}
                      onCancel={handleCancel}
                      poiValues={selectedPoi}
+                     email={email}
                   />
                </div>
             </div>
