@@ -69,6 +69,11 @@ function Update_User(props) {
         } else {
           console.log("Status is not 200");
         }
+        // Close the modal
+        onCancel();
+
+        // Refresh the page
+        window.location.reload();
       } catch (err) {
         console.log(err.response.data.errors[0]);
 

@@ -1,118 +1,144 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { createTheme, useTheme, ThemeProvider } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import NavBar from '../../Additionals/NavBar/NavBar';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
+const colors = [
+   '#9BABB8',
+   '#E893CF',
+   '#30A2FF',
+   '#D7C0AE',
+   '#F2D8D8',
+   '#8696FE',
+   '#000000',
+];
 const ThemeCustomization = () => {
-   const [colors, setColors] = useState([]);
-   const [counter, setCounter] = useState(0);
+   // const ThemeCustomization = ({ colors }) => {
+   const [appTheme, setAppTheme] = useState('#FFFFFF');
+   const [fontColor, setFontColor] = useState('#000000');
+   const [activeLink, setActiveLink] = useState(null);
+   const [activeImage, setActiveImage] = useState(null);
+   const theme = useTheme();
+   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
    const location = useLocation();
    const navigate = useNavigate();
-   const [message, setMessage] = useState('No data received from IFrame, yet.');
 
-   const initialRenderRef = useRef(true); // Create a mutable reference for initial render state
-   const handlerRef = useRef(null); // Create a mutable reference for the event handler
-
-   const ref = useRef();
-   const shouldLog = useRef(true);
    useEffect(() => {
-      if (shouldLog.current) {
-         shouldLog.current = false;
-
-         console.log('customize app');
-         const handler = (ev) => {
-            console.log('ev: ', ev);
-            if (typeof ev.data !== 'object') return;
-            if (!ev.data.type) return;
-            if (ev.data.type !== 'button-click') return;
-            if (!ev.data.message) return;
-            // const newColor =
-            //    '#' + Math.floor(Math.random() * 16777215).toString(16);
-            // setColors((prevColors) => [...prevColors, newColor]);
-            // setCounter((prevCounter) => prevCounter + 1);
-            setMessage(ev.data.message);
-         };
-
-         window.addEventListener('message', handler);
-         // Clean up
-         return () => window.removeEventListener('message', handler); // The "message" param should match with the iframe.js file
+      // console.log(`token: ${location.state.token}`);
+      // if (shouldLog.current) {
+      //    shouldLog.current = false;
+      if (!location.state) {
+         navigate('/');
+      } else {
+         setActiveImage(4);
+         setActiveLink(3);
+         axios
+            .get(`https://tiys.herokuapp.com/api/auth`, {
+               headers: {
+                  'x-auth-token': location.state.token,
+                  'Content-Type': 'application/json',
+               },
+            })
+            .then((response) => {
+               // console.log(response.data);
+            })
+            .catch((error) => {
+               console.error('Error fetching user: ', error);
+            });
       }
-   }, []);
-   // useEffect(() => {
-   //    console.log(`token: ${location.state.token}`);
-   //    if (!location.state) {
-   //       navigate('/');
-   //    } else {
-   //       axios
-   //          .get(`https://tiys.herokuapp.com/api/auth`, {
-   //             headers: {
-   //                'x-auth-token': location.state.token,
-   //                'Content-Type': 'application/json',
-   //             },
-   //          })
-   //          .then((response) => {
-   //             // console.log(response.data);
-   //          })
-   //          .catch((error) => {
-   //             console.error('Error fetching user: ', error);
-   //          });
-   //    }
-   // }, [location.state]);
+      // }
+   }, [location.state]);
 
-   //Add the new color to the array
-   // useEffect(() => {
-   //    console.log('customize app');
-   //    const handler = (ev) => {
-   //       console.log('ev: ', ev);
-   //       if (typeof ev.data !== 'object') return;
-   //       if (!ev.data.type) return;
-   //       if (ev.data.type !== 'button-click') return;
-   //       if (!ev.data.message) return;
-   //       const newColor =
-   //          '#' + Math.floor(Math.random() * 16777215).toString(16);
-   //       setColors((prevColors) => [...prevColors, newColor]);
-   //       setCounter((prevCounter) => prevCounter + 1);
-   //    };
+   useEffect(() => {
+      document.body.style.backgroundColor = appTheme;
+   }, [appTheme]);
 
-   //    handlerRef.current = handler; // Assign the handler function to the mutable reference
+   const handleButtonClick = (color) => {
+      //Set new background color
+      if (color === 'white' || '#FFFFFF') {
+         setFontColor('#3a517b');
+      } else {
+         setFontColor('#FFFFFF');
+      }
 
-   //    // Check if it's the initial render
-   //    if (!handlerRef.current) {
-   //       // Listen for message events
-   //       window.addEventListener('message', handlerRef.current);
-   //       console.log(colors);
-   //    } else {
-   //       handlerRef.current = false; // Set the initial render state to false
-   //    }
-   //    // Listen for message events
-   //    window.addEventListener('message', handlerRef.current);
-   //    console.log(colors);
-   //    // Remove event listener on unmount
-   //    return () => {
-   //       window.removeEventListener('message', handlerRef.current);
-   //    };
-   // }, [colors]);
+      setAppTheme(color);
+      // Change body color inside index.css
+      // Change background color inside Navbar
+   };
+
+   const appBarStyle = {
+      backgroundColor: appTheme,
+   };
 
    //Return Randomly Generated Colors Array
    return (
-      <div>
-         <div
-            style={{
-               marginTop: '80px',
-            }}
+      <>
+         <NavBar
+            activeImage={activeImage}
+            activeLink={activeLink}
+            style={appBarStyle}
+         />
+         <Typography
+            component='div'
+            sx={
+               isSmallScreen
+                  ? {
+                       marginTop: '40px',
+                    }
+                  : { marginTop: '100px', fontSize: '1.25rem' }
+            }
          >
             <h2
                style={{
                   marginTop: '10px',
                }}
             >
-               Colors:
+               Customize Your App:
             </h2>
+         </Typography>
+         <h3
+            style={
+               isSmallScreen
+                  ? {
+                       textAlign: 'center',
+                       fontSize: '0.9rem',
+                    }
+                  : {
+                       textAlign: 'center',
+                       marginTop: '10px',
+                    }
+            }
+         >
+            Select in which color you would like the app to be displayed:
+         </h3>
+         <div
+            style={{
+               display: 'flex',
+               flexWrap: 'wrap',
+               margin: '0 auto',
+               justifyContent: 'center',
+            }}
+         >
+            {colors.map((color, index) => (
+               <Button
+                  key={index}
+                  variant='contained'
+                  style={{
+                     backgroundColor: color,
+                     marginRight: '10px',
+                     color: fontColor,
+                  }}
+                  onClick={() => handleButtonClick(color)}
+               >
+                  {color}
+               </Button>
+            ))}
          </div>
-         {message}
-         {/* {colors.map((color, index) => (
-            <div key={index}>{color}</div>
-         ))} */}
-      </div>
+      </>
    );
 };
 

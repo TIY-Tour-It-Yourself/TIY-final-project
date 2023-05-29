@@ -12,11 +12,14 @@ import ranking from './images/star.png';
 import styles from './MapBuilder.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ReviewForm from '../ReviewFormPage/ReviewForm';
+import eventIcon from './images/event.png';
 import { duration } from 'moment/moment';
 
 const MapBuilder = (props) => {
    const ref = useRef();
    const shouldLog = useRef(true);
+   const [events, setEvents] = useState([]);
+   const [colors, setColors] = useState([]);
    const [isMapLoaded, setIsMapLoaded] = useState(false);
    const [isClicked, setIsClicked] = useState(false);
    const [isLocationsLoaded, setIsLocationsLoaded] = useState(false);
@@ -80,7 +83,14 @@ const MapBuilder = (props) => {
          const searchParams = new URLSearchParams(location.search);
          const routeChosen = searchParams.get('routeId');
          setRouteId(routeChosen);
+         const selectedEventsParam = searchParams.get('selectedEvents');
 
+         if (selectedEventsParam) {
+            const parsedSelectedEvents = JSON.parse(
+               decodeURIComponent(selectedEventsParam)
+            );
+            setEvents(parsedSelectedEvents);
+         }
          //Get Route by ID
          const fetchRoute = async () => {
             try {
@@ -230,6 +240,11 @@ const MapBuilder = (props) => {
       experienceLevel,
    ]);
 
+   //Colors Customization array
+   useEffect(() => {
+      console.log(colors); // Log the updated colors array when it changes
+   }, [colors]);
+
    //Open AR Element from ARManagement component
    const openARElement = (poi) => {
       const url = `/ar.html?lat=${poi.coordinates.lat}&lng=${poi.coordinates.lng}&desc=${poi.description}&img=${poi.arid.url}`;
@@ -237,13 +252,24 @@ const MapBuilder = (props) => {
    };
 
    //Open AR Element ThirdLevel from ARManagement component
-   const openThirdLevelARElement = (
-      stepLat,
-      stepLng,
-      ThreeArElements,
-      arLevel
-   ) => {
-      const url = `/ar.html?lat=${stepLat}&lng=${stepLng}&desc=${null}&img=${ThreeArElements}&arLevel=${arLevel}`;
+   const openThirdLevelARElement = (stepLat, stepLng, ThreeArElements) => {
+      //Add new color to user's color array (Need to add to current array each time)
+      // const newColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+
+      // const updateColorsArray = async () => {
+      //    try {
+      //       // const response = await axios.post(
+      //       //    `https://tiys.herokuapp.com/api/colors`, {color: newColor}
+      //       //    );
+      //       // console.log('New color added successfully.', response.data);
+      //       setColors((prevColors) => [...prevColors, newColor]);
+      //    } catch (error) {
+      //       console.log('Error in adding color: ', error);
+      //    }
+      // };
+      // updateColorsArray();
+
+      const url = `/ar.html?lat=${stepLat}&lng=${stepLng}&desc=${null}&img=${ThreeArElements}`;
       window.open(url, '_blank');
    };
 
@@ -523,6 +549,17 @@ const MapBuilder = (props) => {
                });
             }
 
+            // Add events as waypoints
+            events.forEach((event) => {
+               waypoints.push({
+                  location: new window.google.maps.LatLng(
+                     event.coordinates.lat,
+                     event.coordinates.lng
+                  ),
+                  stopover: true,
+               });
+            });
+
             const request = {
                origin: origin,
                destination: destination,
@@ -758,8 +795,7 @@ const MapBuilder = (props) => {
                         openThirdLevelARElement(
                            step.start_point.lat(),
                            step.start_point.lng(),
-                           ThreeArElement,
-                           3
+                           ThreeArElement
                         );
                      });
                   });
@@ -768,6 +804,37 @@ const MapBuilder = (props) => {
                      infoWindow.open(map, marker); // open the info window when the marker is clicked
                   });
                });
+            };
+
+            const createEvents = async (route) => {
+               for (const event of events) {
+                  const marker = new window.google.maps.Marker({
+                     position: {
+                        lat: event.coordinates.lat,
+                        lng: event.coordinates.lng,
+                     },
+                     map: map,
+                     icon: {
+                        url: eventIcon,
+                        scaledSize: new window.google.maps.Size(35, 35), // Set the desired width and height
+                     },
+                  });
+
+                  const infoWindow = new window.google.maps.InfoWindow({
+                     content: `<div style="display: flex; flex-direction: column; direction: rtl;">
+                               <h3 style="color: #D25380;">${event.title}</h3>
+                               <p><strong>כתובת:</strong> ${event.address}</p>
+                               <p><strong>מיקום:</strong> ${event.location}</p>
+                               <p><strong>תאריך:</strong> ${event.date}</p>
+                             </div>`,
+                  });
+
+                  infoWindow.addListener('domready', () => {});
+
+                  marker.addListener('click', () => {
+                     infoWindow.open(map, marker); // open the info window when the marker is clicked
+                  });
+               }
             };
 
             //Arrow Location Marker
@@ -911,6 +978,10 @@ const MapBuilder = (props) => {
                   addUserLocation();
                   if (experienceLevel === 3) {
                      buildThirdLevelRoute(response);
+                  }
+
+                  if (events.length > 0) {
+                     createEvents(response);
                   }
                }
             });

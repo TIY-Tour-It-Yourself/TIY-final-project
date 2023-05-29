@@ -9,12 +9,38 @@ import { Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-const EventsModal = ({ handleCloseModal }) => {
+const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
    const [open, setOpen] = useState(true);
    const navigate = useNavigate();
    const location = useLocation();
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+   const [events, setEvents] = useState([]); // State to hold the events
+   const [isLoading, setIsLoading] = useState(true);
+   const [selectedEvents, setSelectedEvents] = useState([]);
+   const [isSelectingEvents, setIsSelectingEvents] = useState(false);
+   const [title, setTitle] = useState([]);
+   const [address, setAddress] = useState([]);
+   const [Location, setLocation] = useState([]);
+   const [date, setDate] = useState([]);
+   const [translatedEvent, setTranslatedEvent] = useState([]);
+
+   const translateText = async (text, targetLanguage) => {
+      const apiKey = 'AIzaSyBTcp_fIBVNuxgqiuv4wqyTLfFC6iGm0iE&libraries=places';
+      const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
+      const response = await fetch(url, {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({
+            q: text,
+            target: targetLanguage,
+         }),
+      });
+      const data = await response.json();
+      return data.data.translations[0].translatedText;
+   };
 
    useEffect(() => {
       if (!location.state) {
@@ -35,6 +61,111 @@ const EventsModal = ({ handleCloseModal }) => {
             });
       }
    }, [location.state]);
+
+   useEffect(() => {
+      const fetchEvents = async () => {
+         try {
+            const response = await axios.get(
+               'https://tiy-poc.glitch.me/events.json'
+            );
+            const translatedEvents = await Promise.all(
+               response.data.map(async (event) => {
+                  const translatedTitle = await translateText(
+                     event.title,
+                     'en'
+                  );
+                  setTitle(translatedTitle);
+                  const translatedAddress = await translateText(
+                     event.address,
+                     'en'
+                  );
+                  setAddress(translatedAddress);
+                  const translatedLocation = await translateText(
+                     event.location,
+                     'en'
+                  );
+                  setLocation(translatedLocation);
+                  const translatedDate = await translateText(event.date, 'en');
+                  setDate(translatedDate);
+
+                  return {
+                     ...event,
+                     title: translatedTitle,
+                     address: translatedAddress,
+                     location: translatedLocation,
+                     date: translatedDate,
+                  };
+               })
+            );
+
+            const eventsWithCoordinates = await geocodeEvents(response.data);
+            setEvents(eventsWithCoordinates);
+            setIsLoading(false);
+         } catch (error) {
+            console.error(error);
+         }
+      };
+
+      fetchEvents();
+   }, []);
+   const geocodeEvents = async (events) => {
+      const apiKey = 'AIzaSyBTcp_fIBVNuxgqiuv4wqyTLfFC6iGm0iE';
+
+      const geocodeAddress = async (address) => {
+         const fullAddress = `${address}, Ramat Gan, Israel`;
+         const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+            fullAddress
+         )}&key=${apiKey}`;
+
+         const response = await axios.get(apiUrl);
+
+         if (response.data.status === 'OK') {
+            const { lat, lng } = response.data.results[0].geometry.location;
+            return { ...address, lat, lng };
+         } else {
+            console.log(`Geocoding failed for address: ${address}`);
+            return address;
+         }
+      };
+      const geocodedEvents = await Promise.all(
+         events.map(async (event) => {
+            const geocodedAddress = await geocodeAddress(event.address);
+            const coordinates = {
+               lat: geocodedAddress.lat,
+               lng: geocodedAddress.lng,
+            };
+            return { ...event, coordinates };
+         })
+      );
+
+      return geocodedEvents;
+   };
+
+   const handleEventClick = (event) => {
+      const isSelected = selectedEvents.some(
+         (selectedEvent) => selectedEvent.id !== event.id
+      );
+      let updatedSelectedEvents = [];
+
+      if (isSelected) {
+         updatedSelectedEvents = selectedEvents.filter(
+            (selectedEvent) => selectedEvent.id !== event.id
+         );
+      } else {
+         updatedSelectedEvents = [...selectedEvents, event];
+      }
+
+      setSelectedEvents(updatedSelectedEvents);
+      console.log(updatedSelectedEvents);
+      setIsSelectingEvents(true);
+   };
+
+   const handleEventSelectionComplete = () => {
+      setIsSelectingEvents(false);
+      // navigate(-1, { state: { selectedEvents } });
+      handleEventSelection(selectedEvents);
+      handleClose();
+   };
 
    const handleClose = () => {
       handleCloseModal();
@@ -67,6 +198,7 @@ const EventsModal = ({ handleCloseModal }) => {
             <Box sx={style}>
                <div>
                   <section className={styles.modal}>
+                     {/* ... */}
                      <Typography
                         component='div'
                         sx={
@@ -97,8 +229,28 @@ const EventsModal = ({ handleCloseModal }) => {
                            <span>
                               Scroll down to see events on specific dates
                            </span>
+                           {/* {isSelectingEvents && (
+                    <Button
+                      variant="contained"
+                      onClick={() =>
+                        navigate(
+                          `/map_builder?routeId=1&selectedEvents=${encodeURIComponent(
+                            JSON.stringify(selectedEvents)
+                          )}`,
+                          {
+                            state: {
+                              token: location.state.token,
+                            },
+                          }
+                        )
+                      }
+                    >
+                      View Selected Events on Map
+                    </Button>
+                  )} */}
                         </Typography>
                      </div>
+
                      <Box
                         component='div'
                         sx={{
@@ -108,9 +260,80 @@ const EventsModal = ({ handleCloseModal }) => {
                            mb: 3,
                         }}
                      >
-                        <div className={styles.event_card}>
-                           <div className={styles.inner_card}></div>
-                        </div>
+                        {/* <div className={styles.event_card}> */}
+                        {/* <div className={styles.inner_card}></div> */}
+                        <>
+                           {' '}
+                           {isSelectingEvents ? (
+                              <>
+                                 <h3> Selected events: </h3>{' '}
+                                 <Button
+                                    variant='contained'
+                                    onClick={handleEventSelectionComplete}
+                                 >
+                                    View Selected Events on Map
+                                 </Button>
+                                 {selectedEvents.map((event, index) => (
+                                    <div
+                                       key={index}
+                                       onClick={() => handleEventClick(event)}
+                                       className='event_div selected'
+                                    >
+                                       <p>
+                                          {event.title} <br /> {event.location}
+                                          <br />
+                                          {event.address} <br />
+                                          {event.date}
+                                       </p>
+                                    </div>
+                                 ))}
+                                 {events.map(
+                                    (event, index) =>
+                                       !selectedEvents.includes(event) && (
+                                          <div
+                                             key={index}
+                                             onClick={() =>
+                                                handleEventClick(event)
+                                             }
+                                             className='event_div'
+                                          >
+                                             <p>
+                                                {event.title}
+                                                <br /> {
+                                                   event.location
+                                                } <br /> {event.address} <br />
+                                                {/* {event.coordinates.lat}, {event.coordinates.lng} <br />{" "} */}
+                                                {event.date}{' '}
+                                             </p>
+                                          </div>
+                                       )
+                                 )}{' '}
+                              </>
+                           ) : (
+                              <>
+                                 {events.map((event, index) => (
+                                    <div
+                                       key={index}
+                                       onClick={() => handleEventClick(event)}
+                                       className={`event_div ${
+                                          selectedEvents.includes(event)
+                                             ? 'selected'
+                                             : ''
+                                       }`}
+                                    >
+                                       <p>
+                                          {' '}
+                                          {event.title} <br /> {event.location}{' '}
+                                          <br /> {event.address}{' '}
+                                          {/* <br /> {event.coordinates.lat}, {event.coordinates.lng}{" "} */}
+                                          <br /> {event.date}{' '}
+                                       </p>{' '}
+                                    </div>
+                                 ))}{' '}
+                              </>
+                           )}{' '}
+                        </>
+                        {/* </div> */}
                      </Box>
                   </section>
                   <div style={{ textAlign: 'center' }}>

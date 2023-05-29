@@ -30,6 +30,7 @@ const Form_Producer = () => {
    const [themeName, setSelectedThemeName] = useState('');
    const [themeSelectedId, setThemeSelectedId] = useState('');
    const [selectedLevelId, setSelectedLevelId] = useState('');
+   const [selectedEvents, setSelectedEvents] = useState([]);
    const [email, setEmail] = useState('');
    const [isFormValid, setIsFormValid] = useState(false);
    const [routeChosen, setRouteChosen] = useState('');
@@ -179,6 +180,11 @@ const Form_Producer = () => {
       coordinates,
    ]);
 
+   //Handle Events
+   const handleEventSelection = (selectedEvents) => {
+      setSelectedEvents(selectedEvents);
+   };
+
    //Open Events Modal
    const handleOpenModal = () => {
       setEventModalOpen(true);
@@ -284,7 +290,11 @@ const Form_Producer = () => {
             });
 
          navigate(
-            `/map_builder?routeId=${getNewRouteIdRes.data}&ARLevel=${selectedLevelId}`,
+            `/map_builder?routeId=${
+               getNewRouteIdRes.data
+            }&ARLevel=${selectedLevelId}&selectedEvents=${JSON.stringify(
+               selectedEvents
+            )}`,
             {
                state: { token: location.state.token },
             }
@@ -519,6 +529,7 @@ const Form_Producer = () => {
                {eventModalOpen && (
                   <EventsModal
                      handleCloseModal={() => setEventModalOpen(false)}
+                     handleEventSelection={handleEventSelection}
                   />
                )}
             </Box>

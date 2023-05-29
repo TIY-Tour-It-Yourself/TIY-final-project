@@ -29,6 +29,7 @@ function Add_User(props) {
   const [isValid, setIsValid] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const { onCancel } = props;
 
   // useEffect(() => {
   //   console.log(location);
@@ -55,8 +56,8 @@ function Add_User(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    //Post request - need to post data to DB to register user
-    //If all fields are filled
+    // Post request - need to post data to DB to register user
+    // If all fields are filled
     if (
       fname.trim().length !== 0 &&
       email.trim().length !== 0 &&
@@ -73,7 +74,6 @@ function Add_User(props) {
           is_accessible,
         })
         .then((response) => {
-          //   const token = response.data.token;
           setIsFormValid(true);
           if (response.status === 200) {
             console.log("OK");
@@ -89,6 +89,12 @@ function Add_User(props) {
             alert("Invalid Credentials.");
           }
         });
+
+      // Close the modal
+      onCancel();
+
+      // Refresh the page
+      window.location.reload();
     } else {
       alert("All fields are required.");
       setIsFormValid(false);

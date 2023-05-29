@@ -29,6 +29,7 @@ import RouteTablePage from './Pages/RouteTablePage';
 import UserTablePage from './Pages/UserTablePage';
 import UpdateUserPage from './Pages/UpdateUserPage';
 import ThemeCustomizationPage from './Pages/ThemeCustomizationPage';
+import NavBar from './Components/Additionals/NavBar/NavBar';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

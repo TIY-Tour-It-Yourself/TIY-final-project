@@ -15,8 +15,8 @@ import axios from "axios";
 function Add_Route(props) {
   const [themeOptions, setThemeOptions] = useState([]);
   const [newRouteId, setNewRouteId] = useState(props.lastRouteId + 2);
-  console.log(newRouteId);
   const [poisData, setPoisData] = useState([]);
+  const { onCancel } = props;
 
   useEffect(() => {
     fetch("https://tiys.herokuapp.com/api/pois")
@@ -69,10 +69,17 @@ function Add_Route(props) {
       setDescription(value);
     } else if (name.startsWith("pois[")) {
       const index = Number(name.match(/\[(\d+)\]/)[1]);
-      setPOIs((prevPOIs) => {
-        const updatedPOIs = [...prevPOIs];
-        updatedPOIs[index] = value; // Store only the poiid value
-        return updatedPOIs;
+      setFormData((prevFormData) => {
+        const updatedPOIs = [...prevFormData.pois];
+        const selectedPOI = poisData.find((poi) => poi.poiid === value);
+        updatedPOIs[index] = {
+          poiid: value,
+          name: selectedPOI ? selectedPOI.name : "", // Find the name of the selected POI
+        };
+        return {
+          ...prevFormData,
+          pois: updatedPOIs,
+        };
       });
     } else if (name === "evaluation_grade") {
       setEvaluation_grade(value);
@@ -92,32 +99,47 @@ function Add_Route(props) {
     }));
   }
 
-  const poisArray = Object.keys(pois).map((key) => pois[key]);
-  console.log(poisArray[0]); // true if pois is an array, false otherwise
+  const poisArray = formData.pois.map((poi) => poi.poiid);
+  console.log(
+    routeid,
+    description,
+    poisArray,
+    evaluation_grade,
+    experience_level,
+    theme,
+    imgurl
+  );
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (routeid && description && pois.length > 0) {
-      axios
-        .post(`https://tiys.herokuapp.com/api/routes`, {
-          routeid: routeid,
-          description: description,
-          pois: pois,
-          evaluation_grade: evaluation_grade,
-          experience_level: experience_level,
-          theme: theme,
-          imgurl: imgurl,
-          access: "public",
-          email: "admin@tiy.com",
-        })
-        .then((response) => {
-          console.log(response);
-          console.log(response.status);
-        })
-        .catch((err) => {
-          console.log(err.response.data.errors);
-        });
+    if (routeid && description && poisArray.length > 0) {
+      try {
+        const response = await axios.post(
+          `https://tiys.herokuapp.com/api/routes`,
+          {
+            routeid: routeid,
+            description: description,
+            pois: poisArray,
+            evaluation_grade: evaluation_grade,
+            experience_level: experience_level,
+            theme: theme,
+            imgurl: imgurl,
+            access: "public",
+            email: "admin@tiy.com",
+          }
+        );
+        console.log(response);
+        console.log(response.status);
+
+        // Close the modal
+        onCancel();
+
+        // Refresh the page
+        window.location.reload();
+      } catch (error) {
+        console.log(error.response.data.errors);
+      }
     } else {
       alert("All fields are required, including at least one POI.");
     }
@@ -146,6 +168,7 @@ function Add_Route(props) {
               value={routeid}
               onChange={(e) => handleInputChange(e)}
               disabled
+              required
             />{" "}
           </Grid>{" "}
           <Grid item xs={12}>
@@ -157,6 +180,7 @@ function Add_Route(props) {
               rows={4}
               value={description}
               onChange={(e) => handleInputChange(e)}
+              required
             />{" "}
           </Grid>{" "}
           {formData.pois.map((poi, index) => (
@@ -164,20 +188,18 @@ function Add_Route(props) {
               <Grid item xs={6}>
                 <FormControl fullWidth>
                   <InputLabel id={`poi-id-${index}`}>
-                    Poi ID {index + 1}
+                    POI {index + 1}
                   </InputLabel>
                   <Select
                     labelId={`poi-id-${index}`}
                     id={`poi-id-${index}`}
                     value={poi.poiid}
                     onChange={(e) => handleInputChange(e)}
-                    name={`pois[${index}].poiid`} // Adjusted the name to target the "poiid" field
+                    name={`pois[${index}].poiid`}
+                    required
                   >
-                    {poisData.map((poiOption, optionIndex) => (
-                      <MenuItem
-                        key={`${poiOption.poiid}-${optionIndex}`}
-                        value={poiOption.poiid}
-                      >
+                    {poisData.map((poiOption) => (
+                      <MenuItem key={poiOption.poiid} value={poiOption.poiid}>
                         {poiOption.name}
                       </MenuItem>
                     ))}
@@ -194,8 +216,8 @@ function Add_Route(props) {
               type="button"
               onClick={addPoi}
             >
-              Add POI
-            </Button>
+              Add POI{" "}
+            </Button>{" "}
           </Grid>{" "}
           <Grid item xs={12}>
             <TextField
@@ -205,26 +227,27 @@ function Add_Route(props) {
               value={evaluation_grade}
               onChange={(e) => handleInputChange(e)}
               disabled
+              required
             />{" "}
           </Grid>{" "}
           {/* <Grid item xs={6}>
-                        <TextField
-                          name="coordinates.lat"
-                          label="Latitude"
-                          fullWidth
-                          value={formData.coordinates.lat}
-                          onChange={handleCoordinatesChange}
-                        />{" "}
-                      </Grid>{" "} */}{" "}
+                                    <TextField
+                                      name="coordinates.lat"
+                                      label="Latitude"
+                                      fullWidth
+                                      value={formData.coordinates.lat}
+                                      onChange={handleCoordinatesChange}
+                                    />{" "}
+                                  </Grid>{" "} */}{" "}
           {/* <Grid item xs={6}>
-                        <TextField
-                          name="coordinates.lng"
-                          label="Longitude"
-                          fullWidth
-                          value={formData.coordinates.lng}
-                          onChange={handleCoordinatesChange}
-                        />{" "}
-                      </Grid>{" "} */}{" "}
+                                    <TextField
+                                      name="coordinates.lng"
+                                      label="Longitude"
+                                      fullWidth
+                                      value={formData.coordinates.lng}
+                                      onChange={handleCoordinatesChange}
+                                    />{" "}
+                                  </Grid>{" "} */}{" "}
           <Grid item xs={12}>
             <InputLabel id="experience-level-label">
               Experience Level{" "}
@@ -235,6 +258,7 @@ function Add_Route(props) {
               fullWidth
               value={experience_level}
               onChange={(e) => handleInputChange(e)}
+              required
             >
               <MenuItem value={1}> 1 </MenuItem>{" "}
               <MenuItem value={2}> 2 </MenuItem>{" "}
@@ -249,6 +273,7 @@ function Add_Route(props) {
                 name="theme"
                 value={theme}
                 onChange={(e) => handleInputChange(e)}
+                required
               >
                 {" "}
                 {themeOptions.map((option) => (
@@ -267,8 +292,9 @@ function Add_Route(props) {
               fullWidth
               value={imgurl}
               onChange={(e) => handleInputChange(e)}
+              required
             />
-          </Grid>
+          </Grid>{" "}
           <Grid item sx={{ display: "flex", justifyContent: "center" }}>
             <Button variant="contained" color="primary" type="submit">
               Submit{" "}

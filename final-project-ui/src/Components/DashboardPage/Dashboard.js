@@ -75,6 +75,23 @@ const Dashboard = () => {
          >
             <h1>What Would You Like To Do?</h1>
          </Typography>
+         <Typography
+            component='div'
+            sx={{
+               textAlign: 'center',
+            }}
+         >
+            <h3
+               style={
+                  ({ marginTop: '-10px', fontSize: '1.05rem' },
+                  isSmallScreen
+                     ? { fontSize: '0.95rem', marginTop: '-1px' }
+                     : { marginTop: '0' })
+               }
+            >
+               Choose a Pre-built Tour or Build One Yourself!
+            </h3>
+         </Typography>
          <Container
             sx={{
                marginTop: '80px',

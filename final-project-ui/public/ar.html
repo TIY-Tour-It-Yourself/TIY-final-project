@@ -13,10 +13,6 @@
             init: function () {
                 this.el.addEventListener('click', e => {
                     alert(description);
-                    // //Third Level Part Implementation
-                    if (arLevel) {
-                        handleClick();
-                    }
                 });
             }
         });
@@ -31,50 +27,17 @@
             crossorigin="anonymous"></a-image>
     </a-scene>
 
-
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const imageUrl = urlParams.get('img');
         const latitude = urlParams.get('lat');
         const longitude = urlParams.get('lng');
         const description = urlParams.get('desc');
-        let arLevel;
-        //Third AR Level Part
-        if (urlParams.get('arLevel')) {
-            arLevel = urlParams.get('arLevel');
-        }
 
         if (imageUrl) {
             const imageElement = document.getElementById("imageUrlValue");
             imageElement.setAttribute('src', imageUrl);
             imageElement.setAttribute('gps-entity-place', `latitude:${latitude}; longitude:${longitude}`);
-        }
-
-        function handleClick() {
-            // console.log("click");
-            let origin = window.location.origin;
-            document.getElementById('imageUrlValue').addEventListener("click", (e) => {
-                //Development environment
-                console.log("click");
-                if (origin === 'http://localhost:3000') {
-                    window.parent.postMessage(
-                        {
-                            type: "button-click",
-                            message: 'incrementCounter'
-                        },
-                        "http://localhost:3000/"
-                    );
-                    //Production environment
-                } else {
-                    window.parent.postMessage(
-                        {
-                            type: "button-click",
-                            message: 'incrementCounter'
-                        },
-                        "https://tiy-1-b2c97.web.app/"
-                    );
-                }
-            });
         }
     </script>
 </body>

@@ -16,7 +16,7 @@ function ReviewForm(props) {
    const [isNamesLoaded, setIsNamesLoaded] = useState(false);
 
    useEffect(() => {
-      // get poi from the database
+      //Get POIs from the Database
       const fetchData = async () => {
          try {
             const response = await axios.get(
@@ -40,7 +40,7 @@ function ReviewForm(props) {
 
    const handleSubmit = async (event) => {
       event.preventDefault();
-      const newgrade = rating; // You can replace this with the actual rating value
+      const newgrade = rating;
 
       const response = await axios
          .post('https://tiys.herokuapp.com/api/grades', {
@@ -49,10 +49,10 @@ function ReviewForm(props) {
             grade: newgrade,
          })
          .then((response) => {
-            // console.log(response.data); // Log the response from the server
+            alert(response.data);
          })
          .catch((error) => {
-            console.error(error);
+            alert(error.response.data);
          });
       props.onCancel(); // close the modal
    };
