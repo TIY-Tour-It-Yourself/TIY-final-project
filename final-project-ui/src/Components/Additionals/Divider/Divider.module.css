@@ -1,10 +1,5 @@
-.divider {
-   /* border: 2px solid blue; */
-}
-
 .divider_span {
    color: '#B3B6B7';
-   /* border: 2px solid blue; */
 }
 
 .divider_span > hr {

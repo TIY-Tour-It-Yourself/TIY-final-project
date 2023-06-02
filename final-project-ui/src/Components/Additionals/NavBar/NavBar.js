@@ -34,7 +34,7 @@ import LoadingBar from '../LoadingBar/LoadingBar';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-const NavBar = ({ activeImage, activeLink }) => {
+const NavBar = ({ activeImage, activeLink, linksColor }) => {
    const [isLoading, setIsLoading] = useState(true);
    const [images, setImages] = useState([
       {
@@ -181,7 +181,6 @@ const NavBar = ({ activeImage, activeLink }) => {
                         ? {
                              flexGrow: 13,
                              display: { md: 'flex' },
-                             //   display: { xs: 'flex', md: 'flex' },
                              mr: 15,
                           }
                         : { display: 'none' }
@@ -195,6 +194,7 @@ const NavBar = ({ activeImage, activeLink }) => {
                         sx={{
                            my: 2,
                            mx: 1,
+                           // color: linksColor,
                            color: '#00337C',
                            display: 'block',
                            borderRadius: '25px',
@@ -249,10 +249,7 @@ const NavBar = ({ activeImage, activeLink }) => {
                   {!isSmallScreen && (
                      <Tooltip title='Open Menu'>
                         <IconButton onClick={handleOpenUserMenu}>
-                           <Avatar
-                              alt='user'
-                              src={`http://www.gravatar.com/avatar/8bb4dc936d8ec3b28fea439222e64bd0?s=200&r=pg&d=mm`}
-                           />
+                           <Avatar alt='user' src={avatar} />
                         </IconButton>
                      </Tooltip>
                   )}

@@ -12,7 +12,11 @@
         AFRAME.registerComponent('clicker', {
             init: function () {
                 this.el.addEventListener('click', e => {
-                    alert(description);
+                    if (arLevel) {
+                        alert('You have unlocked a Theme Customization Feature!');
+                    } else {
+                        alert(description);
+                    }
                 });
             }
         });
@@ -33,6 +37,7 @@
         const latitude = urlParams.get('lat');
         const longitude = urlParams.get('lng');
         const description = urlParams.get('desc');
+        const arLevel = urlParams.get('arLevel');
 
         if (imageUrl) {
             const imageElement = document.getElementById("imageUrlValue");

@@ -13,11 +13,12 @@ import styles from './MapBuilder.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ReviewForm from '../ReviewFormPage/ReviewForm';
 import eventIcon from './images/event.png';
-import { duration } from 'moment/moment';
+// import { duration } from 'moment/moment';
 
 const MapBuilder = (props) => {
    const ref = useRef();
    const shouldLog = useRef(true);
+   const [flag, setFlag] = useState(false);
    const [events, setEvents] = useState([]);
    const [colors, setColors] = useState([]);
    const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -242,8 +243,8 @@ const MapBuilder = (props) => {
 
    //Colors Customization array
    useEffect(() => {
-      console.log(colors); // Log the updated colors array when it changes
-   }, [colors]);
+      console.log(colors, flag); // Log the updated colors array when it changes
+   }, [colors, flag]);
 
    //Open AR Element from ARManagement component
    const openARElement = (poi) => {
@@ -252,7 +253,14 @@ const MapBuilder = (props) => {
    };
 
    //Open AR Element ThirdLevel from ARManagement component
-   const openThirdLevelARElement = (stepLat, stepLng, ThreeArElements) => {
+   const openThirdLevelARElement = (
+      stepLat,
+      stepLng,
+      ThreeArElements,
+      arLevel
+   ) => {
+      setFlag(true);
+      // console.log(flag);
       //Add new color to user's color array (Need to add to current array each time)
       // const newColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
 
@@ -269,7 +277,7 @@ const MapBuilder = (props) => {
       // };
       // updateColorsArray();
 
-      const url = `/ar.html?lat=${stepLat}&lng=${stepLng}&desc=${null}&img=${ThreeArElements}`;
+      const url = `/ar.html?lat=${stepLat}&lng=${stepLng}&desc=${null}&img=${ThreeArElements}&arLevel=${arLevel}`;
       window.open(url, '_blank');
    };
 
@@ -795,7 +803,8 @@ const MapBuilder = (props) => {
                         openThirdLevelARElement(
                            step.start_point.lat(),
                            step.start_point.lng(),
-                           ThreeArElement
+                           ThreeArElement,
+                           3
                         );
                      });
                   });

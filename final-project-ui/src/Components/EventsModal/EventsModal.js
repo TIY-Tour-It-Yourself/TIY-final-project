@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './EventsModal.module.css';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
@@ -19,28 +19,6 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
    const [isLoading, setIsLoading] = useState(true);
    const [selectedEvents, setSelectedEvents] = useState([]);
    const [isSelectingEvents, setIsSelectingEvents] = useState(false);
-   const [title, setTitle] = useState([]);
-   const [address, setAddress] = useState([]);
-   const [Location, setLocation] = useState([]);
-   const [date, setDate] = useState([]);
-   const [translatedEvent, setTranslatedEvent] = useState([]);
-
-   const translateText = async (text, targetLanguage) => {
-      const apiKey = 'AIzaSyBTcp_fIBVNuxgqiuv4wqyTLfFC6iGm0iE&libraries=places';
-      const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
-      const response = await fetch(url, {
-         method: 'POST',
-         headers: {
-            'Content-Type': 'application/json',
-         },
-         body: JSON.stringify({
-            q: text,
-            target: targetLanguage,
-         }),
-      });
-      const data = await response.json();
-      return data.data.translations[0].translatedText;
-   };
 
    useEffect(() => {
       if (!location.state) {
@@ -68,35 +46,6 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
             const response = await axios.get(
                'https://tiy-poc.glitch.me/events.json'
             );
-            const translatedEvents = await Promise.all(
-               response.data.map(async (event) => {
-                  const translatedTitle = await translateText(
-                     event.title,
-                     'en'
-                  );
-                  setTitle(translatedTitle);
-                  const translatedAddress = await translateText(
-                     event.address,
-                     'en'
-                  );
-                  setAddress(translatedAddress);
-                  const translatedLocation = await translateText(
-                     event.location,
-                     'en'
-                  );
-                  setLocation(translatedLocation);
-                  const translatedDate = await translateText(event.date, 'en');
-                  setDate(translatedDate);
-
-                  return {
-                     ...event,
-                     title: translatedTitle,
-                     address: translatedAddress,
-                     location: translatedLocation,
-                     date: translatedDate,
-                  };
-               })
-            );
 
             const eventsWithCoordinates = await geocodeEvents(response.data);
             setEvents(eventsWithCoordinates);
@@ -108,6 +57,7 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
 
       fetchEvents();
    }, []);
+
    const geocodeEvents = async (events) => {
       const apiKey = 'AIzaSyBTcp_fIBVNuxgqiuv4wqyTLfFC6iGm0iE';
 
@@ -140,7 +90,6 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
 
       return geocodedEvents;
    };
-
    const handleEventClick = (event) => {
       const isSelected = selectedEvents.some(
          (selectedEvent) => selectedEvent.id !== event.id
@@ -156,17 +105,15 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
       }
 
       setSelectedEvents(updatedSelectedEvents);
-      console.log(updatedSelectedEvents);
+      // console.log(updatedSelectedEvents);
       setIsSelectingEvents(true);
    };
-
    const handleEventSelectionComplete = () => {
       setIsSelectingEvents(false);
       // navigate(-1, { state: { selectedEvents } });
       handleEventSelection(selectedEvents);
       handleClose();
    };
-
    const handleClose = () => {
       handleCloseModal();
    };
@@ -174,10 +121,10 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
    //Modal Style
    const style = {
       position: 'absolute',
-      top: '50%',
+      top: '50vh',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      width: '70%',
+      width: isSmallScreen ? '70%' : '40%', // Adjust the width based on the screen size
       height: '75%',
       borderRadius: '30px',
       bgcolor: 'background.paper',
@@ -186,6 +133,57 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
       boxShadow: 24,
       p: 4,
    };
+
+   function sortEventsByDate(events) {
+      return events.sort((a, b) => {
+         if (!a.date && !b.date) {
+            return 0;
+         }
+         if (!a.date) {
+            return 1;
+         }
+         if (!b.date) {
+            return -1;
+         }
+
+         // Extract the start dates from the event dates
+         const startDateA = a.date.split('-')[0];
+         const startDateB = b.date.split('-')[0];
+
+         // Convert start dates to a sortable format (mm/dd)
+         const sortableDateA = `${startDateA.slice(3, 5)}/${startDateA.slice(
+            0,
+            2
+         )}`;
+         const sortableDateB = `${startDateB.slice(3, 5)}/${startDateB.slice(
+            0,
+            2
+         )}`;
+
+         // Compare the sortable start dates
+         if (sortableDateA < sortableDateB) return -1;
+         if (sortableDateA > sortableDateB) return 1;
+
+         // Handle the case of "dd/mm-dd/mm"
+         if (a.date.includes('-') && b.date.includes('-')) {
+            const endDateA = a.date.split('-')[1];
+            const endDateB = b.date.split('-')[1];
+            const sortableEndDateA = `${endDateA.slice(3, 5)}/${endDateA.slice(
+               0,
+               2
+            )}`;
+            const sortableEndDateB = `${endDateB.slice(3, 5)}/${endDateB.slice(
+               0,
+               2
+            )}`;
+
+            if (sortableEndDateA < sortableEndDateB) return -1;
+            if (sortableEndDateA > sortableEndDateB) return 1;
+         }
+
+         return 0;
+      });
+   }
 
    return (
       <div className={styles.modal}>
@@ -198,7 +196,6 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
             <Box sx={style}>
                <div>
                   <section className={styles.modal}>
-                     {/* ... */}
                      <Typography
                         component='div'
                         sx={
@@ -229,36 +226,20 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
                            <span>
                               Scroll down to see events on specific dates
                            </span>
-                           {/* {isSelectingEvents && (
-                    <Button
-                      variant="contained"
-                      onClick={() =>
-                        navigate(
-                          `/map_builder?routeId=1&selectedEvents=${encodeURIComponent(
-                            JSON.stringify(selectedEvents)
-                          )}`,
-                          {
-                            state: {
-                              token: location.state.token,
-                            },
-                          }
-                        )
-                      }
-                    >
-                      View Selected Events on Map
-                    </Button>
-                  )} */}
                         </Typography>
                      </div>
 
                      <Box
                         component='div'
-                        sx={{
-                           display: 'flex',
-                           flexWrap: 'wrap',
-                           justifyContent: 'center',
-                           mb: 3,
-                        }}
+                        sx={
+                           ({
+                              display: 'flex',
+                              flexWrap: 'wrap',
+                              justifyContent: 'center',
+                              mb: 3,
+                           },
+                           !isSmallScreen ? { width: '100%' } : {})
+                        }
                      >
                         {/* <div className={styles.event_card}> */}
                         {/* <div className={styles.inner_card}></div> */}
@@ -266,74 +247,331 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
                            {' '}
                            {isSelectingEvents ? (
                               <>
-                                 <h3> Selected events: </h3>{' '}
-                                 <Button
-                                    variant='contained'
-                                    onClick={handleEventSelectionComplete}
-                                 >
-                                    View Selected Events on Map
-                                 </Button>
-                                 {selectedEvents.map((event, index) => (
-                                    <div
-                                       key={index}
-                                       onClick={() => handleEventClick(event)}
-                                       className='event_div selected'
+                                 <div>
+                                    <Button
+                                       variant='contained'
+                                       onClick={handleEventSelectionComplete}
+                                       style={{
+                                          fontWeight: 'bold',
+                                          borderRadius: '5%',
+                                          height: '30px',
+                                          width: '160px',
+                                          padding: 0,
+                                       }}
                                     >
-                                       <p>
-                                          {event.title} <br /> {event.location}
-                                          <br />
-                                          {event.address} <br />
-                                          {event.date}
-                                       </p>
-                                    </div>
-                                 ))}
-                                 {events.map(
-                                    (event, index) =>
-                                       !selectedEvents.includes(event) && (
-                                          <div
+                                       Back To Form
+                                    </Button>
+                                 </div>
+                                 <div
+                                    style={{
+                                       display: 'flex',
+                                       flexDirection: 'column',
+                                       alignItems: 'center',
+                                       height: '100%',
+                                    }}
+                                 >
+                                    <ul style={{ marginTop: '20px' }}>
+                                       {selectedEvents
+                                          .sort((a, b) => {
+                                             if (!a.date && !b.date) {
+                                                return 0;
+                                             }
+                                             if (!a.date) {
+                                                return 1;
+                                             }
+                                             if (!b.date) {
+                                                return -1;
+                                             }
+
+                                             // Extract the start dates from the event dates
+                                             const startDateA = a.date.split(
+                                                '-'
+                                             )[0];
+                                             const startDateB = b.date.split(
+                                                '-'
+                                             )[0];
+
+                                             // Convert start dates to a sortable format (mm/dd)
+                                             const sortableDateA = `${startDateA.slice(
+                                                3,
+                                                5
+                                             )}/${startDateA.slice(0, 2)}`;
+                                             const sortableDateB = `${startDateB.slice(
+                                                3,
+                                                5
+                                             )}/${startDateB.slice(0, 2)}`;
+
+                                             // Compare the sortable start dates
+                                             if (sortableDateA < sortableDateB)
+                                                return -1;
+                                             if (sortableDateA > sortableDateB)
+                                                return 1;
+
+                                             // Handle the case of "dd/mm-dd/mm"
+                                             if (
+                                                a.date.includes('-') &&
+                                                b.date.includes('-')
+                                             ) {
+                                                const endDateA = a.date.split(
+                                                   '-'
+                                                )[1];
+                                                const endDateB = b.date.split(
+                                                   '-'
+                                                )[1];
+                                                const sortableEndDateA = `${endDateA.slice(
+                                                   3,
+                                                   5
+                                                )}/${endDateA.slice(0, 2)}`;
+                                                const sortableEndDateB = `${endDateB.slice(
+                                                   3,
+                                                   5
+                                                )}/${endDateB.slice(0, 2)}`;
+
+                                                if (
+                                                   sortableEndDateA <
+                                                   sortableEndDateB
+                                                )
+                                                   return -1;
+                                                if (
+                                                   sortableEndDateA >
+                                                   sortableEndDateB
+                                                )
+                                                   return 1;
+                                             }
+
+                                             return 0;
+                                          })
+                                          .map((event, index) => (
+                                             <li
+                                                key={index}
+                                                onClick={() =>
+                                                   handleEventClick(event)
+                                                }
+                                                className={`${styles.selectedEvent} ${styles.disabled}`}
+                                             >
+                                                <p>
+                                                   <b>{event.title}</b> <br />{' '}
+                                                   {event.location}
+                                                   <br />
+                                                   {event.address} <br />
+                                                   {event.date}
+                                                </p>
+                                             </li>
+                                          ))}
+                                    </ul>
+
+                                    <ul>
+                                       {events
+                                          .sort((a, b) => {
+                                             if (!a.date && !b.date) {
+                                                return 0;
+                                             }
+                                             if (!a.date) {
+                                                return 1;
+                                             }
+                                             if (!b.date) {
+                                                return -1;
+                                             }
+
+                                             // Extract the start dates from the event dates
+                                             const startDateA = a.date.split(
+                                                '-'
+                                             )[0];
+                                             const startDateB = b.date.split(
+                                                '-'
+                                             )[0];
+
+                                             // Convert start dates to a sortable format (mm/dd)
+                                             const sortableDateA = `${startDateA.slice(
+                                                3,
+                                                5
+                                             )}/${startDateA.slice(0, 2)}`;
+                                             const sortableDateB = `${startDateB.slice(
+                                                3,
+                                                5
+                                             )}/${startDateB.slice(0, 2)}`;
+
+                                             // Compare the sortable start dates
+                                             if (sortableDateA < sortableDateB)
+                                                return -1;
+                                             if (sortableDateA > sortableDateB)
+                                                return 1;
+
+                                             // Handle the case of "dd/mm-dd/mm"
+                                             if (
+                                                a.date.includes('-') &&
+                                                b.date.includes('-')
+                                             ) {
+                                                const endDateA = a.date.split(
+                                                   '-'
+                                                )[1];
+                                                const endDateB = b.date.split(
+                                                   '-'
+                                                )[1];
+                                                const sortableEndDateA = `${endDateA.slice(
+                                                   3,
+                                                   5
+                                                )}/${endDateA.slice(0, 2)}`;
+                                                const sortableEndDateB = `${endDateB.slice(
+                                                   3,
+                                                   5
+                                                )}/${endDateB.slice(0, 2)}`;
+
+                                                if (
+                                                   sortableEndDateA <
+                                                   sortableEndDateB
+                                                )
+                                                   return -1;
+                                                if (
+                                                   sortableEndDateA >
+                                                   sortableEndDateB
+                                                )
+                                                   return 1;
+                                             }
+
+                                             return 0;
+                                          })
+                                          .map(
+                                             (event, index) =>
+                                                !selectedEvents.includes(
+                                                   event
+                                                ) && (
+                                                   <li
+                                                      key={index}
+                                                      onClick={() =>
+                                                         handleEventClick(event)
+                                                      }
+                                                      className={
+                                                         styles.event_list_item
+                                                      }
+                                                      style={{
+                                                         marginRight: '40px',
+                                                      }}
+                                                   >
+                                                      <p>
+                                                         <b> {event.title}</b>
+                                                         <br /> {
+                                                            event.location
+                                                         }{' '}
+                                                         <br /> {event.address}
+                                                         <br />
+                                                         {event.date}{' '}
+                                                      </p>
+                                                   </li>
+                                                )
+                                          )}
+                                    </ul>
+                                 </div>
+                              </>
+                           ) : (
+                              <>
+                                 {/* <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          height: "100%",
+                          justifyContent: "center",
+                          border: "2px solid black",
+                        }}
+                      > */}
+                                 <ul>
+                                    {events
+                                       .sort((a, b) => {
+                                          if (!a.date && !b.date) {
+                                             return 0;
+                                          }
+                                          if (!a.date) {
+                                             return 1;
+                                          }
+                                          if (!b.date) {
+                                             return -1;
+                                          }
+
+                                          // Extract the start dates from the event dates
+                                          const startDateA = a.date.split(
+                                             '-'
+                                          )[0];
+                                          const startDateB = b.date.split(
+                                             '-'
+                                          )[0];
+
+                                          // Convert start dates to a sortable format (mm/dd)
+                                          const sortableDateA = `${startDateA.slice(
+                                             3,
+                                             5
+                                          )}/${startDateA.slice(0, 2)}`;
+                                          const sortableDateB = `${startDateB.slice(
+                                             3,
+                                             5
+                                          )}/${startDateB.slice(0, 2)}`;
+
+                                          // Compare the sortable start dates
+                                          if (sortableDateA < sortableDateB)
+                                             return -1;
+                                          if (sortableDateA > sortableDateB)
+                                             return 1;
+
+                                          // Handle the case of "dd/mm-dd/mm"
+                                          if (
+                                             a.date.includes('-') &&
+                                             b.date.includes('-')
+                                          ) {
+                                             const endDateA = a.date.split(
+                                                '-'
+                                             )[1];
+                                             const endDateB = b.date.split(
+                                                '-'
+                                             )[1];
+                                             const sortableEndDateA = `${endDateA.slice(
+                                                3,
+                                                5
+                                             )}/${endDateA.slice(0, 2)}`;
+                                             const sortableEndDateB = `${endDateB.slice(
+                                                3,
+                                                5
+                                             )}/${endDateB.slice(0, 2)}`;
+
+                                             if (
+                                                sortableEndDateA <
+                                                sortableEndDateB
+                                             )
+                                                return -1;
+                                             if (
+                                                sortableEndDateA >
+                                                sortableEndDateB
+                                             )
+                                                return 1;
+                                          }
+
+                                          return 0;
+                                       })
+                                       .map((event, index) => (
+                                          <li
                                              key={index}
                                              onClick={() =>
                                                 handleEventClick(event)
                                              }
-                                             className='event_div'
+                                             className={`${
+                                                styles.event_list_item
+                                             } ${
+                                                selectedEvents.includes(event)
+                                                   ? styles.selected
+                                                   : ''
+                                             }`}
                                           >
-                                             <p>
-                                                {event.title}
-                                                <br /> {
-                                                   event.location
-                                                } <br /> {event.address} <br />
-                                                {/* {event.coordinates.lat}, {event.coordinates.lng} <br />{" "} */}
-                                                {event.date}{' '}
-                                             </p>
-                                          </div>
-                                       )
-                                 )}{' '}
-                              </>
-                           ) : (
-                              <>
-                                 {events.map((event, index) => (
-                                    <div
-                                       key={index}
-                                       onClick={() => handleEventClick(event)}
-                                       className={`event_div ${
-                                          selectedEvents.includes(event)
-                                             ? 'selected'
-                                             : ''
-                                       }`}
-                                    >
-                                       <p>
-                                          {' '}
-                                          {event.title} <br /> {event.location}{' '}
-                                          <br /> {event.address}{' '}
-                                          {/* <br /> {event.coordinates.lat}, {event.coordinates.lng}{" "} */}
-                                          <br /> {event.date}{' '}
-                                       </p>{' '}
-                                    </div>
-                                 ))}{' '}
+                                             <b> {event.title}</b> <br />
+                                             {event.location}
+                                             <br />
+                                             {event.address} <br />
+                                             {event.date}
+                                          </li>
+                                       ))}{' '}
+                                 </ul>
+                                 {/* </div> */}
                               </>
                            )}{' '}
                         </>
-                        {/* </div> */}
                      </Box>
                   </section>
                   <div style={{ textAlign: 'center' }}>
