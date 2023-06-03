@@ -174,7 +174,11 @@ const Tours = () => {
                            <div>Rank: {route.evaluation_grade.toFixed(1)}</div>
                            <div className={styles.align_right}>
                               <Button
-                                 sx={{ fontSize: '10px', borderRadius: '20px' }}
+                                 sx={{
+                                    fontSize: '10px',
+                                    borderRadius: '20px',
+                                    border: '1px solid rgb(65, 63, 63)',
+                                 }}
                                  variant='outlined'
                                  onClick={() => openRoute(route.routeid)}
                               >
@@ -287,7 +291,11 @@ const Tours = () => {
                            </div>
                            <div className={styles.align_right}>
                               <Button
-                                 sx={{ fontSize: '10px', borderRadius: '20px' }}
+                                 sx={{
+                                    fontSize: '10px',
+                                    borderRadius: '20px',
+                                    border: '1px solid rgb(65, 63, 63)',
+                                 }}
                                  variant='outlined'
                                  onClick={() => openRoute(tour.routeid)}
                               >

@@ -10,13 +10,13 @@ import Box from '@mui/material/Box';
 import LoadingBar from '../../Additionals/LoadingBar/LoadingBar';
 
 const colors = [
-   { name: 'Gray', color: '#9BABB8' },
-   { name: 'Pink', color: '#E893CF' },
+   { name: 'Gray', color: '#DDDDDD' },
+   { name: 'Orange', color: '#FFA559' },
    { name: 'Yellow', color: '#F6FA70' },
-   { name: 'Blue', color: '#30A2FF' },
-   { name: 'Pink', color: '#F2D8D8' },
-   { name: 'Purple', color: '#8696FE' },
-   { name: 'Green', color: '#5F8D4E' },
+   { name: 'Blue', color: '#AEE2FF' },
+   { name: 'Pink', color: '#FFE1E1' },
+   { name: 'Purple', color: '#E5D1FA' },
+   { name: 'Green', color: '#ADE792' },
    { name: 'White', color: '#FFFFFF' },
 ];
 const ThemeCustomization = ({ flag }) => {
