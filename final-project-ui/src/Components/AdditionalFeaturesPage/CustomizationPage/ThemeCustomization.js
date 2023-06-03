@@ -7,28 +7,29 @@ import NavBar from '../../Additionals/NavBar/NavBar';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
 import LoadingBar from '../../Additionals/LoadingBar/LoadingBar';
+import styles from './ThemeCustomization.module.css';
+import { localeData } from 'moment/moment';
 
-const colors = [
-   { name: 'Gray', color: '#DDDDDD' },
-   { name: 'Orange', color: '#FFA559' },
-   { name: 'Yellow', color: '#F6FA70' },
-   { name: 'Blue', color: '#AEE2FF' },
-   { name: 'Pink', color: '#FFE1E1' },
-   { name: 'Purple', color: '#E5D1FA' },
-   { name: 'Green', color: '#ADE792' },
-   { name: 'White', color: '#FFFFFF' },
-];
 const ThemeCustomization = ({ flag }) => {
    const [isLoading, setIsLoading] = useState(true);
    const [selectedColor, setSelectedColor] = useState(null);
-   const [appTheme, setAppTheme] = useState('#FFFFFF');
+   const [appTheme, setAppTheme] = useState('');
    const [fontColor, setFontColor] = useState('#00337C');
+   const [colors, setColors] = useState([]);
+   const [colorsStatus, setColorsStatus] = useState('');
+   const [colorsNames, setColorsNames] = useState([]);
+   const [colorsCodes, setColorsCodes] = useState([]);
+   const [lockedColors, setLockedColors] = useState([]);
+   const [unlockedColors, setUnlockedColors] = useState([]);
    const [coins, setCoins] = useState(0);
+   const [email, setEmail] = useState('');
    const [name, setName] = useState('');
    const [fname, setFname] = useState('');
    const [activeLink, setActiveLink] = useState(null);
    const [activeImage, setActiveImage] = useState(null);
+   const [open, setOpen] = useState(false);
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
    const location = useLocation();
@@ -51,6 +52,7 @@ const ThemeCustomization = ({ flag }) => {
                setIsLoading(false);
                setCoins(response.data.coins);
                setName(response.data.fname);
+               setEmail(response.data.email);
             })
             .catch((error) => {
                setIsLoading(false);
@@ -58,6 +60,53 @@ const ThemeCustomization = ({ flag }) => {
             });
       }
    }, [location.state]);
+
+   // //Display this page with the previously chosen color by user
+   // useEffect(() => {
+   //    const storedColor = localStorage.getItem('selectedColor');
+   //    console.log(storedColor);
+   //    if (storedColor) {
+   //       setSelectedColor(storedColor);
+   //       setAppTheme(storedColor);
+   //    }
+   // }, []);
+
+   useEffect(() => {
+      if (email) {
+         const fetchColors = async () => {
+            try {
+               const response = await axios.get(
+                  `https://tiys.herokuapp.com/api/skins/${email}`
+               );
+               setColors(response.data);
+               const colorNames = Object.values(response.data)
+                  .filter((color) => typeof color === 'object')
+                  .map((color) => color.name);
+               const colorCodes = Object.values(response.data)
+                  .filter((color) => typeof color === 'object')
+                  .map((color) => color.code);
+               const colorStatus = Object.values(response.data)
+                  .filter((color) => typeof color === 'object')
+                  .map((color) => color.status);
+               const locked = Object.entries(response.data)
+                  .filter(([key, value]) => value.status === 'Locked')
+                  .map(([key, value]) => value);
+               const unlocked = Object.entries(response.data)
+                  .filter(([key, value]) => value.status === 'Unlocked')
+                  .map(([key, value]) => value);
+
+               setUnlockedColors(unlocked);
+               setLockedColors(locked);
+               setColorsNames(colorNames);
+               setColorsCodes(colorCodes);
+               setColorsStatus(colorStatus);
+            } catch (error) {
+               console.log(error);
+            }
+         };
+         fetchColors();
+      }
+   }, [email]);
 
    useEffect(() => {
       document.body.style.backgroundColor = appTheme;
@@ -71,19 +120,70 @@ const ThemeCustomization = ({ flag }) => {
       }
    }, [coins, name]);
 
-   const handleButtonClick = (color) => {
-      setSelectedColor(color);
-      setAppTheme(color);
+   //Modal Style
+   const style = {
+      position: 'absolute',
+      top: '50vh',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: isSmallScreen ? '70%' : '40%', // Adjust the width based on the screen size
+      height: '75%',
+      borderRadius: '30px',
+      bgcolor: 'background.paper',
+      border: '1px solid grey',
+      overflow: 'scroll',
+      boxShadow: 24,
+      p: 4,
+   };
 
-      // Change body color inside index.css
-      // Change background color inside Navbar
+   const handleButtonClick = (code) => {
+      if (code) {
+         // Update the status of all colors
+         const updatedLockedColors = lockedColors.map((color) => {
+            return {
+               ...color,
+               status: color.code === code ? 'Unlocked' : 'Locked',
+            };
+         });
+         setLockedColors(updatedLockedColors);
+      }
+      setSelectedColor(code);
+      setAppTheme(code);
+   };
+
+   const handleUnlockedColor = (code) => {
+      if (code) {
+         // Update the status of the unlocked color
+         const updatedColors = Object.values(colors).map((color) => {
+            if (color.code === code) {
+               return {
+                  ...color,
+                  status: 'Unlocked',
+               };
+            }
+            return color;
+         });
+         setColors(updatedColors);
+      }
+      setSelectedColor(code);
+      setAppTheme(code);
+      console.log(code);
+      // localStorage.setItem('selectedColor', code); // Store selected color in local storage
    };
 
    const appBarStyle = {
       backgroundColor: appTheme,
    };
 
-   //Return Randomly Generated Colors Array
+   const handleOpenModal = () => {
+      setOpen(true);
+   };
+
+   const handleCloseModal = () => {
+      setOpen(false);
+   };
+
+   //Return Colors Array
    return (
       <>
          {isLoading ? (
@@ -136,7 +236,7 @@ const ThemeCustomization = ({ flag }) => {
                      }
                   >
                      Select in which color you would like the app to be
-                     displayed:
+                     displayed
                   </h3>
                </Typography>
                <Box
@@ -148,26 +248,60 @@ const ThemeCustomization = ({ flag }) => {
                      width: '80%',
                   }}
                >
-                  {colors.map((color, index) => (
+                  {/* Render the unlocked colors from the original array */}
+                  {Object.values(colors).map((color, index) => {
+                     if (color.status === 'Unlocked') {
+                        return (
+                           <Button
+                              key={index}
+                              variant='contained'
+                              style={{
+                                 backgroundColor: color.code,
+                                 marginRight: '10px',
+                                 color:
+                                    selectedColor === color.code
+                                       ? fontColor
+                                       : '#00337C',
+                                 border:
+                                    selectedColor === color.code
+                                       ? '1px solid grey'
+                                       : 'none',
+                                 ...(isSmallScreen
+                                    ? { margin: '2%', width: '40%' }
+                                    : {}),
+                              }}
+                              onClick={() => handleUnlockedColor(color.code)}
+                           >
+                              {color.name}
+                           </Button>
+                        );
+                     }
+                     return null;
+                  })}
+                  {lockedColors.map((color, index) => (
                      <Button
                         key={index}
                         variant='contained'
                         style={{
-                           backgroundColor: color.color,
+                           backgroundColor: color.code,
                            marginRight: '10px',
                            color:
-                              selectedColor === color.color
+                              selectedColor === color.code
                                  ? fontColor
                                  : '#00337C',
                            border:
-                              selectedColor === color.color
+                              selectedColor === color.code
                                  ? '1px solid grey'
                                  : 'none',
                            ...(isSmallScreen
                               ? { margin: '2%', width: '40%' }
                               : {}),
+                           ...(color.status === 'Locked'
+                              ? { backgroundColor: '#F0F0F0', color: '#7F8487' }
+                              : {}),
                         }}
-                        onClick={() => handleButtonClick(color.color)}
+                        onClick={() => handleButtonClick(color.code)}
+                        disabled={color.status === 'Locked'}
                      >
                         {color.name}
                      </Button>
@@ -178,18 +312,105 @@ const ThemeCustomization = ({ flag }) => {
                   sx={{
                      display: 'flex',
                      justifyContent: 'center',
+                     flexDirection: 'column',
                      marginTop: '30px',
-                     width: '50%',
-                     ...(isSmallScreen
-                        ? { marginLeft: '90px' }
-                        : {
-                             marginLeft: '380px',
-                          }),
+                     textAlign: 'center',
                   }}
                >
                   <h3 style={{ fontSize: '1.25rem' }}>
                      {fname}'s Coins: {coins}
                   </h3>
+               </Box>
+               <Box
+                  sx={{
+                     display: 'flex',
+                     justifyContent: 'center',
+                  }}
+               >
+                  <Button
+                     variant='outlined'
+                     sx={
+                        ({
+                           marginLeft: '10px',
+                        },
+                        isSmallScreen
+                           ? {
+                                fontSize: '0.85rem',
+                             }
+                           : {})
+                     }
+                     onClick={handleOpenModal}
+                  >
+                     Unlock Color
+                  </Button>
+                  <Modal
+                     open={open}
+                     onClose={handleCloseModal}
+                     aria-labelledby='modal-modal-title'
+                     aria-describedby='modal-modal-description'
+                  >
+                     <Box component='div' sx={style}>
+                        <div
+                           style={{
+                              textAlign: 'center',
+                           }}
+                        >
+                           <h3>Select Which Color To Unlock</h3>
+                           <div
+                              style={
+                                 !isSmallScreen
+                                    ? {
+                                         width: '100%',
+                                         margin: '0 auto',
+                                      }
+                                    : {}
+                              }
+                           >
+                              {lockedColors.map((color, index) => (
+                                 <Button
+                                    component='div'
+                                    key={index}
+                                    variant='contained'
+                                    style={{
+                                       backgroundColor: color.code,
+                                       marginRight: '10px',
+                                       color:
+                                          selectedColor === color.code
+                                             ? fontColor
+                                             : '#00337C',
+                                       border:
+                                          selectedColor === color.code
+                                             ? '1px solid grey'
+                                             : 'none',
+                                       ...(isSmallScreen
+                                          ? { margin: '2%', width: '40%' }
+                                          : { margin: '1%', width: '20%' }),
+                                    }}
+                                    onClick={() =>
+                                       handleButtonClick(color.code)
+                                    }
+                                    disabled={
+                                       selectedColor &&
+                                       selectedColor !== color.code
+                                    }
+                                 >
+                                    {color.name}
+                                 </Button>
+                              ))}
+                           </div>
+                           <br />
+                           <br />
+                           <Button
+                              variant='outlined'
+                              className={styles.button}
+                              sx={{ fontWeight: 'bold' }}
+                              onClick={handleCloseModal}
+                           >
+                              Close
+                           </Button>
+                        </div>
+                     </Box>
+                  </Modal>
                </Box>
             </>
          )}

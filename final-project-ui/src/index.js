@@ -14,7 +14,6 @@ import NotFoundPage from './Pages/NotFoundPage';
 import MapProducerPage from './Pages/MapProducerPage';
 import AccountPage from './Pages/AccountPage';
 import ToursPage from './Pages/ToursPage';
-import ARManagementPage from './Pages/ARManagementPage';
 import MapBuilderPage from './Pages/MapBuilderPage';
 import ResearcherPage from './Pages/ResearcherPage';
 import ToursTablePage from './Pages/ToursTablePage';
@@ -60,7 +59,6 @@ root.render(
                <Route path='/form_producer' element={<FormProducerPage />} />
                <Route path='/map_producer' element={<MapProducerPage />} />
                <Route path='/map_builder' element={<MapBuilderPage />} />
-               <Route path='/ar_page' element={<ARManagementPage />} />
                <Route path='/events_choice' element={<EventsModalPage />} />
                <Route path='/user_settings' element={<AccountPage />} />
                <Route path='/tours_history' element={<ToursPage />} />

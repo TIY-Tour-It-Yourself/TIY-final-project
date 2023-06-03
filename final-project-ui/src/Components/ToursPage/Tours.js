@@ -119,7 +119,6 @@ const Tours = () => {
       p: 4,
    };
 
-   //TBD: add the creates route by the user / the tour the user chose to participate
    const openRoute = (routeid) => {
       navigate(`/map_builder?routeId=${routeid}`, {
          state: { token: location.state.token },

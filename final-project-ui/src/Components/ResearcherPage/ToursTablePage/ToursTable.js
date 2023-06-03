@@ -4,7 +4,11 @@ import axios from 'axios';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Typography, Box } from '@mui/material';
+import { Typography, Box, Pagination } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 
 const columns = [
    { field: 'routeid', headerName: 'Tour ID', width: 90, sortable: true },
@@ -87,15 +91,21 @@ const columnsSecond = [
 const ToursTable = () => {
    const location = useLocation();
    const navigate = useNavigate();
-   // const [isSelectionEnabled, setIsSelectionEnabled] = useState(true);
    const [tours, setTours] = useState([]);
    const [routeTheme, setRouteThemes] = useState([]);
    const [selectedRowData, setSelectedRowData] = useState([]);
    const [poisGrades, setPoisGrades] = useState([]);
    const [poisIds, setPoisIds] = useState([]);
    const [filteredData, setFilteredData] = useState('');
+   const [currentPage, setCurrentPage] = useState(1);
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+   //Manipulation of Pagination on Responsive Display
+   const pageSize = 1;
+   const startIndex = (currentPage - 1) * pageSize;
+   const endIndex = startIndex + pageSize;
+   const paginatedTours = tours.slice(startIndex, endIndex);
 
    useEffect(() => {
       if (!location.state) {
@@ -151,14 +161,20 @@ const ToursTable = () => {
       getGradesData();
    }, []);
 
+   useEffect(() => {
+      if (selectedRowData && poisIds.length > 0 && poisGrades.length > 0) {
+         console.log(selectedRowData, poisIds, poisGrades);
+
+         const filteredGrades = poisGrades.filter((poi) => {
+            return poisIds.includes(poi.poiid.poiid);
+         });
+
+         setFilteredData(filteredGrades);
+      }
+   }, [selectedRowData, poisIds, poisGrades]);
+
    //Display Filtered Data On Row Selection
    const onRowsSelectionHandler = (ids) => {
-      // console.log(isSelectionEnabled);
-      // if (!isSelectionEnabled) {
-      // If selection is disabled, return without updating the state
-      //    return;
-      // }
-
       if (ids.length === 0) {
          setSelectedRowData([]);
          setPoisIds([]);
@@ -173,22 +189,11 @@ const ToursTable = () => {
 
       const poiIds = selectedRow[0].pois.map((poi) => poi.poiid);
       setPoisIds(poiIds);
-
-      // Disable further selection
-      // setIsSelectionEnabled(false);
    };
 
-   useEffect(() => {
-      if (selectedRowData && poisIds.length > 0 && poisGrades.length > 0) {
-         console.log(selectedRowData, poisIds, poisGrades);
-
-         const filteredGrades = poisGrades.filter((poi) => {
-            return poisIds.includes(poi.poiid.poiid);
-         });
-
-         setFilteredData(filteredGrades);
-      }
-   }, [selectedRowData, poisIds, poisGrades]);
+   const handlePageChange = (event, value) => {
+      setCurrentPage(value);
+   };
 
    return (
       <>
@@ -216,37 +221,104 @@ const ToursTable = () => {
          >
             <h3>Tours Statistics</h3>
          </Typography>
-         <Box
-            sx={
-               !isSmallScreen
-                  ? { width: '70%', ml: '5%' }
-                  : { width: '90%', ml: '5%' }
-            }
-         >
-            <DataGrid
-               slots={{
-                  toolbar: GridToolbar,
-               }}
-               rows={tours.map((route) => ({
-                  ...route,
-                  id: route._id,
-                  pois: route.pois.length,
-                  grade: route.evaluation_grade.toFixed(2),
-               }))}
-               columns={columns}
-               onRowSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
-               initialState={{
-                  pagination: {
-                     paginationModel: {
-                        pageSize: 5,
+         {!isSmallScreen ? (
+            <Box
+               sx={
+                  !isSmallScreen
+                     ? { width: '80%', ml: '5%' }
+                     : { width: '90%', ml: '5%' }
+               }
+            >
+               <DataGrid
+                  slots={{
+                     toolbar: GridToolbar,
+                  }}
+                  rows={tours.map((route) => ({
+                     ...route,
+                     id: route._id,
+                     pois: route.pois.length,
+                     grade: route.evaluation_grade.toFixed(2),
+                  }))}
+                  columns={columns}
+                  onRowSelectionModelChange={(ids) =>
+                     onRowsSelectionHandler(ids)
+                  }
+                  initialState={{
+                     pagination: {
+                        paginationModel: {
+                           pageSize: 5,
+                        },
                      },
-                  },
-               }}
-               pageSizeOptions={[5]}
-               checkboxSelection
-               disableRowSelectionOnClick
-            />
-         </Box>
+                  }}
+                  pageSizeOptions={[5]}
+                  checkboxSelection
+                  disableRowSelectionOnClick
+               />
+            </Box>
+         ) : (
+            <div>
+               {paginatedTours.map((route) => (
+                  <Card
+                     key={route._id}
+                     style={{
+                        width: '250px',
+                        border: '1px solid black',
+                        boxShadow: '2px 4px 8px rgba(0, 0, 0, 0.8)',
+                        marginBottom: '30px',
+                        marginLeft: '57px',
+                     }}
+                  >
+                     <CardContent>
+                        <Typography>
+                           <b>Tour ID: </b>
+                           {route.routeid}
+                        </Typography>
+                        <Typography>
+                           <b>Tour Name: </b>
+                           {route.name}
+                        </Typography>
+                        <Typography>
+                           <b>Tour Theme: </b>
+                           {route.theme}
+                        </Typography>
+                        <Typography>
+                           <b>AR Level: </b>
+                           {route.experience_level}
+                        </Typography>
+                        <Typography>
+                           <b>POI Amount: </b>
+                           {route.pois.length}
+                        </Typography>
+                        <Typography>
+                           <b>Evaluation Grade: </b>
+                           {route.evaluation_grade}
+                        </Typography>
+                        <Typography>
+                           <b>Tour Duration: </b>
+                           {route.duration}
+                        </Typography>
+                     </CardContent>
+
+                     <div
+                        style={{
+                           display: 'flex',
+                           justifyContent: 'center',
+                           height: '100%',
+                           marginTop: '20px',
+                           marginBottom: '40px',
+                        }}
+                     ></div>
+                  </Card>
+               ))}
+               <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Pagination
+                     count={Math.ceil(tours.length / pageSize)}
+                     page={currentPage}
+                     onChange={handlePageChange}
+                  />
+               </div>
+            </div>
+         )}
          <br />
          <br />
          {/* Second DataGrid (Table) */}
