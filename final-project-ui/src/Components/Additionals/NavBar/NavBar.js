@@ -34,7 +34,7 @@ import LoadingBar from '../LoadingBar/LoadingBar';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-const NavBar = ({ activeImage, activeLink, linksColor }) => {
+const NavBar = ({ activeImage, activeLink }) => {
    const [isLoading, setIsLoading] = useState(true);
    const [images, setImages] = useState([
       {

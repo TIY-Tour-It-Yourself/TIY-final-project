@@ -10,7 +10,6 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import LoadingBar from '../../Additionals/LoadingBar/LoadingBar';
 import styles from './ThemeCustomization.module.css';
-import { localeData } from 'moment/moment';
 
 const ThemeCustomization = ({ flag }) => {
    const [isLoading, setIsLoading] = useState(true);
@@ -18,11 +17,7 @@ const ThemeCustomization = ({ flag }) => {
    const [appTheme, setAppTheme] = useState('');
    const [fontColor, setFontColor] = useState('#00337C');
    const [colors, setColors] = useState([]);
-   const [colorsStatus, setColorsStatus] = useState('');
-   const [colorsNames, setColorsNames] = useState([]);
-   const [colorsCodes, setColorsCodes] = useState([]);
    const [lockedColors, setLockedColors] = useState([]);
-   const [unlockedColors, setUnlockedColors] = useState([]);
    const [coins, setCoins] = useState(0);
    const [email, setEmail] = useState('');
    const [name, setName] = useState('');
@@ -62,14 +57,18 @@ const ThemeCustomization = ({ flag }) => {
    }, [location.state]);
 
    // //Display this page with the previously chosen color by user
-   // useEffect(() => {
-   //    const storedColor = localStorage.getItem('selectedColor');
-   //    console.log(storedColor);
-   //    if (storedColor) {
-   //       setSelectedColor(storedColor);
-   //       setAppTheme(storedColor);
-   //    }
-   // }, []);
+   useEffect(() => {
+      const storedTheme = localStorage.getItem('appTheme');
+      if (storedTheme) {
+         setAppTheme(storedTheme);
+         document.body.style.backgroundColor = storedTheme;
+      } else {
+         const defaultTheme = 'white'; // Set a default theme color
+         setAppTheme(defaultTheme);
+         document.body.style.backgroundColor = defaultTheme;
+         localStorage.setItem('appTheme', defaultTheme);
+      }
+   }, []);
 
    useEffect(() => {
       if (email) {
@@ -79,27 +78,11 @@ const ThemeCustomization = ({ flag }) => {
                   `https://tiys.herokuapp.com/api/skins/${email}`
                );
                setColors(response.data);
-               const colorNames = Object.values(response.data)
-                  .filter((color) => typeof color === 'object')
-                  .map((color) => color.name);
-               const colorCodes = Object.values(response.data)
-                  .filter((color) => typeof color === 'object')
-                  .map((color) => color.code);
-               const colorStatus = Object.values(response.data)
-                  .filter((color) => typeof color === 'object')
-                  .map((color) => color.status);
                const locked = Object.entries(response.data)
                   .filter(([key, value]) => value.status === 'Locked')
                   .map(([key, value]) => value);
-               const unlocked = Object.entries(response.data)
-                  .filter(([key, value]) => value.status === 'Unlocked')
-                  .map(([key, value]) => value);
 
-               setUnlockedColors(unlocked);
                setLockedColors(locked);
-               setColorsNames(colorNames);
-               setColorsCodes(colorCodes);
-               setColorsStatus(colorStatus);
             } catch (error) {
                console.log(error);
             }
@@ -110,8 +93,7 @@ const ThemeCustomization = ({ flag }) => {
 
    useEffect(() => {
       document.body.style.backgroundColor = appTheme;
-      document.body.style.color = fontColor;
-   }, [appTheme, fontColor]);
+   }, [appTheme]);
 
    useEffect(() => {
       if (coins !== 0) {
@@ -136,8 +118,15 @@ const ThemeCustomization = ({ flag }) => {
       p: 4,
    };
 
+   const changeTheme = (newTheme) => {
+      setAppTheme(newTheme);
+      document.body.style.backgroundColor = newTheme;
+      localStorage.setItem('appTheme', newTheme);
+   };
+
    const handleButtonClick = (name, code) => {
       if (code && coins >= 50) {
+         changeTheme(code);
          const unlockColors = async () => {
             try {
                const response = await axios.put(
@@ -173,6 +162,7 @@ const ThemeCustomization = ({ flag }) => {
 
    const handleUnlockedColor = (code) => {
       if (code) {
+         changeTheme(code);
          // Update the status of the unlocked color
          const updatedColors = Object.values(colors).map((color) => {
             if (color.code === code) {
@@ -214,7 +204,6 @@ const ThemeCustomization = ({ flag }) => {
                   activeImage={activeImage}
                   activeLink={activeLink}
                   style={appBarStyle}
-                  linksColor={fontColor}
                />
                <Typography
                   component='div'
