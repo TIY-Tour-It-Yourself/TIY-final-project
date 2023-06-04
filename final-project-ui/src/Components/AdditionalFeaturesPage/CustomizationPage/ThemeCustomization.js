@@ -136,8 +136,24 @@ const ThemeCustomization = ({ flag }) => {
       p: 4,
    };
 
-   const handleButtonClick = (code) => {
-      if (code) {
+   const handleButtonClick = (name, code) => {
+      if (code && coins >= 50) {
+         const unlockColors = async () => {
+            try {
+               const response = await axios.put(
+                  'https://tiys.herokuapp.com/api/skins',
+                  {
+                     email: email,
+                     color: name,
+                  }
+               );
+               console.log(response.data);
+            } catch (error) {
+               console.log(error);
+            }
+         };
+         unlockColors();
+
          // Update the status of all colors
          const updatedLockedColors = lockedColors.map((color) => {
             return {
@@ -145,10 +161,14 @@ const ThemeCustomization = ({ flag }) => {
                status: color.code === code ? 'Unlocked' : 'Locked',
             };
          });
+
          setLockedColors(updatedLockedColors);
+         setSelectedColor(code);
+         setAppTheme(code);
+      } else {
+         //If coins < 50
+         alert("Sorry! You Don't Have Enough Coins.");
       }
-      setSelectedColor(code);
-      setAppTheme(code);
    };
 
    const handleUnlockedColor = (code) => {
@@ -164,12 +184,12 @@ const ThemeCustomization = ({ flag }) => {
             return color;
          });
          setColors(updatedColors);
+         setSelectedColor(code);
+         setAppTheme(code);
       }
-      setSelectedColor(code);
-      setAppTheme(code);
-      console.log(code);
-      // localStorage.setItem('selectedColor', code); // Store selected color in local storage
    };
+
+   // localStorage.setItem('selectedColor', code); // Store selected color in local storage
 
    const appBarStyle = {
       backgroundColor: appTheme,
@@ -300,7 +320,9 @@ const ThemeCustomization = ({ flag }) => {
                               ? { backgroundColor: '#F0F0F0', color: '#7F8487' }
                               : {}),
                         }}
-                        onClick={() => handleButtonClick(color.code)}
+                        onClick={() =>
+                           handleButtonClick(color.name, color.code)
+                        }
                         disabled={color.status === 'Locked'}
                      >
                         {color.name}
@@ -355,6 +377,7 @@ const ThemeCustomization = ({ flag }) => {
                               textAlign: 'center',
                            }}
                         >
+                           {/* Locked Colors Modal */}
                            <h3>Select Which Color To Unlock</h3>
                            <div
                               style={
@@ -387,11 +410,15 @@ const ThemeCustomization = ({ flag }) => {
                                           : { margin: '1%', width: '20%' }),
                                     }}
                                     onClick={() =>
-                                       handleButtonClick(color.code)
+                                       handleButtonClick(color.name, color.code)
                                     }
                                     disabled={
-                                       selectedColor &&
-                                       selectedColor !== color.code
+                                       !lockedColors.find(
+                                          (lockedColor) =>
+                                             lockedColor.code === color.code
+                                       )
+                                       // selectedColor &&
+                                       // selectedColor !== color.code
                                     }
                                  >
                                     {color.name}

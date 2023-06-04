@@ -204,7 +204,7 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
                               : { fontWeight: 'bold', fontSize: '1.5rem' }
                         }
                      >
-                        <span>Choose Events to add to your Tour:</span>
+                        <span>Choose Events To Add To Your Tour</span>
                      </Typography>
                      <div>
                         <Typography

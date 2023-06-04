@@ -13,7 +13,7 @@ import styles from './MapBuilder.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ReviewForm from '../ReviewFormPage/ReviewForm';
 import eventIcon from './images/event.png';
-// import { duration } from 'moment/moment';
+import center from './images/center-symbol.svg';
 
 const MapBuilder = (props) => {
    const ref = useRef();
@@ -259,23 +259,21 @@ const MapBuilder = (props) => {
       ThreeArElements,
       arLevel
    ) => {
-      setFlag(true);
-      // console.log(flag);
-      //Add new color to user's color array (Need to add to current array each time)
-      // const newColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
-
-      // const updateColorsArray = async () => {
-      //    try {
-      //       // const response = await axios.post(
-      //       //    `https://tiys.herokuapp.com/api/colors`, {color: newColor}
-      //       //    );
-      //       // console.log('New color added successfully.', response.data);
-      //       setColors((prevColors) => [...prevColors, newColor]);
-      //    } catch (error) {
-      //       console.log('Error in adding color: ', error);
-      //    }
-      // };
-      // updateColorsArray();
+      //With each click on 3rd Level - user's coins amount will rise
+      const addCoins = async () => {
+         try {
+            const response = await axios.put(
+               `https://tiys.herokuapp.com/api/users/coins`,
+               {
+                  email: email,
+               }
+            );
+            console.log('Coins added successfully.', response.data);
+         } catch (error) {
+            console.log('Error in adding coins: ', error);
+         }
+      };
+      addCoins();
 
       const url = `/ar.html?lat=${stepLat}&lng=${stepLng}&desc=${null}&img=${ThreeArElements}&arLevel=${arLevel}`;
       window.open(url, '_blank');
@@ -332,6 +330,13 @@ const MapBuilder = (props) => {
                   window.google.maps.ControlPosition.RIGHT_CENTER,
                   '-',
                ],
+               [
+                  'Center',
+                  'center',
+                  0,
+                  window.google.maps.ControlPosition.RIGHT_CENTER,
+                  'C',
+               ],
             ];
 
             buttons.forEach(([text, mode, amount, position, symbol]) => {
@@ -340,7 +345,14 @@ const MapBuilder = (props) => {
 
                controlUI.classList.add('ui-button');
                controlUI.classList.add(styles['zoom-button']); // Add custom class for styling
-               controlUI.innerText = `${symbol}`;
+               if (mode === 'center') {
+                  const centerIcon = document.createElement('img');
+                  centerIcon.src = center; // Path to the center image
+                  centerIcon.alt = 'Center';
+                  controlUI.appendChild(centerIcon);
+               } else {
+                  controlUI.innerText = `${symbol}`;
+               }
                controlUI.addEventListener('click', () => {
                   adjustMap(mode, amount);
                });
@@ -357,6 +369,9 @@ const MapBuilder = (props) => {
                      } else {
                         map.setZoom(map.getZoom() - 1);
                      }
+                     break;
+                  case 'center':
+                     map.setCenter(myLocationMarker.getPosition()); // Set map center to current location
                      break;
                   default:
                      break;
@@ -937,7 +952,9 @@ const MapBuilder = (props) => {
 
                // Update previousLocation with the current location for the next iteration
                previousLocation = currentLocation;
-               map.setCenter(currentLocation);
+               if (location.coords.speed > 0) {
+                  map.setCenter(currentLocation);
+               }
             }
 
             function calculateHeading(previousLocation, currentLocation) {
