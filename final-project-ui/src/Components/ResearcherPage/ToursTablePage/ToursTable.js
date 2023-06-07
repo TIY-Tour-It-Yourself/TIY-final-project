@@ -5,6 +5,7 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Typography, Box, Pagination } from '@mui/material';
+import NavBarExternal from '../../Additionals/NavBarExternal/NavBarExternal';
 import IconButton from '@mui/material/IconButton';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Card from '@mui/material/Card';
@@ -81,23 +82,27 @@ const columnsSecond = [
    {
       field: 'email',
       headerName: 'User Ranked',
-      width: 160,
+      width: 200,
       sortable: true,
       headerAlign: 'center',
       align: 'center',
    },
 ];
 
-const ToursTable = () => {
+const ToursTable = ({ userRole }) => {
    const location = useLocation();
    const navigate = useNavigate();
+   const [activeImage, setActiveImage] = useState('');
    const [tours, setTours] = useState([]);
    const [routeTheme, setRouteThemes] = useState([]);
    const [selectedRowData, setSelectedRowData] = useState([]);
    const [poisGrades, setPoisGrades] = useState([]);
    const [poisIds, setPoisIds] = useState([]);
+   const [cardPoisIds, setCardPoisIds] = useState([]);
    const [filteredData, setFilteredData] = useState('');
    const [currentPage, setCurrentPage] = useState(1);
+   const [selectedCard, setSelectedCard] = useState(null);
+   const [selectedCardData, setSelectedCardData] = useState(null);
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -111,6 +116,7 @@ const ToursTable = () => {
       if (!location.state) {
          navigate('/');
       } else {
+         setActiveImage(1);
          axios
             .get(`https://tiys.herokuapp.com/api/auth`, {
                headers: {
@@ -163,7 +169,7 @@ const ToursTable = () => {
 
    useEffect(() => {
       if (selectedRowData && poisIds.length > 0 && poisGrades.length > 0) {
-         console.log(selectedRowData, poisIds, poisGrades);
+         // console.log(selectedRowData, poisIds, poisGrades);
 
          const filteredGrades = poisGrades.filter((poi) => {
             return poisIds.includes(poi.poiid.poiid);
@@ -171,10 +177,22 @@ const ToursTable = () => {
 
          setFilteredData(filteredGrades);
       }
-   }, [selectedRowData, poisIds, poisGrades]);
+      // Chosen card data
+      else if (
+         selectedCardData &&
+         cardPoisIds.length > 0 &&
+         poisGrades.length > 0
+      ) {
+         const filteredCardGrades = poisGrades.filter((poi) => {
+            return cardPoisIds.includes(poi.poiid.poiid);
+         });
+         setFilteredData(filteredCardGrades);
+      }
+   }, [selectedRowData, selectedCardData, poisIds, poisGrades]);
 
    //Display Filtered Data On Row Selection
    const onRowsSelectionHandler = (ids) => {
+      console.log(ids);
       if (ids.length === 0) {
          setSelectedRowData([]);
          setPoisIds([]);
@@ -195,8 +213,21 @@ const ToursTable = () => {
       setCurrentPage(value);
    };
 
+   const handleCardChoice = (selectedRoute) => {
+      if (selectedRoute === '') {
+         return;
+      }
+
+      const tourID = selectedRoute._id;
+      const selectedTour = paginatedTours.find((tour) => tour._id === tourID);
+      const poiIds = selectedTour.pois.map((poi) => poi.poiid);
+      setPoisIds(poiIds);
+      setSelectedCardData(selectedTour);
+   };
+
    return (
       <>
+         <NavBarExternal activeImage={activeImage} userRole={userRole} />
          <Typography
             component='div'
             sx={
@@ -240,9 +271,7 @@ const ToursTable = () => {
                      grade: route.evaluation_grade.toFixed(2),
                   }))}
                   columns={columns}
-                  onRowSelectionModelChange={(ids) =>
-                     onRowsSelectionHandler(ids)
-                  }
+                  onRowSelectionModelChange={(id) => onRowsSelectionHandler(id)}
                   initialState={{
                      pagination: {
                         paginationModel: {
@@ -261,12 +290,14 @@ const ToursTable = () => {
                   <Card
                      key={route._id}
                      style={{
+                        cursor: 'pointer',
                         width: '250px',
                         border: '1px solid black',
                         boxShadow: '2px 4px 8px rgba(0, 0, 0, 0.8)',
                         marginBottom: '30px',
                         marginLeft: '57px',
                      }}
+                     onClick={() => handleCardChoice(route)}
                   >
                      <CardContent>
                         <Typography>
@@ -335,7 +366,7 @@ const ToursTable = () => {
                      toolbar: GridToolbar,
                   }}
                   rows={filteredData.map((row) => {
-                     console.log(row); // Print the row object
+                     // console.log(row); // Print the row object
                      return {
                         ...row,
                         id: row._id,

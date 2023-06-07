@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './Admin.module.css';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import NavBar from '../Additionals/NavBar/NavBar';
+import NavBarExternal from '../Additionals/NavBarExternal/NavBarExternal';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -15,8 +15,8 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const Admin = () => {
-   const [token, setToken] = useState('');
    const [activeImage, setActiveImage] = useState(null);
+   const [admin, setAdmin] = useState('');
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
    const navigate = useNavigate();
@@ -26,20 +26,25 @@ const Admin = () => {
       if (!location.state) {
          navigate('/');
       } else {
-         axios
-            .get(`https://tiys.herokuapp.com/api/auth`, {
-               headers: {
-                  'x-auth-token': location.state.token,
-                  'Content-Type': 'application/json',
-               },
-            })
-            .then((response) => {
-               setToken(response.data.token);
+         setActiveImage(1);
+         const fetchUser = async () => {
+            try {
+               const response = axios.get(
+                  `https://tiys.herokuapp.com/api/auth`,
+                  {
+                     headers: {
+                        'x-auth-token': location.state.token,
+                        'Content-Type': 'application/json',
+                     },
+                  }
+               );
+               setAdmin('admin');
                // console.log(response.data);
-            })
-            .catch((error) => {
+            } catch (error) {
                console.error('Error fetching user: ', error);
-            });
+            }
+         };
+         fetchUser();
       }
    }, [location.state]);
 
@@ -56,7 +61,7 @@ const Admin = () => {
 
    return (
       <>
-         <NavBar token={token} />
+         <NavBarExternal activeImage={activeImage} userRole={admin} />
          <Typography
             component='div'
             sx={
@@ -94,8 +99,14 @@ const Admin = () => {
           /> */}
                <CardContent>
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
-                     <Typography variant='h6' component='div'>
-                        POIs(point of interest)
+                     <Typography
+                        variant='h6'
+                        component='div'
+                        sx={{ textAlign: 'center' }}
+                     >
+                        POIs
+                        <br />
+                        (Points Of Interest)
                      </Typography>
                   </div>
                </CardContent>

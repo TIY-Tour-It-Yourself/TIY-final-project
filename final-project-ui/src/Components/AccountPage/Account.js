@@ -8,7 +8,7 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
 
-const Account = () => {
+const Account = ({ userRole }) => {
    const [activeImage, setActiveImage] = useState(null);
    const [activeLink, setActiveLink] = useState(null);
    const [isUpdated, setIsUpdated] = useState(false);
@@ -67,7 +67,11 @@ const Account = () => {
 
    return (
       <>
-         <NavBar activeImage={activeImage} activeLink={activeLink} />
+         <NavBar
+            activeImage={activeImage}
+            activeLink={activeLink}
+            userRole={userRole}
+         />
          <PageContainer>
             <Typography
                component='div'

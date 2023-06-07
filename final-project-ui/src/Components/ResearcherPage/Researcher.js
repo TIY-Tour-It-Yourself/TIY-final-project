@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -10,33 +10,33 @@ const Researcher = () => {
    const navigate = useNavigate();
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+   const [researcher, setResearcher] = useState('');
 
    useEffect(() => {
       if (!location.state) {
          navigate('/');
       } else {
-         axios
-            .get(`https://tiys.herokuapp.com/api/auth`, {
-               headers: {
-                  'x-auth-token': location.state.token,
-                  'Content-Type': 'application/json',
-               },
-            })
-            .then((response) => {
-               //    console.log(response.data);
-            })
-            .catch((error) => {
+         const fetchUser = async () => {
+            try {
+               const response = await axios.get(
+                  `https://tiys.herokuapp.com/api/auth`,
+                  {
+                     headers: {
+                        'x-auth-token': location.state.token,
+                        'Content-Type': 'application/json',
+                     },
+                  }
+               );
+               setResearcher('researcher');
+            } catch (error) {
                console.error('Error fetching user: ', error);
-            });
+            }
+         };
+         fetchUser();
       }
    }, []);
 
-   const handleNavigation = (title) => {
-      if (title === 'Tours Statistics')
-         navigate('/tours_table', { state: { token: location.state.token } });
-   };
-
-   return <ToursTable />;
+   return <>{researcher && <ToursTable userRole={researcher} />}</>;
 };
 
 export default Researcher;
