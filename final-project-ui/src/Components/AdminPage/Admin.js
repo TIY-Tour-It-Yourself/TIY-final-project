@@ -39,7 +39,6 @@ const Admin = () => {
                   }
                );
                setAdmin('admin');
-               // console.log(response.data);
             } catch (error) {
                console.error('Error fetching user: ', error);
             }
@@ -91,12 +90,6 @@ const Admin = () => {
             }}
          >
             <Card className={styles.card} sx={{ width: 240 }}>
-               {/* <CardMedia
-            component="img"
-            height="100"
-            // image={bursa}
-            alt="National Park"
-          /> */}
                <CardContent>
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
                      <Typography
@@ -127,12 +120,6 @@ const Admin = () => {
                </CardActions>
             </Card>
             <Card className={styles.card} sx={{ width: 240 }}>
-               {/* <CardMedia
-            component="img"
-            height="100"
-            // image={map}
-            alt="National Park"
-          /> */}
                <CardContent>
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
                      <Typography variant='h6' component='div'>
@@ -157,12 +144,6 @@ const Admin = () => {
                </CardActions>
             </Card>
             <Card className={styles.card} sx={{ width: 240 }}>
-               {/* <CardMedia
-            component="img"
-            height="100"
-            // image={map}
-            alt="National Park"
-          /> */}
                <CardContent>
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
                      <Typography variant='h6' component='div'>

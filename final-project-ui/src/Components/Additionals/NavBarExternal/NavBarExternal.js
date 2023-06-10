@@ -164,40 +164,92 @@ const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
                         : { display: 'none' }
                   }
                >
-                  {links.map((link) => (
-                     <Button
-                        disableRipple
-                        key={link.id}
-                        onClick={() => handleButtonClick(link)}
-                        sx={{
-                           my: 2,
-                           mx: 1,
-                           // color: linksColor,
-                           color: '#00337C',
-                           display: 'block',
-                           borderRadius: '25px',
-                           ':hover': {
-                              bgcolor: 'none',
-                              textDecoration: 'underline',
-                              textUnderlinePosition: 'under',
-                           },
-                           '&:hover': {
-                              backgroundColor: 'transparent',
-                           },
-                           fontSize: '1.01rem',
-                           fontWeight: 'bold',
-                           fontFamily: 'Rubik, sans-serif',
-                           ...(activeLink === link.id
-                              ? {
-                                   textDecoration: 'underline',
-                                   textUnderlinePosition: 'under',
-                                }
-                              : {}),
-                        }}
-                     >
-                        {link.title}
-                     </Button>
-                  ))}
+                  {links.map((link) => {
+                     {
+                        console.log(userRole);
+                     }
+                     if (
+                        (userRole === 'researcher' || userRole === 'admin') &&
+                        link.title === 'Settings'
+                     ) {
+                        // Update the src for the researcher user
+                        return (
+                           <Button
+                              disableRipple
+                              key={link.id}
+                              onClick={() =>
+                                 handleButtonClick(
+                                    navigate('/external_user_settings', {
+                                       state: { token: location.state.token },
+                                    })
+                                 )
+                              }
+                              sx={{
+                                 my: 2,
+                                 mx: 1,
+                                 // color: linksColor,
+                                 color: '#00337C',
+                                 display: 'block',
+                                 borderRadius: '25px',
+                                 ':hover': {
+                                    bgcolor: 'none',
+                                    textDecoration: 'underline',
+                                    textUnderlinePosition: 'under',
+                                 },
+                                 '&:hover': {
+                                    backgroundColor: 'transparent',
+                                 },
+                                 fontSize: '1.01rem',
+                                 fontWeight: 'bold',
+                                 fontFamily: 'Rubik, sans-serif',
+                                 ...(activeLink === link.id
+                                    ? {
+                                         textDecoration: 'underline',
+                                         textUnderlinePosition: 'under',
+                                      }
+                                    : {}),
+                              }}
+                           >
+                              {link.title}
+                           </Button>
+                        );
+                     } else {
+                        return (
+                           <Button
+                              disableRipple
+                              key={link.id}
+                              onClick={() => handleButtonClick(link)}
+                              sx={{
+                                 my: 2,
+                                 mx: 1,
+                                 // color: linksColor,
+                                 color: '#00337C',
+                                 display: 'block',
+                                 borderRadius: '25px',
+                                 ':hover': {
+                                    bgcolor: 'none',
+                                    textDecoration: 'underline',
+                                    textUnderlinePosition: 'under',
+                                 },
+                                 '&:hover': {
+                                    backgroundColor: 'transparent',
+                                 },
+                                 fontSize: '1.01rem',
+                                 fontWeight: 'bold',
+                                 fontFamily: 'Rubik, sans-serif',
+                                 ...(activeLink === link.id
+                                    ? {
+                                         textDecoration: 'underline',
+                                         textUnderlinePosition: 'under',
+                                      }
+                                    : {}),
+                              }}
+                           >
+                              {link.title}
+                           </Button>
+                        );
+                     }
+                  })}
                </Box>
                {isSmallScreen && (
                   <Box component='div'>
@@ -221,8 +273,27 @@ const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
                                  />
                               </Button>
                            );
+                        } else if (
+                           userRole === 'admin' &&
+                           img.title === 'home'
+                        ) {
+                           return (
+                              <Button
+                                 component='div'
+                                 sx={{ marginLeft: '17px' }}
+                                 key={img.id}
+                              >
+                                 <img
+                                    onClick={() => handleImageClick('/admin')}
+                                    src={img.src_clicked} // Use the clicked image source for the researcher user
+                                    title={img.title}
+                                    height='33'
+                                    width='33'
+                                 />
+                              </Button>
+                           );
                         } else {
-                           // Render the image link as usual- for admin user
+                           // Render the image link as usual- for TIY user
                            return (
                               <Button
                                  component='div'

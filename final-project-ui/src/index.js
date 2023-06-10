@@ -28,7 +28,7 @@ import RouteTablePage from './Pages/RouteTablePage';
 import UserTablePage from './Pages/UserTablePage';
 import UpdateUserPage from './Pages/UpdateUserPage';
 import ThemeCustomizationPage from './Pages/ThemeCustomizationPage';
-import NavBar from './Components/Additionals/NavBar/NavBar';
+import ExternalAccountPage from './Pages/ExternalAccountPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -61,6 +61,10 @@ root.render(
                <Route path='/map_builder' element={<MapBuilderPage />} />
                <Route path='/events_choice' element={<EventsModalPage />} />
                <Route path='/user_settings' element={<AccountPage />} />
+               <Route
+                  path='/external_user_settings'
+                  element={<ExternalAccountPage />}
+               />
                <Route path='/tours_history' element={<ToursPage />} />
                <Route
                   path='/theme_customization'

@@ -243,7 +243,7 @@ const MapBuilder = (props) => {
 
    //Colors Customization array
    useEffect(() => {
-      console.log(colors); // Log the updated colors array when it changes
+      // console.log(colors); // Log the updated colors array when it changes
    }, [colors, flag]);
 
    //Open AR Element from ARManagement component
