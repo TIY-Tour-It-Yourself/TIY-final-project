@@ -151,7 +151,14 @@ function MyComponent(props) {
 
    const columns = [
       { field: 'description', headerName: 'Description', flex: 1 },
-      ...poiColumns, // Spread the poiColumns array here
+      // ...poiColumns, // Spread the poiColumns array here
+      {
+         field: 'poiid',
+         headerName: 'POI IDs',
+         flex: 1,
+         valueGetter: (params) =>
+            params.row.pois.map((poi) => poi.poiid).join(', '),
+      },
       {
          field: 'evaluation_grade',
          headerName: 'Evaluation Grade',
