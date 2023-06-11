@@ -16,7 +16,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const Admin = () => {
    const [activeImage, setActiveImage] = useState(null);
-   const [admin, setAdmin] = useState('');
+   const [admin, setAdmin] = useState('admin');
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
    const navigate = useNavigate();
@@ -38,7 +38,6 @@ const Admin = () => {
                      },
                   }
                );
-               setAdmin('admin');
             } catch (error) {
                console.error('Error fetching user: ', error);
             }
@@ -48,14 +47,20 @@ const Admin = () => {
    }, [location.state]);
 
    const handleNavigatePoisTable = () => {
-      navigate('/pois_table', { state: { token: location.state.token } });
+      navigate('/pois_table', {
+         state: { token: location.state.token, userRole: admin },
+      });
    };
 
    const handleNavigateRoutesTable = () => {
-      navigate('/route_table', { state: { token: location.state.token } });
+      navigate('/route_table', {
+         state: { token: location.state.token, userRole: admin },
+      });
    };
    const handleNavigateUsersTable = () => {
-      navigate('/users_table', { state: { token: location.state.token } });
+      navigate('/users_table', {
+         state: { token: location.state.token, userRole: admin },
+      });
    };
 
    return (

@@ -6,7 +6,7 @@ import Add_Pois from './Add_Poi';
 import Update_Poi from './Update_Poi';
 import { useState, useEffect } from 'react';
 import styles from './Pois_Table.module.css';
-import NavBar from '../../Additionals/NavBar/NavBar';
+import NavBarExternal from '../../Additionals/NavBarExternal/NavBarExternal';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -16,7 +16,7 @@ import IconButton from '@mui/material/IconButton';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function MyComponent(props) {
-   const [token, setToken] = useState('');
+   const [admin, setAdmin] = useState('');
    const [pois, setPois] = React.useState([]);
    const [showAddForm, setAddShowForm] = useState(false);
    const [showUpdateForm, setUpdateShowForm] = useState(false);
@@ -68,7 +68,7 @@ function MyComponent(props) {
                },
             })
             .then((response) => {
-               setToken(response.data.token);
+               setAdmin(location.state.userRole);
                // console.log(response.data);
             })
             .catch((error) => {
@@ -167,7 +167,7 @@ function MyComponent(props) {
 
    return (
       <>
-         <NavBar token={token} />
+         <NavBarExternal userRole={admin} />
          <div
             style={{
                marginTop: '30px',

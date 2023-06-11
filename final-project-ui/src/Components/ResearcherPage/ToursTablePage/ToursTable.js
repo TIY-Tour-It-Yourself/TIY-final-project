@@ -58,6 +58,14 @@ const columns = [
       headerAlign: 'center',
       align: 'center',
    },
+   {
+      field: 'type',
+      headerName: 'Consumer / Producer',
+      sortable: true,
+      width: 210,
+      headerAlign: 'center',
+      align: 'center',
+   },
 ];
 
 const columnsSecond = [
@@ -92,6 +100,7 @@ const columnsSecond = [
 const ToursTable = ({ userRole }) => {
    const location = useLocation();
    const navigate = useNavigate();
+   const [user, setUser] = useState(userRole);
    const [activeImage, setActiveImage] = useState('');
    const [tours, setTours] = useState([]);
    const [routeTheme, setRouteThemes] = useState([]);
@@ -169,8 +178,6 @@ const ToursTable = ({ userRole }) => {
 
    useEffect(() => {
       if (selectedRowData && poisIds.length > 0 && poisGrades.length > 0) {
-         // console.log(selectedRowData, poisIds, poisGrades);
-
          const filteredGrades = poisGrades.filter((poi) => {
             return poisIds.includes(poi.poiid.poiid);
          });
@@ -192,7 +199,6 @@ const ToursTable = ({ userRole }) => {
 
    //Display Filtered Data On Row Selection
    const onRowsSelectionHandler = (ids) => {
-      console.log(ids);
       if (ids.length === 0) {
          setSelectedRowData([]);
          setPoisIds([]);
@@ -227,7 +233,7 @@ const ToursTable = ({ userRole }) => {
 
    return (
       <>
-         <NavBarExternal activeImage={activeImage} userRole={userRole} />
+         <NavBarExternal activeImage={activeImage} userRole={user} />
          <Typography
             component='div'
             sx={
@@ -328,6 +334,10 @@ const ToursTable = ({ userRole }) => {
                            <b>Tour Duration: </b>
                            {route.duration}
                         </Typography>
+                        <Typography>
+                           <b>Consumer / Producer: </b>
+                           {route.type}
+                        </Typography>
                      </CardContent>
 
                      <div
@@ -366,7 +376,6 @@ const ToursTable = ({ userRole }) => {
                      toolbar: GridToolbar,
                   }}
                   rows={filteredData.map((row) => {
-                     // console.log(row); // Print the row object
                      return {
                         ...row,
                         id: row._id,

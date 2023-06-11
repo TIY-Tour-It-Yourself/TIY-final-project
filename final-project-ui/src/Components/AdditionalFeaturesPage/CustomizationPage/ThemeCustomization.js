@@ -96,10 +96,8 @@ const ThemeCustomization = ({ flag }) => {
    }, [appTheme]);
 
    useEffect(() => {
-      if (coins !== 0) {
-         const fname = name.substring(0, name.indexOf(' '));
-         setFname(fname);
-      }
+      const fname = name.substring(0, name.indexOf(' '));
+      setFname(fname);
    }, [coins, name]);
 
    //Modal Style

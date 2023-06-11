@@ -7,8 +7,10 @@ import { TextField, Button, FormControl, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
+import NavBarExternal from '../Additionals/NavBarExternal/NavBarExternal';
 
-const Account = ({ userRole }) => {
+const ExternalAccount = ({ userRole }) => {
+   const [user, setUser] = useState(userRole);
    const [activeImage, setActiveImage] = useState(null);
    const [activeLink, setActiveLink] = useState(null);
    const [isUpdated, setIsUpdated] = useState(false);
@@ -67,10 +69,10 @@ const Account = ({ userRole }) => {
 
    return (
       <>
-         <NavBar
+         <NavBarExternal
             activeImage={activeImage}
             activeLink={activeLink}
-            userRole={userRole}
+            userRole={location.state.userRole}
          />
          <PageContainer>
             <Typography
@@ -145,4 +147,4 @@ const Account = ({ userRole }) => {
    );
 };
 
-export default Account;
+export default ExternalAccount;

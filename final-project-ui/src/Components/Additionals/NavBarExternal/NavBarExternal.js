@@ -6,12 +6,6 @@ import home from './nav_imgs/home_origin.png';
 import home_clicked from './nav_imgs/home_clicked.png';
 import user_settings from './nav_imgs/user_origin_new.png';
 import user_settings_clicked from './nav_imgs/user_origin_new_clicked.png';
-import history from './nav_imgs/history_origin.png';
-import history_clicked from './nav_imgs/history_clicked.png';
-import calendar from './nav_imgs/schedule_origin.png';
-import calendar_clicked from './nav_imgs/schedule_clicked.png';
-import customize_theme from './nav_imgs/customize_theme.png';
-import customize_theme_clicked from './nav_imgs/customize_theme_clicked.png';
 import logout_rounded from './nav_imgs/logout_rounded_corners.png';
 import logout_rect from './nav_imgs/logout_rectangle.png';
 import logout_straight from './nav_imgs/logout_straight.png';
@@ -35,6 +29,7 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
+   const [user, setUser] = useState(userRole);
    const [isLoading, setIsLoading] = useState(true);
    const [images, setImages] = useState([
       {
@@ -49,7 +44,7 @@ const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
          title: 'settings',
          src: user_settings,
          src_clicked: user_settings_clicked,
-         url: '/user_settings',
+         url: '/external_user_settings',
       },
    ]);
 
@@ -85,17 +80,13 @@ const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
          }
       };
       fetchAvatar();
-   }, []);
+   }, [location.state]);
 
-   const links = [
-      { id: 1, title: 'Settings', url: `/user_settings` },
-      // { id: 2, title: 'My Tours', url: '/tours_history' },
-      // { id: 3, title: 'Customize App', url: '/theme_customization' },
-   ];
+   const links = [{ id: 1, title: 'Settings', url: `/external_user_settings` }];
 
    const handleImageClick = (imageUrl) => {
       navigate(imageUrl, {
-         state: { token: location.state.token },
+         state: { token: location.state.token, userRole: user },
       });
    };
 
@@ -108,7 +99,9 @@ const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
    };
 
    const openSettingsPage = (event) => {
-      navigate('/user_settings', { state: { token: location.state.token } });
+      navigate('/external_user_settings', {
+         state: { token: location.state.token, userRole: user },
+      });
    };
    const handleLogout = (event) => {
       localStorage.removeItem('token');
@@ -116,9 +109,9 @@ const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
    };
 
    const handleButtonClick = (newLink) => {
-      if (links.filter((link) => link.title === newLink.title)) {
-         navigate(newLink.url, { state: { token: location.state.token } });
-      }
+      navigate(newLink.url, {
+         state: { token: location.state.token, userRole: user },
+      });
    };
 
    const handleAvatarLoad = () => {
@@ -144,11 +137,30 @@ const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
                            src={logo}
                            alt='Logo'
                            className={styles.logo}
-                           onClick={() =>
-                              navigate('/dashboard', {
-                                 state: { token: location.state.token },
-                              })
-                           }
+                           onClick={() => {
+                              if (user === 'admin') {
+                                 navigate('/admin', {
+                                    state: {
+                                       token: location.state.token,
+                                       userRole: user,
+                                    },
+                                 });
+                              } else if (user === 'researcher') {
+                                 navigate('/res_dashboard', {
+                                    state: {
+                                       token: location.state.token,
+                                       userRole: user,
+                                    },
+                                 });
+                              } else {
+                                 navigate('/admin', {
+                                    state: {
+                                       token: location.state.token,
+                                       userRole: user,
+                                    },
+                                 });
+                              }
+                           }}
                         />
                      </div>
                   </Box>
@@ -165,29 +177,16 @@ const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
                   }
                >
                   {links.map((link) => {
-                     {
-                        console.log(userRole);
-                     }
-                     if (
-                        (userRole === 'researcher' || userRole === 'admin') &&
-                        link.title === 'Settings'
-                     ) {
+                     if (user === 'researcher' && link.title === 'Settings') {
                         // Update the src for the researcher user
                         return (
                            <Button
                               disableRipple
                               key={link.id}
-                              onClick={() =>
-                                 handleButtonClick(
-                                    navigate('/external_user_settings', {
-                                       state: { token: location.state.token },
-                                    })
-                                 )
-                              }
+                              onClick={handleButtonClick}
                               sx={{
                                  my: 2,
                                  mx: 1,
-                                 // color: linksColor,
                                  color: '#00337C',
                                  display: 'block',
                                  borderRadius: '25px',
@@ -222,7 +221,6 @@ const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
                               sx={{
                                  my: 2,
                                  mx: 1,
-                                 // color: linksColor,
                                  color: '#00337C',
                                  display: 'block',
                                  borderRadius: '25px',
@@ -254,7 +252,7 @@ const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
                {isSmallScreen && (
                   <Box component='div'>
                      {images.map((img) => {
-                        if (userRole === 'researcher' && img.title === 'home') {
+                        if (user === 'researcher' && img.title === 'home') {
                            // Update the src for the researcher user
                            return (
                               <Button
@@ -266,7 +264,11 @@ const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
                                     onClick={() =>
                                        handleImageClick('/res_dashboard')
                                     }
-                                    src={img.src_clicked} // Use the clicked image source for the researcher user
+                                    src={
+                                       activeImage === img.id
+                                          ? img.src_clicked
+                                          : img.src
+                                    }
                                     title={img.title}
                                     height='33'
                                     width='33'
@@ -274,8 +276,8 @@ const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
                               </Button>
                            );
                         } else if (
-                           userRole === 'admin' &&
-                           img.title === 'home'
+                           user === 'researcher' &&
+                           img.title === 'settings'
                         ) {
                            return (
                               <Button
@@ -284,8 +286,16 @@ const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
                                  key={img.id}
                               >
                                  <img
-                                    onClick={() => handleImageClick('/admin')}
-                                    src={img.src_clicked} // Use the clicked image source for the researcher user
+                                    onClick={() =>
+                                       handleImageClick(
+                                          '/external_user_settings'
+                                       )
+                                    }
+                                    src={
+                                       activeImage === img.id
+                                          ? img.src_clicked
+                                          : img.src
+                                    }
                                     title={img.title}
                                     height='33'
                                     width='33'
@@ -293,7 +303,6 @@ const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
                               </Button>
                            );
                         } else {
-                           // Render the image link as usual- for TIY user
                            return (
                               <Button
                                  component='div'

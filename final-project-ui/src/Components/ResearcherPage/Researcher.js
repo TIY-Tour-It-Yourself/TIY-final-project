@@ -10,7 +10,7 @@ const Researcher = () => {
    const navigate = useNavigate();
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-   const [researcher, setResearcher] = useState('');
+   const [researcher, setResearcher] = useState('researcher');
 
    useEffect(() => {
       if (!location.state) {
@@ -27,14 +27,13 @@ const Researcher = () => {
                      },
                   }
                );
-               setResearcher('researcher');
             } catch (error) {
                console.error('Error fetching user: ', error);
             }
          };
          fetchUser();
       }
-   }, []);
+   }, [location.state]);
 
    return <>{researcher && <ToursTable userRole={researcher} />}</>;
 };
