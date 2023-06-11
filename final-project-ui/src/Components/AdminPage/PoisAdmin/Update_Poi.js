@@ -104,7 +104,7 @@ function Update_Poi(props) {
 
    return (
       <>
-         <div style={{ height: '100%' }}>
+         <div style={{ height: '700px' }}>
             <h2> Update Point Of Interest(POI): </h2>{' '}
             <form onSubmit={handleSubmit}>
                <Grid
@@ -124,18 +124,16 @@ function Update_Poi(props) {
                         label='Poi ID'
                         fullWidth
                         value={poiid}
-                        // onChange={handleChange}
                         onChange={(e) => handleInputChange(e)}
                         disabled
-                     />{' '}
-                  </Grid>{' '}
+                     />
+                  </Grid>
                   <Grid item xs={12}>
                      <TextField
                         name='name'
                         label='Name'
                         fullWidth
                         value={name}
-                        // onChange={handleChange}
                         onChange={(e) => handleInputChange(e)}
                      />{' '}
                   </Grid>{' '}

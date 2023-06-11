@@ -306,7 +306,7 @@ function MyComponent(props) {
                      >
                         <ArrowBackIcon />
                      </IconButton>
-                     <h1 style={{ marginTop: '50px' }}>Pois Table</h1>
+                     <h1 style={{ marginTop: '50px' }}>POIs Table</h1>
                   </div>
                   <div
                      style={{ height: 500, width: '100%', marginTop: '10px' }}

@@ -109,9 +109,28 @@ function Users_Table(props) {
          headerName: 'email',
          flex: 1,
       },
-      { field: 'age', headerName: 'Age', flex: 1 },
-      { field: 'is_accessible', headerName: 'Is_Accessible', flex: 1 },
-      { field: 'coins', headerName: 'Coins', flex: 1, type: 'number' },
+      {
+         field: 'age',
+         headerName: 'Age',
+         flex: 1,
+         headerAlign: 'center',
+         align: 'center',
+      },
+      {
+         field: 'is_accessible',
+         headerName: 'Is_Accessible',
+         flex: 1,
+         headerAlign: 'center',
+         align: 'center',
+      },
+      {
+         field: 'coins',
+         headerName: 'Coins',
+         flex: 1,
+         type: 'number',
+         headerAlign: 'center',
+         align: 'center',
+      },
       {
          field: 'avatar',
          headerName: 'Avatar',
@@ -226,17 +245,12 @@ function Users_Table(props) {
                            <Typography>
                               <b> Coins: </b> {user.coins}{' '}
                            </Typography>{' '}
-                           {/* <Typography>
-                                                                          <b>Avatar Url:</b>
-                                                                          {user.avatar}
-                                                                        </Typography> */}{' '}
                         </CardContent>
                         <div
                            style={{
                               display: 'flex',
                               justifyContent: 'center',
                               height: '100%',
-                              marginTop: '20px',
                               marginBottom: '40px',
                            }}
                         >
@@ -258,7 +272,6 @@ function Users_Table(props) {
                               style={{
                                  backgroundColor: '#d91d0f',
                                  color: 'white',
-                                 // marginLeft: "10px",
                                  flex: 1,
                                  maxWidth: '140px',
                                  marginLeft: '5px',
@@ -281,7 +294,6 @@ function Users_Table(props) {
                      style={{
                         display: 'flex',
                         justifyContent: 'center',
-                        marginTop: '20px',
                      }}
                   >
                      <Button variant='contained' onClick={handleAddUser}>
@@ -339,18 +351,10 @@ function Users_Table(props) {
                         style={{
                            display: 'flex',
                            justifyContent: 'center',
-                           marginTop: '20px',
+                           marginTop: '10px',
                         }}
                      >
-                        <Button
-                           variant='contained'
-                           onClick={handleAddUser}
-                           // style={{
-                           //   display: "flex",
-                           //   justifyContent: "center",
-                           //   marginTop: "20px",
-                           // }}
-                        >
+                        <Button variant='contained' onClick={handleAddUser}>
                            Add New User{' '}
                         </Button>{' '}
                         <Button
@@ -376,7 +380,6 @@ function Users_Table(props) {
                   <div
                      className={styles.lightboxContent}
                      style={{
-                        marginTop: '250px',
                         maxWidth: isSmallScreen ? '100%' : 'auto',
                      }}
                   >
@@ -395,7 +398,6 @@ function Users_Table(props) {
                   <div
                      className={styles.lightboxContent}
                      style={{
-                        marginTop: '250px',
                         maxWidth: isSmallScreen ? '100%' : 'auto',
                      }}
                   >

@@ -9,12 +9,10 @@ import {
    Button,
 } from '@mui/material';
 import { useState, useEffect } from 'react';
-import NavBar from '../../Additionals/NavBar/NavBar';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 function Add_User(props) {
-   // const selectedPoi = props.selectedPoi;
    const [newPoiId, setNewPoiId] = useState(props.lastRouteId + 1);
    const [themeOptions, setThemeOptions] = useState([]);
    const [activeImage, setActiveImage] = useState(null);
@@ -34,8 +32,6 @@ function Add_User(props) {
    const handleSubmit = async (e) => {
       e.preventDefault();
 
-      // Post request - need to post data to DB to register user
-      // If all fields are filled
       if (
          fname.trim().length !== 0 &&
          email.trim().length !== 0 &&
@@ -101,7 +97,7 @@ function Add_User(props) {
 
    return (
       <>
-         <div style={{ height: '100%' }}>
+         <div style={{ height: '100%', marginBottom: '40px' }}>
             <h2> Add New User: </h2>{' '}
             <form onSubmit={handleSubmit}>
                <Grid
@@ -125,9 +121,8 @@ function Add_User(props) {
                         onBlur={() => setIsDirty(true)}
                         onChange={(e) => handleInputChange(e)}
                         required
-                        // disabled
-                     />{' '}
-                  </Grid>{' '}
+                     />
+                  </Grid>
                   <Grid item xs={12}>
                      <TextField
                         name='email'

@@ -150,27 +150,42 @@ function MyComponent(props) {
    }
 
    const columns = [
-      { field: 'description', headerName: 'Description', flex: 1 },
-      // ...poiColumns, // Spread the poiColumns array here
+      {
+         field: 'description',
+         headerName: 'Description',
+         flex: 1,
+      },
       {
          field: 'poiid',
          headerName: 'POI IDs',
          flex: 1,
          valueGetter: (params) =>
             params.row.pois.map((poi) => poi.poiid).join(', '),
+         headerAlign: 'center',
+         align: 'center',
       },
       {
          field: 'evaluation_grade',
          headerName: 'Evaluation Grade',
          flex: 1,
          type: 'number',
+         headerAlign: 'center',
+         align: 'center',
       },
-      { field: 'experience_level', headerName: 'Experience Level', flex: 1 },
+      {
+         field: 'experience_level',
+         headerName: 'Experience Level',
+         flex: 1,
+         headerAlign: 'center',
+         align: 'center',
+      },
       {
          field: 'theme.theme',
          headerName: 'Theme',
          flex: 1,
          valueGetter: (params) => params.row.theme.theme,
+         headerAlign: 'center',
+         align: 'center',
       },
       { field: 'imgurl', headerName: 'Imgurl', flex: 1 },
       {
@@ -289,7 +304,6 @@ function MyComponent(props) {
                               style={{
                                  backgroundColor: '#d91d0f',
                                  color: 'white',
-                                 // marginLeft: "10px",
                                  flex: 1,
                                  maxWidth: '140px',
                                  marginLeft: '5px',
@@ -348,7 +362,6 @@ function MyComponent(props) {
                   <div
                      style={{ height: 500, width: '100%', marginTop: '10px' }}
                   >
-                     {' '}
                      <DataGrid
                         slots={{
                            toolbar: GridToolbar,
@@ -434,6 +447,7 @@ function MyComponent(props) {
                      <Button
                         className='close-button'
                         onClick={handleCancelUpdate}
+                        style={{ marginTop: '120px' }}
                      >
                         X
                      </Button>

@@ -284,10 +284,7 @@ const Tours = () => {
                            <div>AR level: {tour.experience_level}</div>
                            <div>POIs: {tour.pois.length}</div>
                            <div>{tour.duration}</div>
-                           <div>
-                              Rank:
-                              {tour.evaluation_grade.toFixed(1)}
-                           </div>
+                           <div>Rank: {tour.evaluation_grade.toFixed(1)}</div>
                            <div className={styles.align_right}>
                               <Button
                                  sx={{
@@ -342,13 +339,13 @@ const Tours = () => {
                                        {tour.experience_level}
                                     </div>
                                     <div>
-                                       <b>POIs:</b> {tour.pois.length}
+                                       <b>POIs: </b> {tour.pois.length}
                                     </div>
                                     <div>
-                                       <b>Duration:</b> {tour.duration}
+                                       <b>Duration: </b> {tour.duration}
                                     </div>
                                     <div>
-                                       <b>Rank:</b>{' '}
+                                       <b>Rank: </b>{' '}
                                        {tour.evaluation_grade.toFixed(1)}
                                     </div>
                                     <div className={styles.align_right}>
