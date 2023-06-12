@@ -396,16 +396,17 @@ const MapBuilder = (props) => {
             // Create the stop navigation button
             const stopNavigationButton = document.createElement('button');
             stopNavigationButton.textContent = 'Stop';
-            stopNavigationButton.style.backgroundColor = '#007aff';
             stopNavigationButton.style.marginLeft = '3px';
-            stopNavigationButton.style.color = 'white';
             stopNavigationButton.style.padding = '10px';
             stopNavigationButton.style.borderRadius = '25px'; // change from "50%" to "25px"
             stopNavigationButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.3)';
             stopNavigationButton.style.fontSize = '16px';
             stopNavigationButton.style.lineHeight = '1';
             stopNavigationButton.style.border = 'none';
-            stopNavigationButton.style.cursor = 'pointer';
+            stopNavigationButton.disabled = true;
+            stopNavigationButton.style.backgroundColor = '#EEEEEE';
+            stopNavigationButton.style.color = 'grey';
+            stopNavigationButton.style.cursor = 'default';
 
             // Create the timer element with white background
             const timerDiv = document.createElement('div');
@@ -415,15 +416,9 @@ const MapBuilder = (props) => {
             timerDiv.style.borderRadius = '5px';
             timerDiv.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.3)';
             timerDiv.style.fontSize = '16px';
-            timerDiv.style.position = 'absolute';
             timerDiv.style.top = '45px';
 
             timerDiv.style.marginBottom = '10px';
-
-            // Add the timer element to the map controls
-            // map.controls[window.google.maps.ControlPosition.TOP_CENTER].push(
-            //    timerDiv
-            // );
 
             // Add media query to update marginTop if screen width is greater than 400px
             const mediaQuery = window.matchMedia('(min-width: 600px)');
@@ -520,6 +515,12 @@ const MapBuilder = (props) => {
                startNavigationButton.style.color = 'grey';
                startNavigationButton.style.cursor = 'default';
                isNavigationStarted = true;
+
+               // Enable the Stop Navigation Button
+               stopNavigationButton.disabled = false;
+               stopNavigationButton.style.color = 'white';
+               stopNavigationButton.style.backgroundColor = '#007aff';
+               stopNavigationButton.style.cursor = 'pointer';
             });
 
             const resetButton = document.createElement('button');
