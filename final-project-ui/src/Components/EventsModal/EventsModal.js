@@ -105,15 +105,15 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
       }
 
       setSelectedEvents(updatedSelectedEvents);
-      // console.log(updatedSelectedEvents);
       setIsSelectingEvents(true);
    };
+
    const handleEventSelectionComplete = () => {
       setIsSelectingEvents(false);
-      // navigate(-1, { state: { selectedEvents } });
       handleEventSelection(selectedEvents);
       handleClose();
    };
+
    const handleClose = () => {
       handleCloseModal();
    };
@@ -185,6 +185,19 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
       });
    }
 
+   const handleEventClickInverse = (event) => {
+      const index = selectedEvents.findIndex(
+         (selectedEvent) => selectedEvent.title === event.title
+      );
+      if (index !== -1) {
+         setSelectedEvents(
+            selectedEvents
+               .slice(0, index)
+               .concat(selectedEvents.slice(index + 1))
+         );
+      }
+   };
+
    return (
       <div className={styles.modal}>
          <Modal
@@ -241,10 +254,7 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
                            !isSmallScreen ? { width: '100%' } : {})
                         }
                      >
-                        {/* <div className={styles.event_card}> */}
-                        {/* <div className={styles.inner_card}></div> */}
                         <>
-                           {' '}
                            {isSelectingEvents ? (
                               <>
                                  <div>
@@ -270,7 +280,7 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
                                        height: '100%',
                                     }}
                                  >
-                                    <ul style={{ marginTop: '20px' }}>
+                                    <ul>
                                        {selectedEvents
                                           .sort((a, b) => {
                                              if (!a.date && !b.date) {
@@ -345,12 +355,19 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
                                              <li
                                                 key={index}
                                                 onClick={() =>
-                                                   handleEventClick(event)
+                                                   handleEventClickInverse(
+                                                      event
+                                                   )
                                                 }
-                                                className={`${styles.selectedEvent} ${styles.disabled}`}
+                                                style={{
+                                                   marginTop: '20px',
+                                                   marginRight: '32px',
+                                                   cursor: 'pointer',
+                                                }}
+                                                className={styles.selectedEvent}
                                              >
                                                 <p>
-                                                   <b>{event.title}</b> <br />{' '}
+                                                   <b>{event.title}</b> <br />
                                                    {event.location}
                                                    <br />
                                                    {event.address} <br />
