@@ -40,9 +40,9 @@ function MyComponent(props) {
    const endIndex = startIndex + pageSize;
    const paginatedPois = pois.slice(startIndex, endIndex);
 
-   function handleAddPoi(id) {
+   function handleAddPoi() {
       setAddShowForm(true);
-      setPoiid(pois.length - 1);
+      setPoiid(pois[pois.length - 1].poiid);
    }
 
    function handleCancelAdd() {
@@ -370,7 +370,10 @@ function MyComponent(props) {
                      <Button className='close-button' onClick={handleCancelAdd}>
                         X
                      </Button>
-                     <Add_Pois lastRouteId={Poiid} onCancel={handleCancelAdd} />
+                     <Add_Pois
+                        lastRouteId={Poiid - 1}
+                        onCancel={handleCancelAdd}
+                     />
                   </div>
                </div>
             )}
