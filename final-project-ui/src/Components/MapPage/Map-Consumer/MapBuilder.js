@@ -798,16 +798,16 @@ const MapBuilder = (props) => {
                      icon: `https://cdn.glitch.global/e974619b-5809-4dcb-bd75-55d296fd7ad8/fireworks.png?v=1683993759744`,
                   });
                   const infoWindow = new window.google.maps.InfoWindow({
-                     content: `<div style="display: flex; justify-content: center; flex-direction: column; margin-left: 22px;">
+                     content: `<div style="display: flex; justify-content: center; flex-direction: column; margin: 0 auto; padding: 10px;">
                      <div style="margin: 0 auto;"><h3 style="color: #D25380;">Surprise!</h3></div>
-                     <div style="display: flex; margin-left: 15px; justify-content: center;">
-                     <div style="display: flex; flex-direction: column; align-items: center; margin-right: 10px;">
+                     <div style="display: flex; flex-direction: column; align-items: center; ">
                         <button id="open-ar-element" style="border: none; background-color: transparent;">
                         <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
                         <br/>
                         <span style="text-decoration: none; font-size: small;">Click Me</span>
                         </button>
-                     </div> `,
+                     </div> 
+                     </div>`,
                   });
 
                   infoWindow.addListener('domready', () => {
@@ -1033,17 +1033,8 @@ const MapBuilder = (props) => {
                   map: map,
                });
 
-               // <a href="${ARURLArray[index]}" target="_blank" style="text-decoration: none;">
-               //        <div>
-               //          <img src="${arIcon}" width='40px' height='40px' alt='${locationName[index]}'>
-               //        </div>
-               //        <div style="margin-top: 7px;">
-               //          <span style="text-decoration: none; font-size: small;">Click Me</span>
-               //        </div>
-               //      </a>
-
                const infoWindow = new window.google.maps.InfoWindow({
-                  content: `<div style="display: flex; justify-content: center; flex-direction: column; margin-left: 22px;">
+                  content: `<div style="display: flex; justify-content: center; flex-direction: column; margin: 0 auto; padding: 8px;">
                   <div style="margin: 0 auto;"><h4>${
                      locationName[index]
                   }</h4></div>
@@ -1058,7 +1049,7 @@ const MapBuilder = (props) => {
                         <span style="text-decoration: none; font-size: small;">Click Me</span>
                      </div>
                   </button>
-                  </div> `
+                  </div>`
                          : ``
                    }
                   <div style="display: flex; flex-direction: column; margin-right: 6px; align-items: center;">

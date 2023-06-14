@@ -361,7 +361,7 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
                                                 }
                                                 style={{
                                                    marginTop: '20px',
-                                                   marginRight: '32px',
+                                                   marginRight: '40px',
                                                    cursor: 'pointer',
                                                 }}
                                                 className={styles.selectedEvent}
@@ -377,7 +377,7 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
                                           ))}
                                     </ul>
 
-                                    <ul>
+                                    <ul style={{ marginRight: '40px' }}>
                                        {events
                                           .sort((a, b) => {
                                              if (!a.date && !b.date) {
@@ -461,9 +461,6 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
                                                       className={
                                                          styles.event_list_item
                                                       }
-                                                      style={{
-                                                         marginRight: '40px',
-                                                      }}
                                                    >
                                                       <p>
                                                          <b> {event.title}</b>
@@ -482,17 +479,7 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
                               </>
                            ) : (
                               <>
-                                 {/* <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          height: "100%",
-                          justifyContent: "center",
-                          border: "2px solid black",
-                        }}
-                      > */}
-                                 <ul>
+                                 <ul style={{ marginRight: '40px' }}>
                                     {events
                                        .sort((a, b) => {
                                           if (!a.date && !b.date) {
