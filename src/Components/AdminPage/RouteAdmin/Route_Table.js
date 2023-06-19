@@ -1,20 +1,22 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import Add_Route from "./Add_Route";
 import Update_Route from "./Update_Route";
-import { useState } from "react";
-import "./Route_Table.css";
+import styles from "./Route_Table.module.css";
 import NavBar from "../../Additionals/NavBar/NavBar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Pagination } from "@mui/material";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import { useMediaQuery } from "@material-ui/core";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import IconButton from "@mui/material/IconButton";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 function MyComponent(props) {
-  const [routes, setRoutes] = React.useState([]);
+  const [token, setToken] = useState("");
+  const [routes, setRoutes] = useState([]);
   const [showAddForm, setAddShowForm] = useState(false);
   const [showUpdateForm, setUpdateShowForm] = useState(false);
   const [selectedRoute, setSelectedRoute] = useState(null);
@@ -44,30 +46,32 @@ function MyComponent(props) {
   function handleCancelUpdate() {
     setUpdateShowForm(false);
   }
+  const handleGoBack = () => {
+    navigate(-1); // Go back to the previous page
+  };
 
-  //  useEffect(() => {
-  //   console.log(location);
-  //   if (!location.state) {
-  //     navigate("/");
-  //   } else {
-  //     setActiveImage(1);
-  //     axios
-  //       .get(`https://tiys.herokuapp.com/api/auth`, {
-  //         headers: {
-  //           "x-auth-token": location.state.token,
-  //           "Content-Type": "application/json",
-  //         },
-  //       })
-  //       .then((response) => {
-  //         // console.log(response.data);   //user's data
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching user: ", error);
-  //       });
-  //   }
-  // }, [location.state]);
+  useEffect(() => {
+    if (!location.state) {
+      navigate("/");
+    } else {
+      axios
+        .get(`https://tiys.herokuapp.com/api/auth`, {
+          headers: {
+            "x-auth-token": location.state.token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((response) => {
+          setToken(response.data.token);
+          // console.log(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching user: ", error);
+        });
+    }
+  }, [location.state]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function fetchData() {
       const response = await axios.get("https://tiys.herokuapp.com/api/routes");
       setRoutes(response.data);
@@ -87,33 +91,40 @@ function MyComponent(props) {
 
   // }
   function handleUpdate(routeid) {
-    console.log("Selected POI ID:", routeid);
     const selected = routes.find((route) => route.routeid === routeid);
     setSelectedRoute(selected);
     setUpdateShowForm(true);
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (selectedRoute !== null) {
       console.log(selectedRoute);
     }
   }, [selectedRoute]);
 
   async function handleDelete(ids) {
-    try {
-      for (const id of ids) {
-        const response = await axios.delete(
-          "https://tiys.herokuapp.com/api/routes",
-          {
-            data: {
-              routeid: id,
-            },
-          }
-        );
-        console.log(`Successfully deleted route with ID ${id}`);
+    // Ask for confirmation before deleting
+    const isConfirmed = window.confirm("Are you sure you want to delete?");
+
+    if (isConfirmed) {
+      try {
+        for (const id of ids) {
+          const response = await axios.delete(
+            "https://tiys.herokuapp.com/api/routes",
+            {
+              data: {
+                routeid: id,
+              },
+            }
+          );
+          console.log(`Successfully deleted route with ID ${id}`);
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error("Error deleting routes:", error);
       }
-    } catch (error) {
-      console.error("Error deleting routes:", error);
+    } else {
+      console.log("Deletion canceled");
     }
   }
 
@@ -135,7 +146,14 @@ function MyComponent(props) {
 
   const columns = [
     { field: "description", headerName: "Description", flex: 1 },
-    ...poiColumns, // Spread the poiColumns array here
+    // ...poiColumns, // Spread the poiColumns array here
+    {
+      field: "poiid",
+      headerName: "POI IDs",
+      flex: 1,
+      valueGetter: (params) =>
+        params.row.pois.map((poi) => poi.poiid).join(", "),
+    },
     {
       field: "evaluation_grade",
       headerName: "Evaluation Grade",
@@ -171,68 +189,186 @@ function MyComponent(props) {
       .map((route) => route._id);
     handleDelete(selectedIDs);
   }
-  // console.log(routes.theme.theme);
   return (
-    <div
-      style={{
-        marginTop: "30px",
-      }}
-    >
-      {isSmallScreen ? (
-        <div>
-          {paginatedRoutes.map((route) => (
-            <Card key={routes.id}>
-              <CardContent>
+    <>
+      <NavBar token={token} />
+      <div
+        style={{
+          marginTop: "30px",
+        }}
+      >
+        {isSmallScreen ? (
+          <div>
+            <IconButton
+              color="primary"
+              aria-label="Go Back"
+              onClick={handleGoBack}
+              style={{
+                position: "absolute",
+                left: "10px",
+                marginTop: "530px",
+              }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+            {paginatedRoutes.map((route) => (
+              <Card
+                key={routes.routeid}
+                style={{
+                  width: "300px", // Adjust the width as needed
+                  border: "1px solid black",
+                  boxShadow: "2px 4px 8px rgba(0, 0, 0, 0.8)",
+                  margin: "0 auto", // Center the card horizontally
+                }}
+              >
+                <CardContent>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: "200px",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <img
+                      src={route.imgurl}
+                      alt="Avatar"
+                      style={{ maxWidth: "100%", height: "auto" }}
+                    />
+                  </div>
+                  <Typography>
+                    <b>Description:</b>
+                    {route.description}
+                  </Typography>
+                  <Typography>
+                    <b>Pois:</b>
+                    {routes.pois}
+                  </Typography>
+                  <Typography>
+                    <b>Evaluation Grade:</b>
+                    {route.evaluation_grade}
+                  </Typography>
+                  <Typography>
+                    <b>Experience Level:</b> {route.experience_level}
+                  </Typography>
+                  <Typography>
+                    <b>Theme:</b> {route.theme.theme}
+                  </Typography>
+                </CardContent>
+
                 <div
                   style={{
                     display: "flex",
-                    alignItems: "center",
                     justifyContent: "center",
-                    height: "200px",
-                    overflow: "hidden",
+                    height: "100%",
+                    marginTop: "20px",
+                    marginBottom: "40px",
                   }}
                 >
-                  <img
-                    src={route.imgurl}
-                    alt="Avatar"
-                    style={{ maxWidth: "100%", height: "auto" }}
-                  />
+                  <Button
+                    variant="contained"
+                    onClick={() => handleUpdate(route.routeid)}
+                    style={{
+                      flex: 1,
+                      maxWidth: "140px",
+                      marginLeft: "5px",
+                      marginRight: "5px",
+                    }}
+                  >
+                    Update
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => handleDelete(route.routeid)}
+                    style={{
+                      backgroundColor: "#d91d0f",
+                      color: "white",
+                      // marginLeft: "10px",
+                      flex: 1,
+                      maxWidth: "140px",
+                      marginLeft: "5px",
+                      marginRight: "5px",
+                    }}
+                  >
+                    Delete
+                  </Button>
                 </div>
-                <Typography>
-                  <b>Description:</b>
-                  {route.description}
-                </Typography>
-                <Typography>
-                  <b>Pois:</b>
-                  {routes.pois}
-                </Typography>
-                <Typography>
-                  <b>Evaluation Grade:</b>
-                  {route.evaluation_grade}
-                </Typography>
-                <Typography>
-                  <b>Experience Level:</b> {route.experience_level}
-                </Typography>
-                <Typography>
-                  <b>Theme:</b> {route.theme.theme}
-                </Typography>
-              </CardContent>
-
+              </Card>
+            ))}
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Pagination
+                count={Math.ceil(routes.length / pageSize)}
+                page={currentPage}
+                onChange={handlePageChange}
+              />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "20px",
+              }}
+            >
+              <Button variant="contained" onClick={handleAddRoute}>
+                Add New Route
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100px",
+                position: "relative",
+              }}
+            >
+              <IconButton
+                color="primary"
+                aria-label="Go Back"
+                onClick={handleGoBack}
+                style={{
+                  position: "absolute",
+                  left: "10px",
+                  marginTop: "35px",
+                }}
+              >
+                <ArrowBackIcon />
+              </IconButton>
+              <h1 style={{ marginTop: "50px" }}>Routes Table</h1>
+            </div>
+            <div style={{ height: 500, width: "100%", marginTop: "10px" }}>
+              {" "}
+              <DataGrid
+                slots={{
+                  toolbar: GridToolbar,
+                }}
+                rows={routes.map((route) => ({
+                  ...route,
+                  id: route.routeid,
+                  grade: route.evaluation_grade.toFixed(2),
+                }))}
+                columns={columns}
+                pageSize={5}
+                rowsPerPageOptions={[5]}
+                style={{ fontSize: "14px" }}
+                checkboxSelection
+                onRowSelectionModelChange={(selectedpoi) => {
+                  setSelectedRowData(selectedpoi);
+                }}
+              />
               <div
                 style={{
                   display: "flex",
                   justifyContent: "center",
-                  height: "100%",
                   marginTop: "20px",
-                  marginBottom: "40px",
                 }}
               >
-                <Button
-                  variant="contained"
-                  onClick={handleUpdate}
-                  style={{ flex: 1 }}
-                >
-                  Update
+                <Button variant="contained" onClick={handleAddRoute}>
+                  Add New Route
                 </Button>
                 <Button
                   variant="contained"
@@ -240,109 +376,70 @@ function MyComponent(props) {
                   style={{
                     backgroundColor: "#d91d0f",
                     color: "white",
-                    flex: 1,
+                    marginLeft: "10px",
                   }}
                 >
-                  Delete
+                  Delete Route
                 </Button>
               </div>
-            </Card>
-          ))}
-          <Pagination
-            count={Math.ceil(routes.length / pageSize)}
-            page={currentPage}
-            onChange={handlePageChange}
-          />
+            </div>
+          </>
+        )}
+        {showAddForm && (
           <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "20px",
-            }}
+            className={styles.lightbox}
+            style={{ maxWidth: isSmallScreen ? "100%" : "auto" }}
           >
-            <Button variant="contained" onClick={handleAddRoute}>
-              Add New Route
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <div style={{ height: 500, width: "100%" }}>
-          <DataGrid
-            slots={{
-              toolbar: GridToolbar,
-            }}
-            rows={routes.map((route) => ({
-              ...route,
-              id: route.routeid,
-              grade: route.evaluation_grade.toFixed(2),
-            }))}
-            columns={columns}
-            pageSize={5}
-            rowsPerPageOptions={[5]}
-            style={{ fontSize: "14px" }}
-            checkboxSelection
-            onRowSelectionModelChange={(selectedpoi) => {
-              setSelectedRowData(selectedpoi);
-            }}
-          />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "20px",
-            }}
-          >
-            <Button variant="contained" onClick={handleAddRoute}>
-              Add New Route
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() => handleDelete(selectedRowData)}
+            <div
+              className={styles.lightboxContent}
               style={{
-                backgroundColor: "#d91d0f",
-                color: "white",
-                marginLeft: "10px",
+                marginTop: "320px",
+                maxWidth: isSmallScreen ? "100%" : "auto",
               }}
             >
-              Delete Route
-            </Button>
+              <Button
+                // variant="contained"
+                className="close-button"
+                onClick={handleCancelAdd}
+                style={{ marginTop: "80px" }}
+              >
+                X
+              </Button>
+              <Add_Route lastRouteId={lastRouteid} onCancel={handleCancelAdd} />
+            </div>
           </div>
-        </div>
-      )}
-      {showAddForm && (
-        <div className="lightbox" style={{ width: "100%" }}>
+        )}
+
+        {showUpdateForm && (
           <div
-            className="lightbox-content"
-            style={{ marginTop: "250px", width: "100%" }}
+            className={styles.lightbox}
+            style={{
+              maxWidth: isSmallScreen ? "100%" : "auto",
+            }}
           >
-            <Button
-              variant="contained"
-              className="close-button"
-              onClick={handleCancelAdd}
+            <div
+              className={styles.lightboxContent}
+              style={{
+                marginTop: "200px",
+                maxWidth: isSmallScreen ? "100%" : "auto",
+              }}
             >
-              X
-            </Button>
-            <Add_Route lastRouteId={lastRouteid} onCancel={handleCancelAdd} />
+              <Button
+                className="close-button"
+                onClick={handleCancelUpdate}
+                style={{ marginTop: "170px" }}
+              >
+                X
+              </Button>
+              <Update_Route
+                onCancel={handleCancelUpdate}
+                selectedRoute={selectedRoute}
+              />
+            </div>
           </div>
-        </div>
-      )}
-      {showUpdateForm && (
-        <div className="lightbox" style={{ maxWidth: "100%" }}>
-          <div
-            className="lightbox-content"
-            style={{ marginTop: "250px", width: "100%" }}
-          >
-            <Button className="close-button" onClick={handleCancelUpdate}>
-              X
-            </Button>
-            <Update_Route
-              onCancel={handleCancelUpdate}
-              selectedRoute={selectedRoute}
-            />
-          </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
 

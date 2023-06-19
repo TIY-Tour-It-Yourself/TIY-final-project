@@ -29,7 +29,6 @@ const MapModal = () => {
 
   return (
     <div className={styles.modal}>
-      {/* <Button sx={{ border: '1px solid #2146C7', borderRadius: '20px', width: '40%'}} onClick={handleOpenModalRoutes}>Show Routes</Button> */}
       <Modal
         open={open}
         onClose={closeModal}

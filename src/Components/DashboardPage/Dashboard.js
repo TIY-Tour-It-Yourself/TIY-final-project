@@ -10,6 +10,7 @@ import axios from "axios";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Button from "@mui/material/Button";
 import { useNavigate, useLocation } from "react-router-dom";
+import LoadingBar from "../Additionals/LoadingBar/LoadingBar";
 
 const cards = [
   { id: 1, title: "Choose Your Tour", src: consumer, url: "/form_consumer" },
@@ -97,15 +98,15 @@ const Dashboard = () => {
             </div>
           </div>
         ))}
-        <Button
-          onClick={() =>
-            navigate("/res_dashboard", {
-              state: { token: location.state.token },
-            })
-          }
-        >
-          Researcher Page
-        </Button>
+        {/* <Button
+               onClick={() =>
+                  navigate('/res_dashboard', {
+                     state: { token: location.state.token },
+                  })
+               }
+            >
+               Researcher Page
+            </Button> */}
       </Container>
     </>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import styles from "./NavBar.module.css";
@@ -21,17 +21,19 @@ import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 import Toolbar from "@mui/material/Toolbar";
 import Avatar from "@mui/material/Avatar";
+import difAvatar from "./nav_imgs/user.png";
 import IconButton from "@mui/material/IconButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Settings from "@mui/icons-material/Settings";
-import Divider from "@mui/material/Divider";
 import Logout from "@mui/icons-material/Logout";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
+import LoadingBar from "../LoadingBar/LoadingBar";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 const NavBar = ({ activeImage, activeLink }) => {
+  const [isLoading, setIsLoading] = useState(true);
   const [images, setImages] = useState([
     {
       id: 1,
@@ -67,9 +69,6 @@ const NavBar = ({ activeImage, activeLink }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  const [updatedToken, setUpdatedToken] = useState("");
-  const [anchorElNav, setAnchorElNav] = useState("");
-
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -79,23 +78,26 @@ const NavBar = ({ activeImage, activeLink }) => {
   useEffect(() => {
     if (!location.state) {
       navigate("/");
-    } else {
-      axios
-        .get(`https://tiys.herokuapp.com/api/auth`, {
-          headers: {
-            "x-auth-token": location.state.token,
-            "Content-Type": "application/json",
-          },
-        })
-        .then((response) => {
-          // console.log(response.data);
-          setAvatar(response.data.avatar);
-        })
-        .catch((error) => {
-          console.error("Error fetching user: ", error);
-        });
     }
-  }, [location.state]);
+    const fetchAvatar = async () => {
+      try {
+        const response = await axios.get(
+          `https://tiys.herokuapp.com/api/auth`,
+          {
+            headers: {
+              "x-auth-token": location.state.token,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        // console.log(response.data);
+        setAvatar(response.data.avatar);
+      } catch (error) {
+        console.error("Error fetching user: ", error);
+      }
+    };
+    fetchAvatar();
+  }, []);
 
   const links = [
     { id: 1, title: "Settings", url: `/user_settings` },
@@ -129,10 +131,13 @@ const NavBar = ({ activeImage, activeLink }) => {
     }
   };
 
+  const handleAvatarLoad = () => {
+    setIsLoading(false); // Avatar loaded, set loading to false
+  };
+
   return (
     <AppBar
       position="fixed"
-      // style={{ backgroundColor: 'white' }}
       sx={
         isSmallScreen
           ? { top: "auto", bottom: 0, backgroundColor: "white" }
@@ -143,7 +148,7 @@ const NavBar = ({ activeImage, activeLink }) => {
         <Toolbar disableGutters>
           {/* Only present the following when screen is Desktop size */}
           {!isSmallScreen && (
-            <Box sx={{ flexGrow: 1, display: { md: "flex" } }}>
+            <Box sx={{ flexGrow: 1 }}>
               <div>
                 <img
                   src={logo}
@@ -163,7 +168,8 @@ const NavBar = ({ activeImage, activeLink }) => {
               !isSmallScreen
                 ? {
                     flexGrow: 13,
-                    display: { xs: "flex", md: "flex" },
+                    display: { md: "flex" },
+                    //   display: { xs: 'flex', md: 'flex' },
                     mr: 15,
                   }
                 : { display: "none" }
@@ -227,7 +233,10 @@ const NavBar = ({ activeImage, activeLink }) => {
             {!isSmallScreen && (
               <Tooltip title="Open Menu">
                 <IconButton onClick={handleOpenUserMenu}>
-                  <Avatar alt="user" src={avatar} />
+                  <Avatar
+                    alt="user"
+                    src={`http://www.gravatar.com/avatar/8bb4dc936d8ec3b28fea439222e64bd0?s=200&r=pg&d=mm`}
+                  />
                 </IconButton>
               </Tooltip>
             )}

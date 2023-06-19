@@ -1,56 +1,9 @@
-// import React, { useState, useEffect } from "react";
-// import axios from "axios";
-// import "./Event.css";
-
-// export function Event() {
-//   const [events, setEvents] = useState([]); // State to hold the events
-//   const [isLoading, setIsLoading] = useState(true);
-
-//   useEffect(() => {
-//     const fetchEvents = async () => {
-//       try {
-//         const response = await axios.post("http://127.0.0.1:5000/run_script");
-//         setEvents(response.data.events);
-//         setIsLoading(false);
-//       } catch (error) {
-//         console.error(error);
-//       }
-//     };
-
-//     fetchEvents();
-//   }, []);
-
-//   return (
-//     <div className="event_board">
-//       <h1>
-//         <b> municipal events </b>{" "}
-//       </h1>{" "}
-//       {isLoading ? (
-//         <p> Loading... </p>
-//       ) : (
-//         events.map((event, index) => (
-//           <div key={index}>
-//             <p>
-//               {event.title}
-//               <br />
-//               {event.location}
-//               <br />
-//               {event.address}
-//               <br />
-//               {event.date}
-//             </p>
-//             {/* Uncomment the line below if "date" property is included in the event dictionary */}
-//             {/* <p>Date: {event.date}</p> */}
-//           </div>
-//         ))
-//       )}{" "}
-//     </div>
-//   );
-// }
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./Event.css";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Button } from "@mui/material";
 
 export function Event() {
   const [events, setEvents] = useState([]); // State to hold the events
@@ -59,6 +12,29 @@ export function Event() {
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [isSelectingEvents, setIsSelectingEvents] = useState(false);
   const location = useLocation();
+  const { t } = useTranslation();
+  const [title, setTitle] = useState([]);
+  const [address, setAddress] = useState([]);
+  const [Location, setLocation] = useState([]);
+  const [date, setDate] = useState([]);
+  const [translatedEvent, setTranslatedEvent] = useState([]);
+
+  const translateText = async (text, targetLanguage) => {
+    const apiKey = "AIzaSyBTcp_fIBVNuxgqiuv4wqyTLfFC6iGm0iE&libraries=places";
+    const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        q: text,
+        target: targetLanguage,
+      }),
+    });
+    const data = await response.json();
+    return data.data.translations[0].translatedText;
+  };
 
   const shouldLog = useRef(true);
   useEffect(() => {
@@ -89,8 +65,34 @@ export function Event() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.post("http://127.0.0.1:5000/run_script");
-        const eventsWithCoordinates = await geocodeEvents(response.data.events);
+        const response = await axios.get(
+          "https://tiy-poc.glitch.me/events.json"
+        );
+        const translatedEvents = await Promise.all(
+          response.data.map(async (event) => {
+            const translatedTitle = await translateText(event.title, "en");
+            setTitle(translatedTitle);
+            const translatedAddress = await translateText(event.address, "en");
+            setAddress(translatedAddress);
+            const translatedLocation = await translateText(
+              event.location,
+              "en"
+            );
+            setLocation(translatedLocation);
+            const translatedDate = await translateText(event.date, "en");
+            setDate(translatedDate);
+
+            return {
+              ...event,
+              title: translatedTitle,
+              address: translatedAddress,
+              location: translatedLocation,
+              date: translatedDate,
+            };
+          })
+        );
+
+        const eventsWithCoordinates = await geocodeEvents(response.data);
         setEvents(eventsWithCoordinates);
         setIsLoading(false);
       } catch (error) {
@@ -102,7 +104,7 @@ export function Event() {
   }, []);
 
   const geocodeEvents = async (events) => {
-    const apiKey = "AIzaSyCQU9JxGT74zn0qE5vpvygu8cxLGKd80OM";
+    const apiKey = "AIzaSyBTcp_fIBVNuxgqiuv4wqyTLfFC6iGm0iE";
 
     const geocodeAddress = async (address) => {
       const fullAddress = `${address}, Ramat Gan, Israel`;
@@ -120,7 +122,7 @@ export function Event() {
         return address;
       }
     };
-
+    console.log(events);
     const geocodedEvents = await Promise.all(
       events.map(async (event) => {
         const geocodedAddress = await geocodeAddress(event.address);
@@ -156,20 +158,40 @@ export function Event() {
 
   const handleEventSelectionComplete = () => {
     setIsSelectingEvents(false);
+    navigate(-1, { state: { selectedEvents } });
   };
+  var routeChosen = 1;
 
   return (
     <div className="event_board">
       <h1>
-        <b>municipal events</b>
-      </h1>
+        <b> municipal events </b>{" "}
+      </h1>{" "}
       {isLoading ? (
-        <p>Loading...</p>
+        <p> Loading... </p>
       ) : (
         <>
+          {" "}
           {isSelectingEvents ? (
             <>
-              <p>Selected events:</p>
+              <h3> Selected events: </h3>{" "}
+              <Button
+                variant="contained"
+                onClick={() =>
+                  navigate(
+                    `/map_builder?routeId=1&selectedEvents=${encodeURIComponent(
+                      JSON.stringify(selectedEvents)
+                    )}`,
+                    {
+                      state: {
+                        token: location.state.token,
+                      },
+                    }
+                  )
+                }
+              >
+                View Selected Events on Map{" "}
+              </Button>{" "}
               {selectedEvents.map((event, index) => (
                 <div
                   key={index}
@@ -177,18 +199,12 @@ export function Event() {
                   className="event_div selected"
                 >
                   <p>
-                    {event.title}
-                    <br />
-                    {event.location}
-                    <br />
-                    {event.address}
-                    <br />
-                    {event.coordinates.lat}, {event.coordinates.lng}
-                    <br />
-                    {event.date}
-                  </p>
+                    {event.title} <br /> {event.location} <br /> {event.address}{" "}
+                    <br /> {event.coordinates.lat}, {event.coordinates.lng}{" "}
+                    <br /> {event.date}{" "}
+                  </p>{" "}
                 </div>
-              ))}
+              ))}{" "}
               {events.map(
                 (event, index) =>
                   !selectedEvents.includes(event) && (
@@ -198,32 +214,21 @@ export function Event() {
                       className="event_div"
                     >
                       <p>
-                        {event.title}
-                        <br />
-                        {event.location}
-                        <br />
-                        {event.address}
-                        <br />
-                        {event.coordinates.lat}, {event.coordinates.lng}
-                        <br />
-                        {event.date}
+                        {" "}
+                        <b>{title}</b>
+                        {/* {event.title}  */}
+                        <br /> {event.location} <br /> {event.address} <br />{" "}
+                        {/* {event.coordinates.lat}, {event.coordinates.lng} <br />{" "} */}
+                        {event.date}{" "}
                       </p>
+                      {console.log(selectedEvents)}
                     </div>
                   )
-              )}
-              <button
-                onClick={() =>
-                  navigate("/map_builder", {
-                    state: { token: location.state.token, selectedEvents },
-                  })
-                }
-              >
-                View Selected Events on Map
-              </button>
+              )}{" "}
             </>
           ) : (
             <>
-              <p>Click on an event to start selecting:</p>
+              <h3> Click on an event to start selecting: </h3>{" "}
               {events.map((event, index) => (
                 <div
                   key={index}
@@ -233,22 +238,17 @@ export function Event() {
                   }`}
                 >
                   <p>
-                    {event.title}
-                    <br />
-                    {event.location}
-                    <br />
-                    {event.address}
-                    <br />
-                    {event.coordinates.lat}, {event.coordinates.lng}
-                    <br />
-                    {event.date}
-                  </p>
+                    {" "}
+                    {event.title} <br /> {event.location} <br /> {event.address}{" "}
+                    {/* <br /> {event.coordinates.lat}, {event.coordinates.lng}{" "} */}
+                    <br /> {event.date}{" "}
+                  </p>{" "}
                 </div>
-              ))}
+              ))}{" "}
             </>
-          )}
+          )}{" "}
         </>
-      )}
+      )}{" "}
     </div>
   );
 }

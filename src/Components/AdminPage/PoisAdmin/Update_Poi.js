@@ -15,10 +15,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 function Update_Poi(props) {
   const selectedPoi = props.selectedPoi;
-  console.log(selectedPoi);
   const [themeOptions, setThemeOptions] = useState([]);
   const location = useLocation();
   const navigate = useNavigate();
+  const { onCancel } = props;
 
   const [poiid, setPoiid] = useState(selectedPoi.poiid);
   const [name, setName] = useState(selectedPoi.name);
@@ -92,38 +92,44 @@ function Update_Poi(props) {
       });
   }, []);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (poiid) {
-      axios
-        .put(`https://tiys.herokuapp.com/api/pois`, {
-          poiid: poiid,
-          name: name,
-          description: description,
-          address: address,
-          coordinates: {
-            lat: coordinates.lat,
-            lng: coordinates.lng,
-          },
-          arid: arid,
-          theme: theme,
-        })
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((err) => {
-          console.log(err.response.data.errors);
-        });
+      try {
+        const response = await axios.put(
+          `https://tiys.herokuapp.com/api/pois`,
+          {
+            poiid: poiid,
+            name: name,
+            description: description,
+            address: address,
+            coordinates: {
+              lat: coordinates.lat,
+              lng: coordinates.lng,
+            },
+            arid: arid,
+            theme: theme,
+          }
+        );
+        // Close the modal
+        onCancel();
+
+        // Refresh the page
+        window.location.reload();
+      } catch (err) {
+        console.log(err.response.data.errors);
+      }
     } else {
       alert("All fields are required.");
     }
   };
+
   return (
     <>
       {" "}
       {/* <NavBar activeImage={activeImage} /> */}{" "}
-      <div style={{ height: "100%" }}>
+      <div style={{ height: "700px" }}>
         <h2> Update Point Of Interest(POI): </h2>{" "}
         <form onSubmit={handleSubmit}>
           <Grid
@@ -208,12 +214,12 @@ function Update_Poi(props) {
                 value={arid}
                 // onChange={handleChange}
                 onChange={(e) => handleInputChange(e)}
+                disabled
               />{" "}
             </Grid>{" "}
             <Grid item xs={12}>
               <FormControl fullWidth>
-                <InputLabel id="theme-label">Theme</InputLabel>
-                {console.log(theme)}
+                <InputLabel id="theme-label"> Theme </InputLabel>{" "}
                 {themeOptions.length > 0 && ( // Add this condition
                   <Select
                     labelId="theme-label"
@@ -232,12 +238,12 @@ function Update_Poi(props) {
             </Grid>
             <Grid item sx={{ display: "flex", justifyContent: "center" }}>
               <Button variant="contained" color="primary" type="submit">
-                Update{" "}
-              </Button>{" "}
-            </Grid>{" "}
-          </Grid>{" "}
-        </form>{" "}
-      </div>{" "}
+                Update
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
+      </div>
     </>
   );
 }

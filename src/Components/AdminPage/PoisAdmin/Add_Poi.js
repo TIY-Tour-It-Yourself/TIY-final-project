@@ -20,6 +20,7 @@ function Add_Poi(props) {
   const [activeImage, setActiveImage] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const { onCancel } = props;
 
   const [formData, setFormData] = React.useState({
     poiid: 16,
@@ -139,33 +140,40 @@ function Add_Poi(props) {
     }));
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (formData) {
-      axios
-        .post(`https://tiys.herokuapp.com/api/pois`, {
-          poiid: poiid,
-          name: name,
-          description: description,
-          address: address,
-          coordinates: {
-            lat: coordinates.lat,
-            lng: coordinates.lng,
-          },
-          arid: arid,
-          theme: theme,
-        })
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((err) => {
-          console.log(err.response.data.errors);
-        });
+      try {
+        const response = await axios.post(
+          `https://tiys.herokuapp.com/api/pois`,
+          {
+            poiid: poiid,
+            name: name,
+            description: description,
+            address: address,
+            coordinates: {
+              lat: coordinates.lat,
+              lng: coordinates.lng,
+            },
+            arid: arid,
+            theme: theme,
+          }
+        );
+        console.log(response);
+        // Close the modal
+        onCancel();
+
+        // Refresh the page
+        window.location.reload();
+      } catch (error) {
+        console.log(error.response.data.errors);
+      }
     } else {
       alert("All fields are required.");
     }
   };
+
   return (
     <>
       {" "}
@@ -193,6 +201,7 @@ function Add_Poi(props) {
                 // onChange={handleChange}
                 onChange={(e) => handleInputChange(e)}
                 disabled
+                required
               />{" "}
             </Grid>{" "}
             <Grid item xs={12}>
@@ -203,6 +212,7 @@ function Add_Poi(props) {
                 value={name}
                 // onChange={handleChange}
                 onChange={(e) => handleInputChange(e)}
+                required
               />{" "}
             </Grid>{" "}
             <Grid item xs={12}>
@@ -215,6 +225,7 @@ function Add_Poi(props) {
                 value={description}
                 // onChange={handleChange}
                 onChange={(e) => handleInputChange(e)}
+                required
               />{" "}
             </Grid>{" "}
             <Grid item xs={12}>
@@ -225,6 +236,7 @@ function Add_Poi(props) {
                 value={address}
                 // onChange={handleChange}
                 onChange={(e) => handleInputChange(e)}
+                required
               />{" "}
             </Grid>{" "}
             <Grid item xs={6}>
@@ -235,6 +247,7 @@ function Add_Poi(props) {
                 value={coordinates.lat}
                 // onChange={handleCoordinatesLat}
                 onChange={(e) => handleInputChange(e)}
+                required
               />{" "}
             </Grid>{" "}
             <Grid item xs={6}>
@@ -245,6 +258,7 @@ function Add_Poi(props) {
                 value={coordinates.lng}
                 // onChange={handleCoordinatesLng}
                 onChange={(e) => handleInputChange(e)}
+                required
               />{" "}
             </Grid>{" "}
             <Grid item xs={12}>
@@ -255,6 +269,7 @@ function Add_Poi(props) {
                 value={arid}
                 // onChange={handleChange}
                 onChange={(e) => handleInputChange(e)}
+                required
               />{" "}
             </Grid>{" "}
             <Grid item xs={12}>
@@ -266,6 +281,7 @@ function Add_Poi(props) {
                   value={theme}
                   // onChange={handleChangeTheme}
                   onChange={(e) => handleInputChange(e)}
+                  required
                 >
                   {" "}
                   {themeOptions.map((option) => (

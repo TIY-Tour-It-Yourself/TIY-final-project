@@ -24,6 +24,7 @@
         "date-fns": "^2.29.3",
         "dayjs": "^1.11.7",
         "gapi-script": "^1.2.0",
+        "i18next": "^22.5.0",
         "jsonwebtoken": "^9.0.0",
         "jwt-decode": "^3.1.2",
         "moment": "^2.29.4",
@@ -31,6 +32,7 @@
         "react-bootstrap": "^2.7.2",
         "react-dom": "^18.2.0",
         "react-fontawesome": "^1.7.1",
+        "react-i18next": "^12.3.1",
         "react-icons": "^4.8.0",
         "react-modal": "^3.16.1",
         "react-rating-stars-component": "^2.2.0",
@@ -39,7 +41,8 @@
         "react-slick": "^0.29.0",
         "react-star-ratings": "^2.3.0",
         "slick-carousel": "^1.8.1",
-        "web-vitals": "^2.1.4"
+        "web-vitals": "^2.1.4",
+        "xlsx": "^0.18.5"
     },
     "scripts": {
         "start": "react-scripts start",

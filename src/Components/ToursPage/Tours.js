@@ -121,7 +121,7 @@ const Tours = () => {
 
   //TBD: add the creates route by the user / the tour the user chose to participate
   const openRoute = (routeid) => {
-    navigate(`/biyalik_map?routeId=${routeid}`, {
+    navigate(`/map_builder?routeId=${routeid}`, {
       state: { token: location.state.token },
     });
   };
@@ -171,7 +171,7 @@ const Tours = () => {
                   <div>{route.theme.theme}</div>
                   <div>POIs: {route.pois.length}</div>
                   <div>AR level: {route.experience_level}</div>
-                  <div>Rank: {route.evaluation_grade}</div>
+                  <div>Rank: {route.evaluation_grade.toFixed(1)}</div>
                   <div className={styles.align_right}>
                     <Button
                       sx={{ fontSize: "10px", borderRadius: "20px" }}
@@ -214,16 +214,13 @@ const Tours = () => {
                           {route.theme.theme}
                         </div>
                         <div>
-                          <b>POIs: </b>
-                          {route.pois.length}
+                          <b>POIs:</b> {route.pois.length}
                         </div>
                         <div>
-                          <b>AR level: </b>
-                          {route.experience_level}
+                          <b>AR level:</b> {route.experience_level}
                         </div>
                         <div>
-                          <b>Rank: </b>
-                          {route.evaluation_grade}
+                          <b>Rank:</b> {route.evaluation_grade.toFixed(1)}
                         </div>
                         <div className={styles.align_right}>
                           <Button
@@ -272,12 +269,16 @@ const Tours = () => {
           {!isSmallScreen ? (
             <div className={styles.container}>
               {newTours.map((tour) => (
-                <div key={tour.routeid} className={styles.record}>
+                <div key={tour._id} className={styles.record}>
                   <div>{tour.description}</div>
                   <div>{tour.theme}</div>
                   <div>AR level: {tour.experience_level}</div>
+                  <div>POIs: {tour.pois.length}</div>
                   <div>{tour.duration}</div>
-                  <div>Rank: {tour.evaluation_grade.toFixed(1)}</div>
+                  <div>
+                    Rank:
+                    {tour.evaluation_grade.toFixed(1)}
+                  </div>
                   <div className={styles.align_right}>
                     <Button
                       sx={{ fontSize: "10px", borderRadius: "20px" }}
@@ -312,7 +313,7 @@ const Tours = () => {
                 <Box sx={style}>
                   <div className={styles.container}>
                     {newTours.map((tour) => (
-                      <div key={tour.routeid} className={styles.record_mobile}>
+                      <div key={tour._id} className={styles.record_mobile}>
                         <div>
                           <b>{tour.description}</b>
                         </div>
@@ -325,12 +326,13 @@ const Tours = () => {
                           {tour.experience_level}
                         </div>
                         <div>
-                          <b>Duration: </b>
-                          {tour.duration}
+                          <b>POIs:</b> {tour.pois.length}
                         </div>
                         <div>
-                          <b>Rank: </b>
-                          {tour.evaluation_grade.toFixed(1)}
+                          <b>Duration:</b> {tour.duration}
+                        </div>
+                        <div>
+                          <b>Rank:</b> {tour.evaluation_grade.toFixed(1)}
                         </div>
                         <div className={styles.align_right}>
                           <Button

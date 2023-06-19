@@ -4,7 +4,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(205, 205, 205, 0.9);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13,7 +13,16 @@
 .lightbox_content {
   background-color: #ffffff;
   padding: 20px;
-  border-radius: 5px;
+  border-radius: 10px;
+}
+
+.zoom-button {
+  width: 30px;
+  height: 30px;
+  background-color: #ffffff;
+  color: #000000;
+  font-weight: bold;
+  margin-right: 20px;
 }
 
 .breathing-circle {
@@ -39,38 +48,4 @@
     transform: scale(2);
     opacity: 0.3;
   }
-}
-
-#spinner-arrow-container {
-  position: relative;
-  width: 40px;
-  height: 40px;
-}
-
-#spinner-arrow {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  font-size: 24px;
-  animation: spin 1s infinite linear;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.zoom-button {
-  width: 30px;
-  height: 30px;
-  background-color: #ffffff;
-  color: #000000;
-  font-weight: bold;
-  margin-right: 20px;
 }

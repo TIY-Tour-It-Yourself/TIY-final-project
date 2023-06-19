@@ -9,8 +9,6 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Container from "@mui/material/Container";
-// import bursa from "./card_images/bursa.jpg";
-// import map from "../Additionals/Assets/map_cropped.jpg";
 import { useTheme } from "@mui/material/styles";
 import axios from "axios";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -24,56 +22,41 @@ const Admin = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // useEffect(() => {
-  //   console.log(location.state.token.token);
-  //   console.log(location.state.token);
-  //   if (!location.state) {
-  //     navigate("/");
-  //   } else {
-  //     setActiveImage(1);
-  //     axios
-  //       .get(`https://tiys.herokuapp.com/api/auth`, {
-  //         headers: {
-  //           "x-auth-token": location.state.token.token,
-  //           "Content-Type": "application/json",
-  //         },
-  //       })
-  //       .then((response) => {
-  //         console.log(response.data); //user's data
-  //         setToken(location.state.token.token);
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching user: ", error);
-  //       });
-  //   }
-  // }, [location.state]);
-
-  // console.log(token); //location.state.token.token
-  // console.log(location.state.token.token); //location.state.token.token
+  useEffect(() => {
+    if (!location.state) {
+      navigate("/");
+    } else {
+      axios
+        .get(`https://tiys.herokuapp.com/api/auth`, {
+          headers: {
+            "x-auth-token": location.state.token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((response) => {
+          setToken(response.data.token);
+          // console.log(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching user: ", error);
+        });
+    }
+  }, [location.state]);
 
   const handleNavigatePoisTable = () => {
-    navigate("/pois_table", {
-      // state: { token: { value: location.state.token } },
-    });
+    navigate("/pois_table", { state: { token: location.state.token } });
   };
 
   const handleNavigateRoutesTable = () => {
-    navigate("/route_table", {
-      // state: { token: { value: location.state.token } },
-    });
+    navigate("/route_table", { state: { token: location.state.token } });
   };
   const handleNavigateUsersTable = () => {
-    navigate("/users_table", {
-      // state: { token: { value: location.state.token } },
-    });
+    navigate("/users_table", { state: { token: location.state.token } });
   };
-  // const handleNavigateConsumer = () => {
-  //   navigate("/form_consumer", { state: { token: token } });
-  // };
 
   return (
     <>
-      {/* <NavBar token={token} activeImage={activeImage} /> */}
+      <NavBar token={token} />
       <Typography
         component="div"
         className={styles.title}

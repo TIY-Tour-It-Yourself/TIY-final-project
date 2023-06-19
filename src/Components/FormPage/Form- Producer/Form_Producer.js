@@ -7,13 +7,14 @@ import { useNavigate, useLocation } from "react-router-dom";
 import NavBar from "../../Additionals/NavBar/NavBar";
 import Grid from "../../Additionals/Grid/Grid";
 import LoadingBar from "../../Additionals/LoadingBar/LoadingBar";
+import EventsModal from "../../EventsModal/EventsModal";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import ARFirstLevel from "./ar_imgs/boy_with_mobile_level_2.jpg";
 import ARSecondLevel from "./ar_imgs/ar_img_1.jpg";
 import ARThirdLevel from "./ar_imgs/ar_level_3_elephant.png";
-import Bialik from "./routes_imgs/tour_bialik.jpg";
 import Location from "./routes_imgs/pin_red.png";
 import Star from "./pois_imgs/star_32.png";
+import usePrevious from "./usePrevious";
 
 const arImgs = [
   { id: 1, name: "Intermediate", src: ARFirstLevel },
@@ -22,6 +23,9 @@ const arImgs = [
 ];
 
 const Form_Producer = () => {
+  const [formState, setFormState] = useState(true);
+  const previousFormState = usePrevious(formState);
+  const [eventModalOpen, setEventModalOpen] = useState(false);
   const [formTheme, setFormTheme] = useState("");
   const [themeName, setSelectedThemeName] = useState("");
   const [themeSelectedId, setThemeSelectedId] = useState("");
@@ -38,11 +42,18 @@ const Form_Producer = () => {
   const [radius, setRadius] = useState(1); // initialize radius to 1 km
   const [userLocation, setUserLocation] = useState(null);
   const [coordinates, setCoordinates] = useState([]);
+  const [selectedEvents, setSelectedEvents] = useState([]);
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
   const location = useLocation();
+
+  const handleEventSelection = (selectedEvents) => {
+    // Handle the selected events data
+    setSelectedEvents(selectedEvents);
+    console.log(selectedEvents);
+  };
 
   useEffect(() => {
     if (!location.state) {
@@ -64,6 +75,13 @@ const Form_Producer = () => {
         });
     }
   }, [location.state]);
+
+  useEffect(() => {
+    // Logic to handle closing the event modal
+    if (eventModalOpen) {
+      setFormState(previousFormState);
+    }
+  }, [eventModalOpen, previousFormState]);
 
   //Get Themes from DB
   useEffect(() => {
@@ -114,7 +132,7 @@ const Form_Producer = () => {
     filterData();
   }, []);
 
-  //Display unfiltered POIs
+  //Display filtered POIs
   useEffect(() => {
     let newLevelId = 0;
     if (themeSelectedId && selectedLevelId) {
@@ -161,7 +179,11 @@ const Form_Producer = () => {
     coordinates,
   ]);
 
-  // -------------------------------------------------
+  //Open Events Modal
+  const handleOpenModal = () => {
+    setEventModalOpen(true);
+  };
+
   // Function to calculate the distance between two points using Haversine formula
   const calcDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371 * 1000; // Radius of the earth in km
@@ -184,21 +206,18 @@ const Form_Producer = () => {
 
   const handleRadiusChange = (event) => {
     const value = Number(event.target.value);
-    console.log("Selected radius:", value);
     setSelectedRadius(value);
     setRadius(value);
   };
 
   //While data hasn't become an array yet- keep loading
   if (!Array.isArray(formTheme) || !Array.isArray(coordinates)) {
-    // return <div> Loading... </div>;
     return <LoadingBar />;
   }
 
   const setSelectedTheme = (value) => {
     if (themeSelectedId !== "") {
       setThemeSelectedId(value);
-      // themeSelected.backgroundColor = '#BAD7E9';
     } else {
       setThemeSelectedId(value);
     }
@@ -236,19 +255,20 @@ const Form_Producer = () => {
     accumulator[`poi${i + 1}`] = current;
     return accumulator;
   }, {});
+  console.log(selectedEvents);
 
   const handleNavigate = async () => {
     try {
       const getNewRouteIdRes = await axios.get(
         "https://tiys.herokuapp.com/api/routes/getnewid/"
       );
-
+      // console.log(themeName);
       const userRouteData = await axios
         .post("https://tiys.herokuapp.com/api/routes", {
           routeid: getNewRouteIdRes.data,
           description: "Private Route",
           pois: poiid,
-          evaluation_grade: "0",
+          evaluation_grade: 0,
           experience_level: selectedLevelId,
           theme: themeName,
           imgurl: "",
@@ -263,9 +283,12 @@ const Form_Producer = () => {
           console.log(error);
           throw error;
         });
-
       navigate(
-        `/map_builder?routeId=${getNewRouteIdRes.data}&ARLevel=${selectedLevelId}`,
+        `/map_builder?routeId=${
+          getNewRouteIdRes.data
+        }&ARLevel=${selectedLevelId}&selectedEvents=${encodeURIComponent(
+          JSON.stringify(selectedEvents)
+        )}`,
         {
           state: { token: location.state.token },
         }
@@ -275,8 +298,11 @@ const Form_Producer = () => {
     }
   };
 
-  //POIs Grades array
-  // const grades = coordinates.map((coord) => coord.grade);
+  // Check if selectedEvents data exists in the location state
+  if (location.state && location.state.selectedEvents) {
+    const selectedEvents = location.state.selectedEvents;
+    console.log(selectedEvents);
+  }
 
   return (
     <>
@@ -355,7 +381,10 @@ const Form_Producer = () => {
             formTheme.map((theme) => (
               <Button
                 key={theme.themeid}
-                onClick={() => setSelectedTheme(theme.themeid)}
+                onClick={() => {
+                  setSelectedTheme(theme.themeid);
+                  setSelectedThemeName(theme.theme);
+                }}
                 value={theme}
                 variant={
                   themeSelectedId === theme.themeid ? "contained" : "outlined"
@@ -469,6 +498,41 @@ const Form_Producer = () => {
             />{" "}
             <div style={{ width: "5rem", textAlign: "left" }}> 8 km </div>{" "}
           </div>{" "}
+          <div className={styles.events_div}>
+            <Typography
+              component="span"
+              sx={
+                isSmallScreen
+                  ? { fontSize: "1.05rem", mb: 1 }
+                  : { fontSize: "1.25rem" }
+              }
+            >
+              <b> Add Events: </b>{" "}
+            </Typography>{" "}
+          </div>{" "}
+          <Button
+            variant="contained"
+            sx={{
+              ":hover": {
+                bgcolor: "#EBB02D",
+                color: "white",
+              },
+              mt: 1,
+              mb: 2,
+              color: "white",
+              backgroundColor: "#EBB02D",
+              borderRadius: "20px",
+            }}
+            onClick={handleOpenModal}
+          >
+            Events List{" "}
+          </Button>{" "}
+          {eventModalOpen && (
+            <EventsModal
+              handleCloseModal={() => setEventModalOpen(false)}
+              handleEventSelection={handleEventSelection}
+            />
+          )}{" "}
         </Box>{" "}
       </div>{" "}
       {/* POIs List */}{" "}
@@ -488,8 +552,7 @@ const Form_Producer = () => {
         >
           <span>
             <b>
-              {" "}
-              Choose the POIs you want to visit <br /> (at least 3):{" "}
+              Choose the POIs you want to visit <br /> (at least 3):
             </b>{" "}
           </span>{" "}
         </Typography>{" "}

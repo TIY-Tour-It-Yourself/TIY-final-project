@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import {
   FormControl,
   Grid,
@@ -8,13 +8,37 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import { useState, useEffect } from "react";
 import NavBar from "../../Additionals/NavBar/NavBar";
 import axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function Update_Route(props) {
+  const [token, setToken] = useState("");
   const [themeOptions, setThemeOptions] = useState([]);
   const [poisData, setPoisData] = useState([]);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!location.state) {
+      navigate("/");
+    } else {
+      axios
+        .get(`https://tiys.herokuapp.com/api/auth`, {
+          headers: {
+            "x-auth-token": location.state.token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((response) => {
+          setToken(response.data.token);
+          // console.log(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching user: ", error);
+        });
+    }
+  }, [location.state]);
 
   useEffect(() => {
     fetch("https://tiys.herokuapp.com/api/pois")
@@ -84,18 +108,9 @@ function Update_Route(props) {
   }
 
   const poisArray = Object.values(pois).map((poi) => poi.poiid);
-  console.log(poisArray);
-  const handleSubmit = async (event) => {
-    // event.preventDefault();
-    console.log(
-      routeid,
-      description,
-      poisArray,
-      evaluation_grade,
-      experience_level,
-      theme.theme,
-      imgurl
-    );
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (routeid && description && pois.length > 0) {
       await axios
         .put(`https://tiys.herokuapp.com/api/routes`, {
@@ -108,8 +123,14 @@ function Update_Route(props) {
           imgurl: imgurl,
         })
         .then((response) => {
-          console.log(response);
-          console.log(response.status);
+          if (response.status === 200) {
+            console.log("OK");
+          }
+
+          onCancel();
+
+          // Refresh the page
+          window.location.reload();
         })
         .catch((err) => {
           console.log(err.response.data.errors[0]);
@@ -120,8 +141,8 @@ function Update_Route(props) {
   };
 
   return (
-    <div style={{ height: "100%" }}>
-      <h2> Update New Route: </h2>{" "}
+    <div style={{ marginBottom: "40px" }}>
+      <h2> Update Route: </h2>{" "}
       <form onSubmit={handleSubmit}>
         <Grid
           container
