@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import axios from 'axios';
+import styles from './ToursTable.module.css';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -328,7 +329,7 @@ const ToursTable = ({ userRole }) => {
                         </Typography>
                         <Typography>
                            <b>Evaluation Grade: </b>
-                           {route.evaluation_grade}
+                           {route.evaluation_grade.toFixed(2)}
                         </Typography>
                         <Typography>
                            <b>Tour Duration: </b>
@@ -340,18 +341,10 @@ const ToursTable = ({ userRole }) => {
                         </Typography>
                      </CardContent>
 
-                     <div
-                        style={{
-                           display: 'flex',
-                           justifyContent: 'center',
-                           height: '100%',
-                           marginTop: '20px',
-                           marginBottom: '40px',
-                        }}
-                     ></div>
+                     <div className={styles.card}></div>
                   </Card>
                ))}
-               <div style={{ display: 'flex', justifyContent: 'center' }}>
+               <div className={styles.pagination}>
                   <Pagination
                      count={Math.ceil(tours.length / pageSize)}
                      page={currentPage}

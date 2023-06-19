@@ -44,13 +44,13 @@ const MapModal = () => {
                      <ol>
                         <li>
                            Follow the{' '}
-                           <span style={{ color: '#379237' }}>green</span> arrow
+                           <span className={styles.green}>green</span> arrow
                            which signifies your current location and tells you
                            which direction to go on the map.
                         </li>
                         <br />
                         <li>
-                           Each <span style={{ color: 'red' }}>red</span> pin
+                           Each <span className={styles.red}>red</span> pin
                            signifies a specific location of the tour. Click on
                            it and you'll see the AR icon (from AR level:
                            'Advanced') and the Rank icon.

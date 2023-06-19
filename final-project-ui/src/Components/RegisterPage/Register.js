@@ -197,8 +197,13 @@ const Register = (props) => {
                </FormControl>
             </form>
             <Typography
-               style={{ fontSize: 'small' }}
-               sx={{ mt: 2, mb: 1, paddingTop: 1, paddingBottom: 2 }}
+               sx={{
+                  fontSize: 'small',
+                  mt: 2,
+                  mb: 1,
+                  paddingTop: 1,
+                  paddingBottom: 2,
+               }}
             >
                <b>Already Have An Account? </b>
                <Link

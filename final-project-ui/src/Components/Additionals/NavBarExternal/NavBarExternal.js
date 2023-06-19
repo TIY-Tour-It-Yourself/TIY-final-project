@@ -183,7 +183,7 @@ const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
                            <Button
                               disableRipple
                               key={link.id}
-                              onClick={handleButtonClick}
+                              onClick={() => handleButtonClick(link)}
                               sx={{
                                  my: 2,
                                  mx: 1,

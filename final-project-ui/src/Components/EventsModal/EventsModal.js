@@ -272,14 +272,7 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
                                        Back To Form
                                     </Button>
                                  </div>
-                                 <div
-                                    style={{
-                                       display: 'flex',
-                                       flexDirection: 'column',
-                                       alignItems: 'center',
-                                       height: '100%',
-                                    }}
-                                 >
+                                 <div className={styles.selected_events}>
                                     <ul>
                                        {selectedEvents
                                           .sort((a, b) => {
@@ -359,12 +352,9 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
                                                       event
                                                    )
                                                 }
-                                                style={{
-                                                   marginTop: '20px',
-                                                   marginRight: '40px',
-                                                   cursor: 'pointer',
-                                                }}
-                                                className={styles.selectedEvent}
+                                                className={
+                                                   styles.deselect_events
+                                                }
                                              >
                                                 <p>
                                                    <b>{event.title}</b> <br />

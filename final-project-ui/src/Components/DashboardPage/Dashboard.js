@@ -15,7 +15,6 @@ import LoadingBar from '../Additionals/LoadingBar/LoadingBar';
 const cards = [
    { id: 1, title: 'Choose Your Tour', src: consumer, url: '/form_consumer' },
    { id: 2, title: 'Build Your Tour', src: producer, url: '/form_producer' },
-   // { id: 3, title: 'My Tours', src: '', url: '/tours_history' },
 ];
 
 const Dashboard = () => {
@@ -115,15 +114,6 @@ const Dashboard = () => {
                   </div>
                </div>
             ))}
-            {/* <Button
-               onClick={() =>
-                  navigate('/res_dashboard', {
-                     state: { token: location.state.token },
-                  })
-               }
-            >
-               Researcher Page
-            </Button> */}
          </Container>
       </>
    );

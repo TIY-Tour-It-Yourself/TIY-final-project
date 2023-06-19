@@ -77,7 +77,7 @@ function ReviewForm(props) {
                   max={4}
                   value={rating ? Number(rating) : 0}
                   className={styles.stars}
-                  onChange={(event, newValue) => {
+                  onChange={(newValue) => {
                      setRating(newValue);
                   }}
                />

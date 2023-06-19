@@ -1,0 +1,12 @@
+.card {
+   display: flex;
+   justify-content: center;
+   height: 100%;
+   margin-top: 20px;
+   margin-bottom: 40px;
+}
+
+.pagination {
+   display: flex;
+   justify-content: center;
+}

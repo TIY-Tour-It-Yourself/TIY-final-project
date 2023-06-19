@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styles from './ExternalAccount.module.css';
 import { useNavigate, useLocation } from 'react-router-dom';
-import NavBar from '../Additionals/NavBar/NavBar';
 import PageContainer from '../Additionals/Container/PageContainer';
 import { TextField, Button, FormControl, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -77,7 +75,6 @@ const ExternalAccount = ({ userRole }) => {
          <PageContainer>
             <Typography
                component='div'
-               className={styles.title}
                sx={
                   !isSmallScreen
                      ? {
@@ -98,7 +95,6 @@ const ExternalAccount = ({ userRole }) => {
                   sx={isSmallScreen ? { width: '100%' } : { width: '45%' }}
                >
                   <TextField
-                     className={styles.input}
                      label='Username'
                      type='text'
                      value={fname}
@@ -108,7 +104,6 @@ const ExternalAccount = ({ userRole }) => {
                      required
                   />
                   <TextField
-                     className={styles.input}
                      label='Password'
                      type='password'
                      // value=''
@@ -119,7 +114,6 @@ const ExternalAccount = ({ userRole }) => {
                   />
                   <Button
                      onClick={handleUpdate}
-                     className={styles.button}
                      type='submit'
                      variant='contained'
                      color='primary'

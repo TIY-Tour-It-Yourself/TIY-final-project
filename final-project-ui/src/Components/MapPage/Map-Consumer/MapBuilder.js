@@ -1094,7 +1094,6 @@ const MapBuilder = (props) => {
 
    return (
       <div id='map' style={{ height: '100vh', width: '100%' }}>
-         {/* {isMapLoaded && <LoadScript />} */}
          {window.google === undefined ? (
             <LoadScript>
                <GoogleMap />

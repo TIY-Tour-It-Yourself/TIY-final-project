@@ -187,7 +187,7 @@ const Login = () => {
                      variant='outlined'
                      required
                   />
-                  <div style={{ padding: 5 }}>
+                  <div className={styles.checkbox}>
                      <label>
                         <input
                            type='checkbox'
@@ -199,7 +199,6 @@ const Login = () => {
                   </div>
                   <Button
                      onClick={handleSubmit}
-                     className={styles.button}
                      type='submit'
                      variant='contained'
                      color='primary'
@@ -218,10 +217,12 @@ const Login = () => {
                </FormControl>
             </form>
             <Typography
-               style={{ fontSize: 'small' }}
-               sx={isSmallScreen ? { mb: 1 } : { mt: 2, mb: 4 }}
+               sx={{
+                  fontSize: 'small',
+                  ...(isSmallScreen ? { mb: 1 } : { mt: 2, mb: 4 }),
+               }}
             >
-               <b>Don't Have An Account?</b>{' '}
+               <b>Don't Have An Account? </b>
                <Link
                   to='/register'
                   sx={{
