@@ -6,7 +6,7 @@ import Add_User from "./Add_User";
 import Update_User from "./Update_User";
 import { useState, useEffect } from "react";
 import styles from "./User_Table.module.css";
-import NavBar from "../../Additionals/NavBar/NavBar";
+import NavBarExternal from "../../Additionals/NavBarExternal/NavBarExternal";
 import { useNavigate, useLocation } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -16,7 +16,7 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 function Users_Table(props) {
-  const [token, setToken] = useState("");
+  const [admin, setAdmin] = useState("");
   const [users, setUsers] = useState([]);
   const [showAddForm, setAddShowForm] = useState(false);
   const [showUpdateForm, setUpdateShowForm] = useState(false);
@@ -39,6 +39,45 @@ function Users_Table(props) {
   const endIndex = startIndex + pageSize;
   const paginatedUsers = users.slice(startIndex, endIndex);
 
+  useEffect(() => {
+    if (!location.state) {
+      navigate("/");
+    } else {
+      axios
+        .get(`https://tiys.herokuapp.com/api/auth`, {
+          headers: {
+            "x-auth-token": location.state.token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((response) => {
+          setAdmin(location.state.userRole);
+        })
+        .catch((error) => {
+          console.error("Error fetching user: ", error);
+        });
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await axios.get("https://tiys.herokuapp.com/api/users");
+      setUsers(response.data);
+    }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (selectedUser !== null) {
+      console.log(selectedUser);
+    }
+  }, [selectedUser]);
+
+  function handleUpdate(email) {
+    const selected = users.find((user) => user.email === email);
+    setSelectedUser(selected);
+    setUpdateShowForm(true);
+  }
   function handleAddUser(id) {
     setAddShowForm(true);
     setPoiid(users.length - 1);
@@ -55,87 +94,6 @@ function Users_Table(props) {
   const handleGoBack = () => {
     navigate(-1); // Go back to the previous page
   };
-  useEffect(() => {
-    if (!location.state) {
-      navigate("/");
-    } else {
-      axios
-        .get(`https://tiys.herokuapp.com/api/auth`, {
-          headers: {
-            "x-auth-token": location.state.token,
-            "Content-Type": "application/json",
-          },
-        })
-        .then((response) => {
-          setToken(response.data.token);
-          // console.log(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching user: ", error);
-        });
-    }
-  }, [location.state]);
-
-  useEffect(() => {
-    async function fetchData() {
-      const response = await axios.get("https://tiys.herokuapp.com/api/users");
-      setUsers(response.data);
-    }
-    fetchData();
-  }, []);
-
-  function handleUpdate(email) {
-    const selected = users.find((user) => user.email === email);
-    setSelectedUser(selected);
-    setUpdateShowForm(true);
-  }
-
-  useEffect(() => {
-    if (selectedUser !== null) {
-      console.log(selectedUser);
-    }
-  }, [selectedUser]);
-
-  function handleAdd() {
-    // handle add logic here
-  }
-
-  const columns = [
-    { field: "fname", headerName: "Name", flex: 1 },
-    {
-      field: "email",
-      headerName: "email",
-      flex: 1,
-    },
-    // {
-    //   field: "password",
-    //   headerName: "Password",
-    //   flex: 1,
-    // },
-    { field: "age", headerName: "Age", flex: 1 },
-    { field: "is_accessible", headerName: "Is_Accessible", flex: 1 },
-    { field: "coins", headerName: "Coins", flex: 1, type: "number" },
-    {
-      field: "avatar",
-      headerName: "Avatar",
-      flex: 1,
-    },
-    {
-      field: "update",
-      headerName: "",
-      flex: 0.5,
-      renderCell: (params) => {
-        return (
-          <Button
-            variant="contained"
-            onClick={() => handleUpdate(params.row.email)}
-          >
-            Update{" "}
-          </Button>
-        );
-      },
-    },
-  ];
   async function handleDelete(emails) {
     // Ask for confirmation before deleting
     const isConfirmed = window.confirm("Are you sure you want to delete?");
@@ -164,9 +122,60 @@ function Users_Table(props) {
     }
   }
 
+  const columns = [
+    { field: "fname", headerName: "Name", flex: 1 },
+    {
+      field: "email",
+      headerName: "email",
+      flex: 1,
+    },
+    {
+      field: "age",
+      headerName: "Age",
+      flex: 1,
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "is_accessible",
+      headerName: "Is_Accessible",
+      flex: 1,
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "coins",
+      headerName: "Coins",
+      flex: 1,
+      type: "number",
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "avatar",
+      headerName: "Avatar",
+      flex: 1,
+    },
+    {
+      field: "update",
+      headerName: "",
+      flex: 0.5,
+      renderCell: (params) => {
+        return (
+          <Button
+            variant="contained"
+            onClick={() => handleUpdate(params.row.email)}
+          >
+            Update{" "}
+          </Button>
+        );
+      },
+    },
+  ];
+
   return (
     <>
-      <NavBar token={token} />
+      <NavBarExternal userRole={admin} />
       <div
         style={{
           marginTop: "30px",
@@ -228,17 +237,12 @@ function Users_Table(props) {
                   <Typography>
                     <b> Coins: </b> {user.coins}{" "}
                   </Typography>{" "}
-                  {/* <Typography>
-                                                                          <b>Avatar Url:</b>
-                                                                          {user.avatar}
-                                                                        </Typography> */}{" "}
                 </CardContent>
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "center",
                     height: "100%",
-                    marginTop: "20px",
                     marginBottom: "40px",
                   }}
                 >
@@ -260,7 +264,6 @@ function Users_Table(props) {
                     style={{
                       backgroundColor: "#d91d0f",
                       color: "white",
-                      // marginLeft: "10px",
                       flex: 1,
                       maxWidth: "140px",
                       marginLeft: "5px",
@@ -283,7 +286,6 @@ function Users_Table(props) {
               style={{
                 display: "flex",
                 justifyContent: "center",
-                marginTop: "20px",
               }}
             >
               <Button variant="contained" onClick={handleAddUser}>
@@ -316,6 +318,7 @@ function Users_Table(props) {
               </IconButton>
               <h1 style={{ marginTop: "50px" }}>Users Table</h1>
             </div>
+
             <div style={{ height: 500, width: "100%", marginTop: "10px" }}>
               <DataGrid
                 slots={{
@@ -338,18 +341,10 @@ function Users_Table(props) {
                 style={{
                   display: "flex",
                   justifyContent: "center",
-                  marginTop: "20px",
+                  marginTop: "10px",
                 }}
               >
-                <Button
-                  variant="contained"
-                  onClick={handleAddUser}
-                  // style={{
-                  //   display: "flex",
-                  //   justifyContent: "center",
-                  //   marginTop: "20px",
-                  // }}
-                >
+                <Button variant="contained" onClick={handleAddUser}>
                   Add New User{" "}
                 </Button>{" "}
                 <Button

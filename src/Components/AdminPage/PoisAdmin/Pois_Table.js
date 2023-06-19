@@ -1,12 +1,12 @@
 import * as React from "react";
-import { DataGrid, GridToolbar, heIL } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { Button, Pagination } from "@mui/material";
 import axios from "axios";
 import Add_Pois from "./Add_Poi";
 import Update_Poi from "./Update_Poi";
 import { useState, useEffect } from "react";
 import styles from "./Pois_Table.module.css";
-import NavBar from "../../Additionals/NavBar/NavBar";
+import NavBarExternal from "../../Additionals/NavBarExternal/NavBarExternal";
 import { useNavigate, useLocation } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -14,10 +14,9 @@ import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import * as XLSX from "xlsx";
 
 function MyComponent(props) {
-  const [token, setToken] = useState("");
+  const [admin, setAdmin] = useState("");
   const [pois, setPois] = React.useState([]);
   const [showAddForm, setAddShowForm] = useState(false);
   const [showUpdateForm, setUpdateShowForm] = useState(false);
@@ -33,15 +32,44 @@ function MyComponent(props) {
   const pageSize = 1;
   const [currentPage, setCurrentPage] = useState(1);
 
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
-  };
-
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const paginatedPois = pois.slice(startIndex, endIndex);
 
-  function handleAddPoi(id) {
+  useEffect(() => {
+    if (!location.state) {
+      navigate("/");
+    } else {
+      axios
+        .get(`https://tiys.herokuapp.com/api/auth`, {
+          headers: {
+            "x-auth-token": location.state.token,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((response) => {
+          setAdmin(location.state.userRole);
+        })
+        .catch((error) => {
+          console.error("Error fetching user: ", error);
+        });
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await axios.get("https://tiys.herokuapp.com/api/pois");
+      setPois(response.data);
+    }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (selectedPoi !== null) {
+    }
+  }, [selectedPoi]);
+
+  function handleAddPoi() {
     setAddShowForm(true);
     setPoiid(pois[pois.length - 1].poiid);
   }
@@ -57,47 +85,16 @@ function MyComponent(props) {
     navigate(-1); // Go back to the previous page
   };
 
-  useEffect(() => {
-    if (!location.state) {
-      navigate("/");
-    } else {
-      axios
-        .get(`https://tiys.herokuapp.com/api/auth`, {
-          headers: {
-            "x-auth-token": location.state.token,
-            "Content-Type": "application/json",
-          },
-        })
-        .then((response) => {
-          setToken(response.data.token);
-          // console.log(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching user: ", error);
-        });
-    }
-  }, [location.state]);
-
-  React.useEffect(() => {
-    async function fetchData() {
-      const response = await axios.get("https://tiys.herokuapp.com/api/pois");
-      setPois(response.data);
-    }
-    fetchData();
-  }, []);
-
   function handleUpdate(id) {
     const selected = pois.find((poi) => poi.poiid === id);
     setSelectedPoi(selected);
     setUpdateShowForm(true);
   }
 
-  React.useEffect(() => {
-    if (selectedPoi !== null) {
-      console.log(selectedPoi);
-    }
-  }, [selectedPoi]);
-
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+  
   const columns = [
     { field: "name", headerName: "Name", flex: 1 },
     {
@@ -142,8 +139,6 @@ function MyComponent(props) {
     const isConfirmed = window.confirm("Are you sure you want to delete?");
 
     if (isConfirmed) {
-      console.log("POIs deleted");
-
       ids.forEach((id) => {
         axios
           .delete("https://tiys.herokuapp.com/api/pois", {
@@ -164,47 +159,9 @@ function MyComponent(props) {
     }
   }
 
-  // const handleExportData = (data) => {
-  //   console.log("exported");
-  //   const fileName = "pois.csv";
-  //   const encoding = "utf-8";
-
-  //   const blob = new Blob([data], { type: "text/csv", encoding, fileName });
-
-  //   const link = document.createElement("a");
-  //   link.href = window.URL.createObjectURL(blob);
-  //   link.download = fileName;
-  //   link.click();
-  // };
-  const handleExportData = () => {
-    console.log("i enter");
-    const encodedRows = pois.map((poi) => ({
-      ...poi,
-      id: poi.poiid,
-      name: encodeURIComponent(poi.name), // Encode Hebrew text using encodeURIComponent
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(encodedRows);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
-
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "buffer",
-    });
-
-    const data = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-
-    const downloadLink = document.createElement("a");
-    downloadLink.href = window.URL.createObjectURL(data);
-    downloadLink.download = "exported_data.xlsx";
-    downloadLink.click();
-  };
   return (
     <>
-      <NavBar token={token} />
+      <NavBarExternal userRole={admin} />
       <div
         style={{
           marginTop: "30px",
@@ -231,33 +188,35 @@ function MyComponent(props) {
                   width: "300px",
                   border: "1px solid black",
                   boxShadow: "2px 4px 8px rgba(0, 0, 0, 0.8)",
-                  margin: "0 auto",
+                  //  margin: '0 auto',
+                  marginBottom: "30px",
+                  marginLeft: "30px",
                 }}
               >
                 <CardContent>
                   <Typography>
-                    <b>Name:</b>
+                    <b>Name: </b>
                     {poi.name}
                   </Typography>
                   <Typography>
-                    <b>Description:</b>
+                    <b>Description: </b>
                     {poi.description}
                   </Typography>
                   <Typography>
-                    <b>Address:</b>
+                    <b>Address: </b>
                     {poi.address}
                   </Typography>
                   <Typography>
-                    <b>Coordinates:</b>
+                    <b>Coordinates: </b>
                     <br />
-                    <b>lat:</b>
+                    <b>lat: </b>
                     {poi.coordinates.lat} <br />
-                    <b>lng:</b>
+                    <b>lng: </b>
                     {poi.coordinates.lng}
                   </Typography>
                   <Typography>
                     {" "}
-                    <b>Arid:</b> {poi.arid.arid}{" "}
+                    <b>Arid: </b> {poi.arid.arid}{" "}
                   </Typography>
                 </CardContent>
 
@@ -346,8 +305,6 @@ function MyComponent(props) {
             <div style={{ height: 500, width: "100%", marginTop: "10px" }}>
               {" "}
               <DataGrid
-                // localeText={heIL.components.MuiDataGrid.defaultProps.localeText}
-
                 slots={{
                   toolbar: GridToolbar,
                 }}
@@ -363,8 +320,6 @@ function MyComponent(props) {
                 onRowSelectionModelChange={(selectedpoi) => {
                   setSelectedRowData(selectedpoi);
                 }}
-                encoding="UTF-8"
-                onExportData={handleExportData}
               />
               <div
                 style={{
@@ -407,7 +362,7 @@ function MyComponent(props) {
               <Button className="close-button" onClick={handleCancelAdd}>
                 X
               </Button>
-              <Add_Pois lastRouteId={Poiid-1} onCancel={handleCancelAdd} />
+              <Add_Pois lastRouteId={Poiid - 1} onCancel={handleCancelAdd} />
             </div>
           </div>
         )}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./Admin.module.css";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import NavBar from "../Additionals/NavBar/NavBar";
+import NavBarExternal from "../Additionals/NavBarExternal/NavBarExternal";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
@@ -15,8 +15,8 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const Admin = () => {
-  const [token, setToken] = useState("");
   const [activeImage, setActiveImage] = useState(null);
+  const [admin, setAdmin] = useState("admin");
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
@@ -26,40 +26,45 @@ const Admin = () => {
     if (!location.state) {
       navigate("/");
     } else {
-      axios
-        .get(`https://tiys.herokuapp.com/api/auth`, {
-          headers: {
-            "x-auth-token": location.state.token,
-            "Content-Type": "application/json",
-          },
-        })
-        .then((response) => {
-          setToken(response.data.token);
-          // console.log(response.data);
-        })
-        .catch((error) => {
+      setActiveImage(1);
+      const fetchUser = async () => {
+        try {
+          const response = axios.get(`https://tiys.herokuapp.com/api/auth`, {
+            headers: {
+              "x-auth-token": location.state.token,
+              "Content-Type": "application/json",
+            },
+          });
+        } catch (error) {
           console.error("Error fetching user: ", error);
-        });
+        }
+      };
+      fetchUser();
     }
   }, [location.state]);
 
   const handleNavigatePoisTable = () => {
-    navigate("/pois_table", { state: { token: location.state.token } });
+    navigate("/pois_table", {
+      state: { token: location.state.token, userRole: admin },
+    });
   };
 
   const handleNavigateRoutesTable = () => {
-    navigate("/route_table", { state: { token: location.state.token } });
+    navigate("/route_table", {
+      state: { token: location.state.token, userRole: admin },
+    });
   };
   const handleNavigateUsersTable = () => {
-    navigate("/users_table", { state: { token: location.state.token } });
+    navigate("/users_table", {
+      state: { token: location.state.token, userRole: admin },
+    });
   };
 
   return (
     <>
-      <NavBar token={token} />
+      <NavBarExternal activeImage={activeImage} userRole={admin} />
       <Typography
         component="div"
-        className={styles.title}
         sx={
           !isSmallScreen
             ? {
@@ -69,7 +74,11 @@ const Admin = () => {
                 mt: "5%",
                 textAlign: "center",
               }
-            : { fontSize: "50px", textAlign: "center" }
+            : {
+                marginTop: "10px",
+                fontSize: "0.8rem",
+                textAlign: "center",
+              }
         }
       >
         <h1>What Would You Like To Do?</h1>
@@ -83,16 +92,16 @@ const Admin = () => {
         }}
       >
         <Card className={styles.card} sx={{ width: 240 }}>
-          {/* <CardMedia
-            component="img"
-            height="100"
-            // image={bursa}
-            alt="National Park"
-          /> */}
           <CardContent>
             <div style={{ display: "flex", justifyContent: "center" }}>
-              <Typography variant="h6" component="div">
-                POIs(point of interest)
+              <Typography
+                variant="h6"
+                component="div"
+                sx={{ textAlign: "center" }}
+              >
+                POIs
+                <br />
+                (Points Of Interest)
               </Typography>
             </div>
           </CardContent>
@@ -113,12 +122,6 @@ const Admin = () => {
           </CardActions>
         </Card>
         <Card className={styles.card} sx={{ width: 240 }}>
-          {/* <CardMedia
-            component="img"
-            height="100"
-            // image={map}
-            alt="National Park"
-          /> */}
           <CardContent>
             <div style={{ display: "flex", justifyContent: "center" }}>
               <Typography variant="h6" component="div">
@@ -143,12 +146,6 @@ const Admin = () => {
           </CardActions>
         </Card>
         <Card className={styles.card} sx={{ width: 240 }}>
-          {/* <CardMedia
-            component="img"
-            height="100"
-            // image={map}
-            alt="National Park"
-          /> */}
           <CardContent>
             <div style={{ display: "flex", justifyContent: "center" }}>
               <Typography variant="h6" component="div">

@@ -30,6 +30,7 @@ const Form_Producer = () => {
   const [themeName, setSelectedThemeName] = useState("");
   const [themeSelectedId, setThemeSelectedId] = useState("");
   const [selectedLevelId, setSelectedLevelId] = useState("");
+  const [selectedEvents, setSelectedEvents] = useState([]);
   const [email, setEmail] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
   const [routeChosen, setRouteChosen] = useState("");
@@ -42,18 +43,11 @@ const Form_Producer = () => {
   const [radius, setRadius] = useState(1); // initialize radius to 1 km
   const [userLocation, setUserLocation] = useState(null);
   const [coordinates, setCoordinates] = useState([]);
-  const [selectedEvents, setSelectedEvents] = useState([]);
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
   const location = useLocation();
-
-  const handleEventSelection = (selectedEvents) => {
-    // Handle the selected events data
-    setSelectedEvents(selectedEvents);
-    console.log(selectedEvents);
-  };
 
   useEffect(() => {
     if (!location.state) {
@@ -67,7 +61,6 @@ const Form_Producer = () => {
           },
         })
         .then((response) => {
-          // console.log(response.data);
           setEmail(response.data.email);
         })
         .catch((error) => {
@@ -121,7 +114,6 @@ const Form_Producer = () => {
       try {
         // Make an API request to fetch the POIs data
         const response = await axios.get("https://tiys.herokuapp.com/api/pois");
-        // console.log(response.data);
         setIsLoading(false);
         setCoordinates(response.data);
       } catch (error) {
@@ -178,6 +170,11 @@ const Form_Producer = () => {
     userLocation,
     coordinates,
   ]);
+
+  //Handle Events
+  const handleEventSelection = (selectedEvents) => {
+    setSelectedEvents(selectedEvents);
+  };
 
   //Open Events Modal
   const handleOpenModal = () => {
@@ -255,14 +252,12 @@ const Form_Producer = () => {
     accumulator[`poi${i + 1}`] = current;
     return accumulator;
   }, {});
-  console.log(selectedEvents);
 
   const handleNavigate = async () => {
     try {
       const getNewRouteIdRes = await axios.get(
         "https://tiys.herokuapp.com/api/routes/getnewid/"
       );
-      // console.log(themeName);
       const userRouteData = await axios
         .post("https://tiys.herokuapp.com/api/routes", {
           routeid: getNewRouteIdRes.data,
@@ -276,18 +271,18 @@ const Form_Producer = () => {
           email: email,
         })
         .then((response) => {
-          // console.log(response.data.token);
           return response.data.token;
         })
         .catch((error) => {
           console.log(error);
           throw error;
         });
+
       navigate(
         `/map_builder?routeId=${
           getNewRouteIdRes.data
-        }&ARLevel=${selectedLevelId}&selectedEvents=${encodeURIComponent(
-          JSON.stringify(selectedEvents)
+        }&ARLevel=${selectedLevelId}&selectedEvents=${JSON.stringify(
+          selectedEvents
         )}`,
         {
           state: { token: location.state.token },
@@ -298,20 +293,14 @@ const Form_Producer = () => {
     }
   };
 
-  // Check if selectedEvents data exists in the location state
-  if (location.state && location.state.selectedEvents) {
-    const selectedEvents = location.state.selectedEvents;
-    console.log(selectedEvents);
-  }
-
   return (
     <>
       <NavBar />
       <Typography component="div" className={styles.title}>
         <h1 style={!isSmallScreen ? {} : { fontSize: "25px" }}>
-          Build Your Tour{" "}
-        </h1>{" "}
-      </Typography>{" "}
+          Build Your Tour
+        </h1>
+      </Typography>
       <Box component="div" className={styles.theme_div}>
         <Typography
           sx={
@@ -321,10 +310,10 @@ const Form_Producer = () => {
           }
         >
           <span>
-            <b> Choose Tour Theme: </b>{" "}
-          </span>{" "}
-        </Typography>{" "}
-        {/* Render themes through map */}{" "}
+            <b> Choose Tour Theme: </b>
+          </span>
+        </Typography>
+        {/* Render themes through map */}
         <Box
           component="div"
           className={styles.themes}
@@ -373,7 +362,7 @@ const Form_Producer = () => {
                         }
                   }
                 >
-                  {theme.theme}{" "}
+                  {theme.theme}
                 </Button>
               ))}
             />
@@ -405,12 +394,12 @@ const Form_Producer = () => {
                       }
                 }
               >
-                {theme.theme}{" "}
+                {theme.theme}
               </Button>
             ))
-          )}{" "}
-        </Box>{" "}
-      </Box>{" "}
+          )}
+        </Box>
+      </Box>
       <div className={styles.components}>
         <div className={styles.ar_div}>
           <Typography
@@ -421,10 +410,9 @@ const Form_Producer = () => {
                 : { fontSize: "1.25rem", mt: 2 }
             }
           >
-            <b> Choose AR Experience: </b>{" "}
-          </Typography>{" "}
+            <b>Choose AR Experience: </b>
+          </Typography>
           <div className={styles.ar_imgs}>
-            {" "}
             {arImgs.map((arImg) => (
               <div key={arImg.id}>
                 <img
@@ -442,12 +430,12 @@ const Form_Producer = () => {
                   height="150"
                 />
                 <div className={styles.arlevel_name}>
-                  <span> {arImg.name} </span>{" "}
-                </div>{" "}
+                  <span> {arImg.name} </span>
+                </div>
               </div>
-            ))}{" "}
-          </div>{" "}
-        </div>{" "}
+            ))}
+          </div>
+        </div>
         <Box component="div" className={styles.radius_filter}>
           <Typography
             component="span"
@@ -464,13 +452,9 @@ const Form_Producer = () => {
                 : { fontSize: "1.25rem", mt: 2 }
             }
           >
-            <b>
-              {" "}
-              Choose Distance: {selectedRadius}
-              km{" "}
-            </b>{" "}
-          </Typography>{" "}
-          {/* Add a range input to display a ruler with values from 1km to 8km */}{" "}
+            <b>Choose Distance: {selectedRadius}km</b>
+          </Typography>
+          {/* Add a range input to display a ruler with values from 1km to 8km */}
           <div
             style={{
               marginTop: "1rem",
@@ -485,8 +469,8 @@ const Form_Producer = () => {
                 marginRight: "0.5rem",
               }}
             >
-              1 km{" "}
-            </div>{" "}
+              1km
+            </div>
             <input
               type="range"
               min="1"
@@ -495,9 +479,9 @@ const Form_Producer = () => {
               style={{ width: "20rem", marginRight: "0.5rem" }}
               value={selectedRadius}
               onChange={handleRadiusChange}
-            />{" "}
-            <div style={{ width: "5rem", textAlign: "left" }}> 8 km </div>{" "}
-          </div>{" "}
+            />
+            <div style={{ width: "5rem", textAlign: "left" }}>8km</div>
+          </div>
           <div className={styles.events_div}>
             <Typography
               component="span"
@@ -507,9 +491,9 @@ const Form_Producer = () => {
                   : { fontSize: "1.25rem" }
               }
             >
-              <b> Add Events: </b>{" "}
-            </Typography>{" "}
-          </div>{" "}
+              <b>Add Events:</b>
+            </Typography>
+          </div>
           <Button
             variant="contained"
             sx={{
@@ -525,17 +509,17 @@ const Form_Producer = () => {
             }}
             onClick={handleOpenModal}
           >
-            Events List{" "}
-          </Button>{" "}
+            Events List
+          </Button>
           {eventModalOpen && (
             <EventsModal
               handleCloseModal={() => setEventModalOpen(false)}
               handleEventSelection={handleEventSelection}
             />
-          )}{" "}
-        </Box>{" "}
-      </div>{" "}
-      {/* POIs List */}{" "}
+          )}
+        </Box>
+      </div>
+      {/* POIs List */}
       <div className={styles.pois_title}>
         <Typography
           component="div"
@@ -552,11 +536,12 @@ const Form_Producer = () => {
         >
           <span>
             <b>
-              Choose the POIs you want to visit <br /> (at least 3):
-            </b>{" "}
-          </span>{" "}
-        </Typography>{" "}
-      </div>{" "}
+              Choose the POIs you want to visit
+              <br /> (at least 3):
+            </b>
+          </span>
+        </Typography>
+      </div>
       {selectedPOIs.length >= 3 && (
         <div
           style={{
@@ -588,13 +573,12 @@ const Form_Producer = () => {
             }
             onClick={handleNavigate}
           >
-            Build Tour{" "}
-          </Button>{" "}
+            Build Tour
+          </Button>
         </div>
-      )}{" "}
+      )}
       {!filteredData ? (
         <div className={styles.poi_imgs}>
-          {" "}
           {coordinates.map((poi) => (
             <div
               style={{ cursor: "pointer", position: "relative" }}
@@ -604,9 +588,9 @@ const Form_Producer = () => {
             >
               <div className={styles.star}>
                 <img src={Star} alt="rank" />
-                <span> {poi.grade.toFixed(1)} </span>{" "}
-              </div>{" "}
-              <img src={Location} alt={poi.name} />{" "}
+                <span>{poi.grade.toFixed(1)}</span>
+              </div>
+              <img src={Location} alt={poi.name} />
               <Typography
                 component="p"
                 sx={
@@ -619,14 +603,13 @@ const Form_Producer = () => {
                     : { fontSize: "0.8rem", fontStyle: "italic" }
                 }
               >
-                {poi.name}{" "}
-              </Typography>{" "}
+                {poi.name}
+              </Typography>
             </div>
-          ))}{" "}
+          ))}
         </div>
       ) : (
         <div className={styles.poi_imgs}>
-          {" "}
           {filteredData.map((poi) => {
             const isSelected = selectedPOIs.includes(poi);
             return (
@@ -639,9 +622,9 @@ const Form_Producer = () => {
               >
                 <div className={styles.star}>
                   <img src={Star} alt="rank" />
-                  <span> {poi.grade.toFixed(1)} </span>{" "}
-                </div>{" "}
-                <img src={Location} alt={poi.name} />{" "}
+                  <span>{poi.grade.toFixed(1)}</span>
+                </div>
+                <img src={Location} alt={poi.name} />
                 <Typography
                   component="p"
                   sx={
@@ -654,13 +637,13 @@ const Form_Producer = () => {
                       : { fontSize: "0.8rem", fontStyle: "italic" }
                   }
                 >
-                  {poi.name}{" "}
-                </Typography>{" "}
+                  {poi.name}
+                </Typography>
               </div>
             );
-          })}{" "}
+          })}
         </div>
-      )}{" "}
+      )}
     </>
   );
 };

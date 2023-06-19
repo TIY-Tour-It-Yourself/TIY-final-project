@@ -9,35 +9,14 @@ import {
   Button,
 } from "@mui/material";
 import { useState, useEffect } from "react";
-import NavBar from "../../Additionals/NavBar/NavBar";
 import axios from "axios";
+import styles from "./Route_Table.module.css";
 
 function Add_Route(props) {
   const [themeOptions, setThemeOptions] = useState([]);
   const [newRouteId, setNewRouteId] = useState(props.lastRouteId + 2);
   const [poisData, setPoisData] = useState([]);
   const { onCancel } = props;
-
-  useEffect(() => {
-    fetch("https://tiys.herokuapp.com/api/pois")
-      .then((response) => response.json())
-      .then((data) => {
-        setPoisData(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching POIs:", error);
-      });
-  }, []);
-  useEffect(() => {
-    fetch("https://tiys.herokuapp.com/api/themes")
-      .then((response) => response.json())
-      .then((data) => {
-        setThemeOptions(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching POIs:", error);
-      });
-  }, []);
 
   const [formData, setFormData] = React.useState({
     routeid: newRouteId + 1,
@@ -55,6 +34,28 @@ function Add_Route(props) {
   const [experience_level, setExperience_level] = useState("");
   const [theme, setTheme] = useState("");
   const [imgurl, setImageurl] = useState("");
+
+  useEffect(() => {
+    fetch("https://tiys.herokuapp.com/api/pois")
+      .then((response) => response.json())
+      .then((data) => {
+        setPoisData(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching POIs:", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch("https://tiys.herokuapp.com/api/themes")
+      .then((response) => response.json())
+      .then((data) => {
+        setThemeOptions(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching POIs:", error);
+      });
+  }, []);
 
   useEffect(() => {
     setRouteid(newRouteId - 1);
@@ -100,15 +101,6 @@ function Add_Route(props) {
   }
 
   const poisArray = formData.pois.map((poi) => poi.poiid);
-  console.log(
-    routeid,
-    description,
-    poisArray,
-    evaluation_grade,
-    experience_level,
-    theme,
-    imgurl
-  );
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -146,8 +138,8 @@ function Add_Route(props) {
   };
 
   return (
-    <div style={{ height: "100%", marginBottom: "40px" }}>
-      <h2> Add New Route: </h2>{" "}
+    <div className={styles.add_route}>
+      <h2> Add New Route: </h2>
       <form onSubmit={handleSubmit}>
         <Grid
           container
@@ -188,8 +180,8 @@ function Add_Route(props) {
               <Grid item xs={6}>
                 <FormControl fullWidth>
                   <InputLabel id={`poi-id-${index}`}>
-                    POI {index + 1}{" "}
-                  </InputLabel>{" "}
+                    POI {index + 1}
+                  </InputLabel>
                   <Select
                     labelId={`poi-id-${index}`}
                     id={`poi-id-${index}`}
@@ -198,18 +190,16 @@ function Add_Route(props) {
                     name={`pois[${index}].poiid`}
                     required
                   >
-                    {" "}
                     {poisData.map((poiOption) => (
                       <MenuItem key={poiOption.poiid} value={poiOption.poiid}>
-                        {" "}
-                        {poiOption.name}{" "}
+                        {poiOption.name}
                       </MenuItem>
-                    ))}{" "}
-                  </Select>{" "}
-                </FormControl>{" "}
-              </Grid>{" "}
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
             </React.Fragment>
-          ))}{" "}
+          ))}
           <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
             <Button
               key="add-poi-button" // Add a unique key
@@ -232,24 +222,6 @@ function Add_Route(props) {
               required
             />{" "}
           </Grid>{" "}
-          {/* <Grid item xs={6}>
-                                            <TextField
-                                              name="coordinates.lat"
-                                              label="Latitude"
-                                              fullWidth
-                                              value={formData.coordinates.lat}
-                                              onChange={handleCoordinatesChange}
-                                            />{" "}
-                                          </Grid>{" "} */}{" "}
-          {/* <Grid item xs={6}>
-                                        <TextField
-                                          name="coordinates.lng"
-                                          label="Longitude"
-                                          fullWidth
-                                          value={formData.coordinates.lng}
-                                          onChange={handleCoordinatesChange}
-                                        />{" "}
-                                      </Grid>{" "} */}{" "}
           <Grid item xs={12}>
             <InputLabel id="experience-level-label">
               Experience Level{" "}
@@ -277,7 +249,6 @@ function Add_Route(props) {
                 onChange={(e) => handleInputChange(e)}
                 required
               >
-                {" "}
                 {themeOptions.map((option) => (
                   <MenuItem key={option.themeid} value={option.theme}>
                     {" "}
@@ -296,14 +267,14 @@ function Add_Route(props) {
               onChange={(e) => handleInputChange(e)}
               required
             />
-          </Grid>{" "}
+          </Grid>
           <Grid item sx={{ display: "flex", justifyContent: "center" }}>
             <Button variant="contained" color="primary" type="submit">
-              Submit{" "}
-            </Button>{" "}
-          </Grid>{" "}
-        </Grid>{" "}
-      </form>{" "}
+              Submit
+            </Button>
+          </Grid>
+        </Grid>
+      </form>
     </div>
   );
 }

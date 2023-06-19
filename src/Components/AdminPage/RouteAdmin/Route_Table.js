@@ -4,7 +4,7 @@ import axios from "axios";
 import Add_Route from "./Add_Route";
 import Update_Route from "./Update_Route";
 import styles from "./Route_Table.module.css";
-import NavBar from "../../Additionals/NavBar/NavBar";
+import NavBarExternal from "../../Additionals/NavBarExternal/NavBarExternal";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Pagination } from "@mui/material";
 import Card from "@mui/material/Card";
@@ -15,7 +15,7 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 function MyComponent(props) {
-  const [token, setToken] = useState("");
+  const [admin, setAdmin] = useState("");
   const [routes, setRoutes] = useState([]);
   const [showAddForm, setAddShowForm] = useState(false);
   const [showUpdateForm, setUpdateShowForm] = useState(false);
@@ -31,24 +31,9 @@ function MyComponent(props) {
   const pageSize = 1;
   const [currentPage, setCurrentPage] = useState(1);
 
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
-  };
-
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const paginatedRoutes = routes.slice(startIndex, endIndex);
-
-  function handleCancelAdd() {
-    setAddShowForm(false);
-  }
-
-  function handleCancelUpdate() {
-    setUpdateShowForm(false);
-  }
-  const handleGoBack = () => {
-    navigate(-1); // Go back to the previous page
-  };
 
   useEffect(() => {
     if (!location.state) {
@@ -62,8 +47,7 @@ function MyComponent(props) {
           },
         })
         .then((response) => {
-          setToken(response.data.token);
-          // console.log(response.data);
+          setAdmin(location.state.userRole);
         })
         .catch((error) => {
           console.error("Error fetching user: ", error);
@@ -80,7 +64,16 @@ function MyComponent(props) {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (selectedRoute !== null) {
+    }
+  }, [selectedRoute]);
+
   var routeLength = routes.length - 1;
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
 
   function handleAddRoute(id) {
     setAddShowForm(true);
@@ -89,18 +82,22 @@ function MyComponent(props) {
     }
   }
 
-  // }
+  function handleCancelAdd() {
+    setAddShowForm(false);
+  }
+
+  function handleCancelUpdate() {
+    setUpdateShowForm(false);
+  }
+  const handleGoBack = () => {
+    navigate(-1); // Go back to the previous page
+  };
+
   function handleUpdate(routeid) {
     const selected = routes.find((route) => route.routeid === routeid);
     setSelectedRoute(selected);
     setUpdateShowForm(true);
   }
-
-  useEffect(() => {
-    if (selectedRoute !== null) {
-      console.log(selectedRoute);
-    }
-  }, [selectedRoute]);
 
   async function handleDelete(ids) {
     // Ask for confirmation before deleting
@@ -145,27 +142,42 @@ function MyComponent(props) {
   }
 
   const columns = [
-    { field: "description", headerName: "Description", flex: 1 },
-    // ...poiColumns, // Spread the poiColumns array here
+    {
+      field: "description",
+      headerName: "Description",
+      flex: 1,
+    },
     {
       field: "poiid",
       headerName: "POI IDs",
       flex: 1,
       valueGetter: (params) =>
         params.row.pois.map((poi) => poi.poiid).join(", "),
+      headerAlign: "center",
+      align: "center",
     },
     {
       field: "evaluation_grade",
       headerName: "Evaluation Grade",
       flex: 1,
       type: "number",
+      headerAlign: "center",
+      align: "center",
     },
-    { field: "experience_level", headerName: "Experience Level", flex: 1 },
+    {
+      field: "experience_level",
+      headerName: "Experience Level",
+      flex: 1,
+      headerAlign: "center",
+      align: "center",
+    },
     {
       field: "theme.theme",
       headerName: "Theme",
       flex: 1,
       valueGetter: (params) => params.row.theme.theme,
+      headerAlign: "center",
+      align: "center",
     },
     { field: "imgurl", headerName: "Imgurl", flex: 1 },
     {
@@ -191,12 +203,8 @@ function MyComponent(props) {
   }
   return (
     <>
-      <NavBar token={token} />
-      <div
-        style={{
-          marginTop: "30px",
-        }}
-      >
+      <NavBarExternal userRole={admin} />
+      <div className={styles.route_table_body}>
         {isSmallScreen ? (
           <div>
             <IconButton
@@ -284,7 +292,6 @@ function MyComponent(props) {
                     style={{
                       backgroundColor: "#d91d0f",
                       color: "white",
-                      // marginLeft: "10px",
                       flex: 1,
                       maxWidth: "140px",
                       marginLeft: "5px",
@@ -341,7 +348,6 @@ function MyComponent(props) {
               <h1 style={{ marginTop: "50px" }}>Routes Table</h1>
             </div>
             <div style={{ height: 500, width: "100%", marginTop: "10px" }}>
-              {" "}
               <DataGrid
                 slots={{
                   toolbar: GridToolbar,
@@ -401,7 +407,6 @@ function MyComponent(props) {
                 // variant="contained"
                 className="close-button"
                 onClick={handleCancelAdd}
-                style={{ marginTop: "80px" }}
               >
                 X
               </Button>
@@ -413,21 +418,19 @@ function MyComponent(props) {
         {showUpdateForm && (
           <div
             className={styles.lightbox}
-            style={{
-              maxWidth: isSmallScreen ? "100%" : "auto",
-            }}
+            style={{ maxWidth: isSmallScreen ? "100%" : "auto" }}
           >
             <div
               className={styles.lightboxContent}
               style={{
-                marginTop: "200px",
+                marginTop: "250px",
                 maxWidth: isSmallScreen ? "100%" : "auto",
               }}
             >
               <Button
                 className="close-button"
                 onClick={handleCancelUpdate}
-                style={{ marginTop: "170px" }}
+                style={{ marginTop: "120px" }}
               >
                 X
               </Button>

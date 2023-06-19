@@ -1,0 +1,15 @@
+.logo {
+   background-repeat: no-repeat;
+   width: 65px;
+   height: 53px;
+   margin-top: 8px;
+   margin-left: 15px;
+   cursor: pointer;
+}
+
+@media (max-width: 600px) {
+   .images {
+      display: flex;
+      justify-content: space-between;
+   }
+}

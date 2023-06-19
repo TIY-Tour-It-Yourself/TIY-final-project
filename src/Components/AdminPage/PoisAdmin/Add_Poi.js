@@ -9,12 +9,11 @@ import {
   Button,
 } from "@mui/material";
 import { useState, useEffect } from "react";
-import NavBar from "../../Additionals/NavBar/NavBar";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+import styles from "./Pois_Table.module.css";
 
 function Add_Poi(props) {
-  // const selectedPoi = props.selectedPoi;
   const [newPoiId, setNewPoiId] = useState(props.lastRouteId + 2);
   const [themeOptions, setThemeOptions] = useState([]);
   const [activeImage, setActiveImage] = useState(null);
@@ -71,28 +70,6 @@ function Add_Poi(props) {
     }
   };
 
-  // useEffect(() => {
-  //   console.log(location);
-  //   if (!location.state) {
-  //     navigate("/");
-  //   } else {
-  //     setActiveImage(1);
-  //     axios
-  //       .get(`https://tiys.herokuapp.com/api/auth`, {
-  //         headers: {
-  //           "x-auth-token": location.state.token,
-  //           "Content-Type": "application/json",
-  //         },
-  //       })
-  //       .then((response) => {
-  //         // console.log(response.data);   //user's data
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching user: ", error);
-  //       });
-  //   }
-  // }, [location.state]);
-
   useEffect(() => {
     fetch("https://tiys.herokuapp.com/api/themes")
       .then((response) => response.json())
@@ -103,42 +80,6 @@ function Add_Poi(props) {
         console.error("Error fetching POIs:", error);
       });
   }, []);
-
-  function handleChange(event) {
-    const { name, value } = event.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
-  }
-
-  const handleChangeTheme = (event) => {
-    const { theme, value } = event.target;
-    console.log(event.target);
-    setFormData((prevFormData) => ({ ...formData, theme: value }));
-  };
-
-  function handleCoordinatesLat(event) {
-    const { name, value } = event.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      coordinates: {
-        ...prevFormData.coordinates,
-        lat: value, // Convert the value to a number if needed
-      },
-    }));
-  }
-
-  function handleCoordinatesLng(event) {
-    const { name, value } = event.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      coordinates: {
-        ...prevFormData.coordinates,
-        lng: value,
-      },
-    }));
-  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -176,10 +117,8 @@ function Add_Poi(props) {
 
   return (
     <>
-      {" "}
-      {/* <NavBar activeImage={activeImage} /> */}{" "}
-      <div style={{ height: "100%" }}>
-        <h2> Add Point Of Interest(POI): </h2>{" "}
+      <div className={styles.add_poi}>
+        <h2> Add Point Of Interest(POI):</h2>
         <form onSubmit={handleSubmit}>
           <Grid
             container
@@ -198,19 +137,17 @@ function Add_Poi(props) {
                 label="Poi ID"
                 fullWidth
                 value={poiid}
-                // onChange={handleChange}
                 onChange={(e) => handleInputChange(e)}
                 disabled
                 required
-              />{" "}
-            </Grid>{" "}
+              />
+            </Grid>
             <Grid item xs={12}>
               <TextField
                 name="name"
                 label="Name"
                 fullWidth
                 value={name}
-                // onChange={handleChange}
                 onChange={(e) => handleInputChange(e)}
                 required
               />{" "}
@@ -223,7 +160,6 @@ function Add_Poi(props) {
                 multiline
                 rows={4}
                 value={description}
-                // onChange={handleChange}
                 onChange={(e) => handleInputChange(e)}
                 required
               />{" "}
@@ -234,7 +170,6 @@ function Add_Poi(props) {
                 label="Address"
                 fullWidth
                 value={address}
-                // onChange={handleChange}
                 onChange={(e) => handleInputChange(e)}
                 required
               />{" "}
@@ -245,7 +180,6 @@ function Add_Poi(props) {
                 label="Latitude"
                 fullWidth
                 value={coordinates.lat}
-                // onChange={handleCoordinatesLat}
                 onChange={(e) => handleInputChange(e)}
                 required
               />{" "}
@@ -256,7 +190,6 @@ function Add_Poi(props) {
                 label="Longitude"
                 fullWidth
                 value={coordinates.lng}
-                // onChange={handleCoordinatesLng}
                 onChange={(e) => handleInputChange(e)}
                 required
               />{" "}
@@ -267,40 +200,37 @@ function Add_Poi(props) {
                 label="AR ID"
                 fullWidth
                 value={arid}
-                // onChange={handleChange}
                 onChange={(e) => handleInputChange(e)}
                 required
-              />{" "}
-            </Grid>{" "}
+              />
+            </Grid>
             <Grid item xs={12}>
               <FormControl fullWidth>
-                <InputLabel id="theme-label"> Theme </InputLabel>{" "}
+                <InputLabel id="theme-label"> Theme </InputLabel>
                 <Select
                   labelId="theme-label"
                   name="theme"
                   value={theme}
-                  // onChange={handleChangeTheme}
                   onChange={(e) => handleInputChange(e)}
                   required
                 >
                   {" "}
                   {themeOptions.map((option) => (
                     <MenuItem key={option.themeid} value={option.theme}>
-                      {" "}
-                      {option.theme}{" "}
+                      {option.theme}
                     </MenuItem>
-                  ))}{" "}
-                </Select>{" "}
-              </FormControl>{" "}
-            </Grid>{" "}
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
             <Grid item sx={{ display: "flex", justifyContent: "center" }}>
               <Button variant="contained" color="primary" type="submit">
-                Submit{" "}
-              </Button>{" "}
-            </Grid>{" "}
-          </Grid>{" "}
-        </form>{" "}
-      </div>{" "}
+                Submit
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
+      </div>
     </>
   );
 }

@@ -57,7 +57,6 @@ const Form_Modifier = () => {
         const response = await axios.get(
           `https://tiys.herokuapp.com/api/routes/${routeChosen}`
         );
-        // console.log(response.data);
         setSelectedLevelId(response.data[0].experience_level);
       } catch (error) {
         console.error(error);
@@ -79,7 +78,6 @@ const Form_Modifier = () => {
         })
         .then((response) => {
           setEmail(response.data.email);
-          // console.log(response.data);
         })
         .catch((error) => {
           console.error("Error fetching user: ", error);
@@ -93,8 +91,6 @@ const Form_Modifier = () => {
       try {
         // Make an API request to fetch the POIs data
         const response = await axios.get("https://tiys.herokuapp.com/api/pois");
-        // console.log(response.data);
-        //Not Filtered
         setPoisData(response.data);
       } catch (error) {
         console.log(error);
@@ -155,7 +151,6 @@ const Form_Modifier = () => {
       const userRouteData = await axios
         .post("https://tiys.herokuapp.com/api/routes", {
           routeid: getNewRouteIdRes.data,
-          // description: 'Private Route',
           description: routeName,
           pois: poiid,
           evaluation_grade: 0,
@@ -166,7 +161,6 @@ const Form_Modifier = () => {
           email: email,
         })
         .then((response) => {
-          // console.log(response.data.token);
           return response.data.token;
         })
         .catch((error) => {

@@ -9,9 +9,9 @@ import {
   Button,
 } from "@mui/material";
 import { useState, useEffect } from "react";
-import NavBar from "../../Additionals/NavBar/NavBar";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+import styles from "./Pois_Table.module.css";
 
 function Update_Poi(props) {
   const selectedPoi = props.selectedPoi;
@@ -59,28 +59,6 @@ function Update_Poi(props) {
     }
   };
 
-  // useEffect(() => {
-  //   console.log(location);
-  //   if (!location.state) {
-  //     navigate("/");
-  //   } else {
-  //     setActiveImage(1);
-  //     axios
-  //       .get(`https://tiys.herokuapp.com/api/auth`, {
-  //         headers: {
-  //           "x-auth-token": location.state.token,
-  //           "Content-Type": "application/json",
-  //         },
-  //       })
-  //       .then((response) => {
-  //         // console.log(response.data);   //user's data
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching user: ", error);
-  //       });
-  //   }
-  // }, [location.state]);
-
   useEffect(() => {
     fetch("https://tiys.herokuapp.com/api/themes")
       .then((response) => response.json())
@@ -127,9 +105,7 @@ function Update_Poi(props) {
 
   return (
     <>
-      {" "}
-      {/* <NavBar activeImage={activeImage} /> */}{" "}
-      <div style={{ height: "700px" }}>
+      <div className={styles.update_poi}>
         <h2> Update Point Of Interest(POI): </h2>{" "}
         <form onSubmit={handleSubmit}>
           <Grid
@@ -149,18 +125,16 @@ function Update_Poi(props) {
                 label="Poi ID"
                 fullWidth
                 value={poiid}
-                // onChange={handleChange}
                 onChange={(e) => handleInputChange(e)}
                 disabled
-              />{" "}
-            </Grid>{" "}
+              />
+            </Grid>
             <Grid item xs={12}>
               <TextField
                 name="name"
                 label="Name"
                 fullWidth
                 value={name}
-                // onChange={handleChange}
                 onChange={(e) => handleInputChange(e)}
               />{" "}
             </Grid>{" "}
@@ -219,7 +193,7 @@ function Update_Poi(props) {
             </Grid>{" "}
             <Grid item xs={12}>
               <FormControl fullWidth>
-                <InputLabel id="theme-label"> Theme </InputLabel>{" "}
+                <InputLabel id="theme-label">Theme</InputLabel>
                 {themeOptions.length > 0 && ( // Add this condition
                   <Select
                     labelId="theme-label"
@@ -238,12 +212,12 @@ function Update_Poi(props) {
             </Grid>
             <Grid item sx={{ display: "flex", justifyContent: "center" }}>
               <Button variant="contained" color="primary" type="submit">
-                Update
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
-      </div>
+                Update{" "}
+              </Button>{" "}
+            </Grid>{" "}
+          </Grid>{" "}
+        </form>{" "}
+      </div>{" "}
     </>
   );
 }

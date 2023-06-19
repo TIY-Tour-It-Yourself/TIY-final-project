@@ -49,7 +49,6 @@ const Form_Consumer = () => {
           },
         })
         .then((response) => {
-          // console.log(response.data);
         })
         .catch((error) => {
           console.error("Error fetching user: ", error);
@@ -86,7 +85,7 @@ const Form_Consumer = () => {
       try {
         // Make an API request to fetch the routes data
         const response = await axios.get(
-          "https://tiys.herokuapp.com/api/routes/users/admin@admin.com"
+          "https://tiys.herokuapp.com/api/routes/users/admin@tiy.com"
         );
         setIsLoading(false);
         setRoutes(response.data);
@@ -123,11 +122,9 @@ const Form_Consumer = () => {
 
   //Redirect to chosen route on the map
   const chooseRoute = (routeId, routeDescription) => {
-    // const chooseRoute = (routeid) => {
     if (selectedLevelId && themeSelectedId) {
       setRouteChosen(routeId);
       setDescription(routeDescription);
-      // setSelectedThemeName(routeTheme);
       setIsFormValid(true);
     } else {
       alert("Theme and AR Experience must be chosen.");
@@ -137,7 +134,6 @@ const Form_Consumer = () => {
 
   const setSelectedTheme = (themeId, themeName) => {
     if (themeSelectedId !== "" && selectedThemeName !== "") {
-      // if (themeSelectedId !== '') {
       setThemeSelectedId(themeId);
       setSelectedThemeName(themeName);
     } else {
@@ -163,7 +159,6 @@ const Form_Consumer = () => {
   };
 
   const handleMapPage = (routeChosen) => {
-    // `/form_modifier?routeId=${routeChosen}&description=${description}&theme=${selectedThemeName}`,
     navigate(`/map_builder?routeId=${routeChosen}`, {
       state: { token: location.state.token },
     });
@@ -190,7 +185,6 @@ const Form_Consumer = () => {
           </span>
         </Typography>
 
-        {/* Render themes through map */}
         <Box
           component="div"
           className={styles.themes}
@@ -220,7 +214,6 @@ const Form_Consumer = () => {
                   <Button
                     key={theme.themeid}
                     onClick={() => setSelectedTheme(theme.themeid, theme.theme)}
-                    // onClick={() => setSelectedTheme(theme.themeid)}
                     value={theme}
                     variant={
                       themeSelectedId === theme.themeid
@@ -253,7 +246,6 @@ const Form_Consumer = () => {
               <Button
                 key={theme.themeid}
                 onClick={() => setSelectedTheme(theme.themeid, theme.theme)}
-                // onClick={() => setSelectedTheme(theme.themeid)}
                 value={theme}
                 variant={
                   themeSelectedId === theme.themeid ? "contained" : "outlined"
@@ -344,7 +336,6 @@ const Form_Consumer = () => {
           {routes.map((route) => (
             <div
               key={route.routeid}
-              // onClick={() => chooseRoute(route.routeid)}
             >
               <div
                 className={styles.route_img}
@@ -388,7 +379,6 @@ const Form_Consumer = () => {
           {filteredData.map((route) => (
             <div
               key={route.routeid}
-              // onClick={(e) => chooseRoute(route.routeid)}
             >
               <div
                 className={styles.route_img}

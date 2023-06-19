@@ -19,6 +19,20 @@ function Update_Route(props) {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const { selectedRoute, onCancel } = props;
+
+  const [routeid, setRouteid] = useState(String(selectedRoute.routeid));
+  const [description, setDescription] = useState(selectedRoute.description);
+  const [pois, setPOIs] = useState(selectedRoute.pois);
+  const [evaluation_grade, setEvaluation_grade] = useState(
+    selectedRoute.evaluation_grade
+  );
+  const [experience_level, setExperience_level] = useState(
+    selectedRoute.experience_level
+  );
+  const [theme, setTheme] = useState(selectedRoute.theme.theme || "");
+  const [imgurl, setImageurl] = useState(selectedRoute.imgurl);
+
   useEffect(() => {
     if (!location.state) {
       navigate("/");
@@ -32,7 +46,6 @@ function Update_Route(props) {
         })
         .then((response) => {
           setToken(response.data.token);
-          // console.log(response.data);
         })
         .catch((error) => {
           console.error("Error fetching user: ", error);
@@ -61,20 +74,6 @@ function Update_Route(props) {
       });
   }, []);
 
-  const { selectedRoute, onCancel } = props;
-
-  const [routeid, setRouteid] = useState(String(selectedRoute.routeid));
-  const [description, setDescription] = useState(selectedRoute.description);
-  const [pois, setPOIs] = useState(selectedRoute.pois);
-  const [evaluation_grade, setEvaluation_grade] = useState(
-    selectedRoute.evaluation_grade
-  );
-  const [experience_level, setExperience_level] = useState(
-    selectedRoute.experience_level
-  );
-  const [theme, setTheme] = useState(selectedRoute.theme.theme || "");
-  const [imgurl, setImageurl] = useState(selectedRoute.imgurl);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -86,7 +85,7 @@ function Update_Route(props) {
       const index = Number(name.match(/\[(\d+)\]/)[1]);
       setPOIs((prevPOIs) => {
         const updatedPOIs = [...prevPOIs];
-        updatedPOIs[index] = poisData.find((poi) => poi.poiid === value); // Find the selected POI object from poisData
+        updatedPOIs[index] = poisData.find((poi) => poi.poiid === value);
         return updatedPOIs;
       });
     } else if (name === "evaluation_grade") {
@@ -99,13 +98,6 @@ function Update_Route(props) {
       setImageurl(value);
     }
   };
-
-  function addPoi() {
-    // setFormData((prevFormData) => ({
-    //   ...prevFormData,
-    //   pois: [...prevFormData.pois, { poiid: "", name: "" }],
-    // }));
-  }
 
   const poisArray = Object.values(pois).map((poi) => poi.poiid);
 
@@ -124,9 +116,8 @@ function Update_Route(props) {
         })
         .then((response) => {
           if (response.status === 200) {
-            console.log("OK");
           }
-
+          // Close the modal
           onCancel();
 
           // Refresh the page
@@ -141,8 +132,8 @@ function Update_Route(props) {
   };
 
   return (
-    <div style={{ marginBottom: "40px" }}>
-      <h2> Update Route: </h2>{" "}
+    <div style={{ height: "100%", marginBottom: "40px" }}>
+      <h2> Update New Route: </h2>{" "}
       <form onSubmit={handleSubmit}>
         <Grid
           container
@@ -209,7 +200,6 @@ function Update_Route(props) {
               variant="contained"
               color="primary"
               type="button"
-              onClick={addPoi}
             >
               Add POI
             </Button>
@@ -221,7 +211,6 @@ function Update_Route(props) {
               fullWidth
               value={evaluation_grade}
               onChange={(e) => handleInputChange(e)}
-              // disabled
             />{" "}
           </Grid>{" "}
           <Grid item xs={12}>

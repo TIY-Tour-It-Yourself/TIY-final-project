@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import NavBar from "../../Additionals/NavBar/NavBar";
 import MapBuilder from "../../MapPage/Map-Consumer/MapBuilder";
 import LoadingBar from "../../Additionals/LoadingBar/LoadingBar";
-import MapModal from "../../MapModal/MapModal";
+import MapModal from '../../MapModal/MapModal';
 
 const InteractiveMap_Consumer = () => {
   const [loading, setLoading] = useState(true);
@@ -17,7 +17,7 @@ const InteractiveMap_Consumer = () => {
 
   return (
     <>
-      <MapModal />
+      <MapModal/>
       <NavBar />
       {loading ? <LoadingBar /> : <MapBuilder />}
     </>

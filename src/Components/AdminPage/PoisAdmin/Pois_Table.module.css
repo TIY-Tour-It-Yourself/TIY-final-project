@@ -15,7 +15,6 @@
 .lightboxContent {
     background-color: #fff;
     margin: 0 auto;
-    /* padding: 0px; */
     border: 1px solid #5a5959;
     width: 100%;
     max-width: 50%;
@@ -28,4 +27,12 @@ h2 {
 .card {
     width: 100%;
     margin-bottom: 1rem;
+}
+
+.add_poi {
+    height: 100px;
+}
+
+.update_poi {
+    height: 700px;
 }

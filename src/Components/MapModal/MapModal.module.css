@@ -1,23 +1,23 @@
-.modal > div {
-  margin-top: 8%;
-  text-align: center;
-}
+.modal > div{
+    margin-top: 8%;
+    text-align: center;
+ }
 
 ol > li::marker {
-  font-weight: bold;
-  color: rgb(15, 77, 139);
+    font-weight: bold;
+    color: rgb(15, 77, 139);
 }
 
 ol > li {
-  font-size: 1.2rem;
+    font-size: 1.2rem;
 }
 
-.third {
-  color: #0081c9;
+.third{
+    color: #0081C9;
 }
 
 @media (max-width: 600px) {
-  .modal {
-    text-align: left;
-  }
+    .modal{
+       text-align: left;
+    }
 }
