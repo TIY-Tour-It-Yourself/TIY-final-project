@@ -56,7 +56,7 @@ const ThemeCustomization = ({ flag }) => {
       }
    }, [location.state]);
 
-   // //Display this page with the previously chosen color by user
+   //Display this page with the previously chosen color by user
    useEffect(() => {
       const storedTheme = localStorage.getItem('appTheme');
       if (storedTheme) {
@@ -177,8 +177,6 @@ const ThemeCustomization = ({ flag }) => {
       }
    };
 
-   // localStorage.setItem('selectedColor', code); // Store selected color in local storage
-
    const appBarStyle = {
       backgroundColor: appTheme,
    };
@@ -213,13 +211,7 @@ const ThemeCustomization = ({ flag }) => {
                         : { marginTop: '100px', fontSize: '1.25rem' }
                   }
                >
-                  <h2
-                     style={{
-                        marginTop: '10px',
-                     }}
-                  >
-                     Customize Your App
-                  </h2>
+                  <h2 className={styles.CustomizeTitle}>Customize Your App</h2>
                </Typography>
                <Typography
                   component='div'
@@ -364,7 +356,6 @@ const ThemeCustomization = ({ flag }) => {
                               textAlign: 'center',
                            }}
                         >
-                           {/* Locked Colors Modal */}
                            <h3>Select Which Color To Unlock</h3>
                            <div
                               style={
@@ -404,8 +395,6 @@ const ThemeCustomization = ({ flag }) => {
                                           (lockedColor) =>
                                              lockedColor.code === color.code
                                        )
-                                       // selectedColor &&
-                                       // selectedColor !== color.code
                                     }
                                  >
                                     {color.name}

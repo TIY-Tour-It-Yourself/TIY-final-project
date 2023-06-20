@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
+import './index.css';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import './index.css';
 import LoginPage from './Pages/LoginPage';
 import { Routes, Route } from 'react-router-dom';
 import RegisterPage from './Pages/RegisterPage';
@@ -11,7 +11,6 @@ import FormConsumerPage from './Pages/FormConsumerPage';
 import FormProducerPage from './Pages/FormProducerPage';
 import FormModifierPage from './Pages/FormModifierPage';
 import NotFoundPage from './Pages/NotFoundPage';
-import MapProducerPage from './Pages/MapProducerPage';
 import AccountPage from './Pages/AccountPage';
 import ToursPage from './Pages/ToursPage';
 import MapBuilderPage from './Pages/MapBuilderPage';
@@ -57,7 +56,6 @@ root.render(
                <Route path='/form_consumer' element={<FormConsumerPage />} />
                <Route path='/form_modifier' element={<FormModifierPage />} />
                <Route path='/form_producer' element={<FormProducerPage />} />
-               <Route path='/map_producer' element={<MapProducerPage />} />
                <Route path='/map_builder' element={<MapBuilderPage />} />
                <Route path='/events_choice' element={<EventsModalPage />} />
                <Route path='/user_settings' element={<AccountPage />} />

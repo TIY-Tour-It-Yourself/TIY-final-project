@@ -35,7 +35,6 @@ const Account = ({ userRole }) => {
                },
             })
             .then((response) => {
-               // console.log(response.data);
                setFname(response.data.fname);
                setEmail(response.data.email);
             })
@@ -56,7 +55,6 @@ const Account = ({ userRole }) => {
                email,
             })
             .then((response) => {
-               // console.log(response);
                setIsUpdated(true);
             })
             .catch((error) => {

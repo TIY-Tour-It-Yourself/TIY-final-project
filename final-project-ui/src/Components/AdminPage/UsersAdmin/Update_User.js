@@ -9,7 +9,6 @@ import {
    Button,
 } from '@mui/material';
 import { useState, useEffect } from 'react';
-import NavBar from '../../Additionals/NavBar/NavBar';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -25,27 +24,6 @@ function Update_User(props) {
    const [isDirty, setIsDirty] = useState(false);
    const [isFormValid, setIsFormValid] = useState(false);
 
-   // useEffect(() => {
-   //   console.log(location);
-   //   if (!location.state) {
-   //     navigate("/");
-   //   } else {
-   //     setActiveImage(1);
-   //     axios
-   //       .get(`https://tiys.herokuapp.com/api/auth`, {
-   //         headers: {
-   //           "x-auth-token": location.state.token,
-   //           "Content-Type": "application/json",
-   //         },
-   //       })
-   //       .then((response) => {
-   //         // console.log(response.data);   //user's data
-   //       })
-   //       .catch((error) => {
-   //         console.error("Error fetching user: ", error);
-   //       });
-   //   }
-   // }, [location.state]);
 
    const handleSubmit = async (e) => {
       e.preventDefault();
@@ -61,7 +39,6 @@ function Update_User(props) {
                }
             );
 
-            // const token = response.data.token;
             setIsFormValid(true);
 
             if (response.status === 200) {
@@ -129,10 +106,8 @@ function Update_User(props) {
                         value={fname}
                         error={!isValid && isDirty}
                         onBlur={() => setIsDirty(true)}
-                        // onChange={handleChange}
                         onChange={(e) => handleInputChange(e)}
                         required
-                        // disabled
                      />{' '}
                   </Grid>{' '}
                   <Grid item xs={12}>
@@ -141,7 +116,6 @@ function Update_User(props) {
                         label='Email'
                         fullWidth
                         value={email}
-                        // onChange={handleChange}
                         onChange={(e) => handleInputChange(e)}
                         required
                      />{' '}
@@ -152,7 +126,6 @@ function Update_User(props) {
                         label='Password'
                         fullWidth
                         value={password}
-                        // onChange={handleChange}
                         onChange={(e) => handleInputChange(e)}
                         required
                      />{' '}

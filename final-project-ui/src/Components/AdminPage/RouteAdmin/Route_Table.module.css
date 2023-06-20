@@ -16,13 +16,26 @@
 .lightboxContent {
   background-color: #fff;
   margin: 0 auto;
-  /* padding: 0px; */
   border: 1px solid #5a5959;
   width: 100%;
   max-width: 500px;
-  /* Adjust this value as needed */
+}
+
+.route_table_body {
+  margin-top: 30px;
+}
+
+.icon_button {
+  position: absolute;
+  left: 10px;
+  margin-top: 530px;
 }
 
 h2 {
   text-align: center;
+}
+
+.add_route {
+  height: 100%;
+  margin-bottom: 20px;
 }

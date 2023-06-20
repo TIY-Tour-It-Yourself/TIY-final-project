@@ -8,13 +8,8 @@ import user_settings from './nav_imgs/user_origin_new.png';
 import user_settings_clicked from './nav_imgs/user_origin_new_clicked.png';
 import history from './nav_imgs/history_origin.png';
 import history_clicked from './nav_imgs/history_clicked.png';
-import calendar from './nav_imgs/schedule_origin.png';
-import calendar_clicked from './nav_imgs/schedule_clicked.png';
 import customize_theme from './nav_imgs/customize_theme.png';
 import customize_theme_clicked from './nav_imgs/customize_theme_clicked.png';
-import logout_rounded from './nav_imgs/logout_rounded_corners.png';
-import logout_rect from './nav_imgs/logout_rectangle.png';
-import logout_straight from './nav_imgs/logout_straight.png';
 import logo from '../Assets/logo_nav_no_sub.png';
 import AppBar from '@mui/material/AppBar';
 import Tooltip from '@mui/material/Tooltip';
@@ -23,14 +18,12 @@ import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import Avatar from '@mui/material/Avatar';
-import difAvatar from './nav_imgs/user.png';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import LoadingBar from '../LoadingBar/LoadingBar';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
@@ -65,13 +58,6 @@ const NavBar = ({ activeImage, activeLink }) => {
          src_clicked: customize_theme_clicked,
          url: '/theme_customization',
       },
-      // {
-      //    id: 4,
-      //    title: 'monthly_events',
-      //    src: calendar,
-      //    src_clicked: calendar_clicked,
-      //    url: '/events',
-      // },
    ]);
 
    const [avatar, setAvatar] = useState(null);
@@ -99,7 +85,6 @@ const NavBar = ({ activeImage, activeLink }) => {
                   },
                }
             );
-            // console.log(response.data);
             setAvatar(response.data.avatar);
          } catch (error) {
             console.error('Error fetching user: ', error);
@@ -112,7 +97,6 @@ const NavBar = ({ activeImage, activeLink }) => {
       { id: 1, title: 'Settings', url: `/user_settings` },
       { id: 2, title: 'My Tours', url: '/tours_history' },
       { id: 3, title: 'Customize App', url: '/theme_customization' },
-      // { id: 3, title: 'Monthly Events', url: '/events' },
    ];
 
    const handleImageClick = (imageUrl) => {
@@ -194,7 +178,6 @@ const NavBar = ({ activeImage, activeLink }) => {
                         sx={{
                            my: 2,
                            mx: 1,
-                           // color: linksColor,
                            color: '#00337C',
                            display: 'block',
                            borderRadius: '25px',

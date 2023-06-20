@@ -32,13 +32,44 @@ function MyComponent(props) {
    const pageSize = 1;
    const [currentPage, setCurrentPage] = useState(1);
 
-   const handlePageChange = (event, value) => {
-      setCurrentPage(value);
-   };
-
    const startIndex = (currentPage - 1) * pageSize;
    const endIndex = startIndex + pageSize;
    const paginatedPois = pois.slice(startIndex, endIndex);
+
+   useEffect(() => {
+      if (!location.state) {
+         navigate('/');
+      } else {
+         axios
+            .get(`https://tiys.herokuapp.com/api/auth`, {
+               headers: {
+                  'x-auth-token': location.state.token,
+                  'Content-Type': 'application/json',
+               },
+            })
+            .then((response) => {
+               setAdmin(location.state.userRole);
+            })
+            .catch((error) => {
+               console.error('Error fetching user: ', error);
+            });
+      }
+   }, [location.state]);
+
+   useEffect(() => {
+      async function fetchData() {
+         const response = await axios.get(
+            'https://tiys.herokuapp.com/api/pois'
+         );
+         setPois(response.data);
+      }
+      fetchData();
+   }, []);
+
+   useEffect(() => {
+      if (selectedPoi !== null) {
+      }
+   }, [selectedPoi]);
 
    function handleAddPoi() {
       setAddShowForm(true);
@@ -56,48 +87,15 @@ function MyComponent(props) {
       navigate(-1); // Go back to the previous page
    };
 
-   useEffect(() => {
-      if (!location.state) {
-         navigate('/');
-      } else {
-         axios
-            .get(`https://tiys.herokuapp.com/api/auth`, {
-               headers: {
-                  'x-auth-token': location.state.token,
-                  'Content-Type': 'application/json',
-               },
-            })
-            .then((response) => {
-               setAdmin(location.state.userRole);
-               // console.log(response.data);
-            })
-            .catch((error) => {
-               console.error('Error fetching user: ', error);
-            });
-      }
-   }, [location.state]);
-
-   React.useEffect(() => {
-      async function fetchData() {
-         const response = await axios.get(
-            'https://tiys.herokuapp.com/api/pois'
-         );
-         setPois(response.data);
-      }
-      fetchData();
-   }, []);
-
    function handleUpdate(id) {
       const selected = pois.find((poi) => poi.poiid === id);
       setSelectedPoi(selected);
       setUpdateShowForm(true);
    }
 
-   React.useEffect(() => {
-      if (selectedPoi !== null) {
-         console.log(selectedPoi);
-      }
-   }, [selectedPoi]);
+   const handlePageChange = (event, value) => {
+      setCurrentPage(value);
+   };
 
    const columns = [
       { field: 'name', headerName: 'Name', flex: 1 },
@@ -143,8 +141,6 @@ function MyComponent(props) {
       const isConfirmed = window.confirm('Are you sure you want to delete?');
 
       if (isConfirmed) {
-         console.log('POIs deleted');
-
          ids.forEach((id) => {
             axios
                .delete('https://tiys.herokuapp.com/api/pois', {
@@ -194,7 +190,6 @@ function MyComponent(props) {
                            width: '300px',
                            border: '1px solid black',
                            boxShadow: '2px 4px 8px rgba(0, 0, 0, 0.8)',
-                           //  margin: '0 auto',
                            marginBottom: '30px',
                            marginLeft: '30px',
                         }}

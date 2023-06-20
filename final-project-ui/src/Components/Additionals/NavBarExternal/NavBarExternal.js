@@ -6,9 +6,6 @@ import home from './nav_imgs/home_origin.png';
 import home_clicked from './nav_imgs/home_clicked.png';
 import user_settings from './nav_imgs/user_origin_new.png';
 import user_settings_clicked from './nav_imgs/user_origin_new_clicked.png';
-import logout_rounded from './nav_imgs/logout_rounded_corners.png';
-import logout_rect from './nav_imgs/logout_rectangle.png';
-import logout_straight from './nav_imgs/logout_straight.png';
 import logo from '../Assets/logo_nav_no_sub.png';
 import AppBar from '@mui/material/AppBar';
 import Tooltip from '@mui/material/Tooltip';
@@ -24,7 +21,6 @@ import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import LoadingBar from '../LoadingBar/LoadingBar';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
@@ -73,7 +69,6 @@ const NavBarExternal = ({ activeImage, activeLink, userRole }) => {
                   },
                }
             );
-            // console.log(response.data);
             setAvatar(response.data.avatar);
          } catch (error) {
             console.error('Error fetching user: ', error);
