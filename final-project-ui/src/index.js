@@ -29,12 +29,26 @@ import UpdateUserPage from './Pages/UpdateUserPage';
 import ThemeCustomizationPage from './Pages/ThemeCustomizationPage';
 import ExternalAccountPage from './Pages/ExternalAccountPage';
 
+// Get the Google Maps API key from the environment variable
+const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+const googleClientAPIKey = process.env.REACT_APP_GOOGLE_CLIENT_API_KEY;
+
+// Function to dynamically add the Google Maps API script to the HTML document
+const addGoogleMapsScript = () => {
+   const script = document.createElement('script');
+   script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&libraries=geometry`;
+   script.async = true;
+   script.defer = true;
+   document.head.appendChild(script);
+};
+
+// Call the function to add the Google Maps API script dynamically
+addGoogleMapsScript();
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-   <GoogleOAuthProvider
-      clientId={`302369383157-cc2iquq6s2e2ihq879qlfes2kbrc2f2e.apps.googleusercontent.com`}
-   >
+   <GoogleOAuthProvider clientId={googleClientAPIKey}>
       <React.StrictMode>
          <BrowserRouter>
             <Routes>
