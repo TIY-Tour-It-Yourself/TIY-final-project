@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, FormControl, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-// import FacebookLogin from 'react-facebook-login';
-import {
-   googleLogout,
-   useGoogleLogin,
-   // GoogleLogin
-} from '@react-oauth/google';
-import axios, { isCancel } from 'axios';
+import { gapi } from 'gapi-script';
+import { GoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Logo from '../Additionals/Logo/Logo';
 import Header from '../Additionals/Header/Header';
@@ -15,36 +11,28 @@ import styles from './Login.module.css';
 import PageContainer from '../Additionals/Container/PageContainer';
 import Divider from '../Additionals/Divider/Divider';
 import { Link, useNavigate } from 'react-router-dom';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faFacebookF } from '@fortawesome/free-brands-svg-icons';
+import jwt_decode from 'jwt-decode';
+import jwt from 'jsonwebtoken';
 
-const Login = (props) => {
-   const [user, setUser] = useState([]);
-   const [profile, setProfile] = useState(false);
+const clientId =
+   '302369383157-cc2iquq6s2e2ihq879qlfes2kbrc2f2e.apps.googleusercontent.com';
+
+const Login = () => {
+   const [rememberMe, setRememberMe] = useState(false);
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
    const [isValid, setIsValid] = useState(false);
    const [isDirty, setIsDirty] = useState(false);
    const [isFormValid, setIsFormValid] = useState(false);
    const [is_accessible, setIsAccessible] = useState('');
-   const [logged, setIsLogged] = useState(false);
-   const [data, setData] = useState({});
-   const [picture, setPicture] = useState('');
    const navigate = useNavigate();
-
-   useEffect(() => {
-      if (is_accessible) {
-         // console.log(`${JSON.stringify(data)} , ${is_accessible}`);
-        navigate(`/dashboard?isAccessible=${is_accessible}`);
-      }
-    }, [is_accessible, data]);
+   const theme = useTheme();
+   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
    const handleSubmit = async (e) => {
       e.preventDefault();
-
       try {
          if (email.trim().length !== 0 && password.trim().length !== 0) {
-            // const { data } = await axios.post(`https://tiys.herokuapp.com/api/auth`, {
             const response = await axios.post(
                `https://tiys.herokuapp.com/api/auth`,
                {
@@ -52,16 +40,26 @@ const Login = (props) => {
                   password,
                }
             );
-            setData(response.data);
-            //Change to response.data.is_accessible once it's available on DB
-            setIsAccessible(response.data.age);
+            const token = response.data.token;
             setIsFormValid(true);
-   
-            // if (response.status == 200) {
-            //    navigate(`/dashboard?isAccessible=${is_accessible}`);
-            // } else {
-            //    console.log('Status is not 200');
-            // }
+
+            // RememberMe Logic
+            if (rememberMe) {
+               localStorage.setItem('token', token);
+            } else {
+               localStorage.removeItem('token', token);
+            }
+
+            if (response.status === 200) {
+               if (isTokenValid(token)) {
+                  handleNavigate(token);
+               } else {
+                  // Handle invalid token
+                  alert('Invalid token. Please log in again.');
+               }
+            } else {
+               console.log('Status is not 200');
+            }
          } else {
             alert('All fields are required.');
             setIsFormValid(false);
@@ -78,72 +76,83 @@ const Login = (props) => {
       }
    };
 
-   //Facebook login
-   const responseFacebook = (response) => {
-      console.log(response);
-      setData(response);
-      setPicture(response.picture.data.url);
-      if (response.accessToken) {
-         setIsLogged(true);
-      } else {
-         setIsLogged(false);
+   useEffect(() => {
+      const token = localStorage.getItem('token');
+      if (token && isTokenValid(token)) {
+         handleNavigate(token);
+      }
+   }, []);
+
+   const handleNavigate = (token) => {
+      if (email === 'admin@tiy.com') {
+         navigate('/admin', { state: { token } });
+      } else if (email === 'researcher@tiy.com') {
+         navigate('/res_dashboard', { state: { token } });
+      } else navigate('/dashboard', { state: { token } });
+   };
+
+   const isTokenValid = (token) => {
+      try {
+         const decodedToken = jwt.decode(token);
+
+         // Check if the token is expired
+         const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+
+         if (decodedToken.exp < currentTime) {
+            return false; // Token has expired
+         }
+         return true; // Token is valid
+      } catch (error) {
+         return false; // Token is invalid or has an error
       }
    };
 
-   const fLogout = () => {
-      setIsLogged(false);
-      setData({});
-      setPicture('');
+   const handleRememberMeChange = (event) => {
+      setRememberMe(event.target.checked);
    };
 
-   //Google Login
-   const login = useGoogleLogin({
-      onSuccess: (codeResponse) => setUser(codeResponse),
-      onError: (error) => console.log('Login Failed:', error),
-   });
+   //Google OAuth User Connection - On success connection
+   const onSuccess = async (res) => {
+      const details = jwt_decode(res.credential);
+      console.log(details);
+      const response = await axios.post(
+         `https://tiys.herokuapp.com/api/users/gmailauth`,
+         {
+            email: details.email,
+            name: details.name,
+            picture: details.picture,
+         }
+      );
+      try {
+         // console.log(response.data);
+         const token = response.data.token;
+         setIsFormValid(true);
 
-   const theme = useTheme();
-   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+         if (response.status == 200) {
+            handleNavigate(token);
+         } else {
+            console.log('Status is not 200');
+         }
+      } catch (error) {
+         console.log(`User could not log in:`, error);
+      }
+   };
+
+   //Google OAuth User Connection - On failure connection
+   const onFailure = (res) => {
+      console.log('login failed: ', res);
+   };
 
    //Login through Google - Takes data from Google
    useEffect(() => {
-      if (user) {
-         axios
-            .get(
-               `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`,
-               {
-                  headers: {
-                     Authorization: `Bearer ${user.access_token}`,
-                     Accept: 'application/json',
-                  },
-               }
-            )
-            .then((res) => {
-               setProfile(res.data);
-               navigate('/form_consumer');
-            })
-            .catch((err) => console.log(err));
-      }
-   }, [user]);
-
-   //Post request - need to post Google connection data of user to DB to check if specific user is already registered
-   useEffect(() => {
-      if (profile) {
-         axios
-            .post(`https://jsonplaceholder.typicode.com/users`, { profile })
-            // .get("https://jsonplaceholder.typicode.com/users/1")
-            .then((response) => {
-               console.log(response.data.token);
-            })
-            .catch((err) => console.log(err));
-      }
-   }, [profile]);
-
-   // log out function to log the user out of google and set the profile array to null
-   const gLogout = () => {
-      googleLogout();
-      setProfile(null);
-   };
+      const start = () => {
+         gapi.client.init({
+            client_id: clientId,
+            scope: '',
+         });
+      };
+      gapi.load('client:auth2', start);
+   });
 
    return (
       <>
@@ -178,16 +187,25 @@ const Login = (props) => {
                      variant='outlined'
                      required
                   />
+                  <div className={styles.checkbox}>
+                     <label>
+                        <input
+                           type='checkbox'
+                           checked={rememberMe}
+                           onChange={handleRememberMeChange}
+                        />
+                        Remember Me
+                     </label>
+                  </div>
                   <Button
                      onClick={handleSubmit}
-                     className={styles.button}
                      type='submit'
                      variant='contained'
                      color='primary'
                      sx={
                         isSmallScreen
-                           ? { mt: 2, ml: 2, mb: 3, width: '80%' }
-                           : { mt: 3, ml: 12, mb: 3, width: '50%' }
+                           ? { mt: 2, ml: 3.25, mb: 3, width: '80%' }
+                           : { mt: 3, ml: 13.25, mb: 3, width: '50%' }
                      }
                      style={{
                         borderRadius: 20,
@@ -198,26 +216,13 @@ const Login = (props) => {
                   </Button>
                </FormControl>
             </form>
-            <Typography sx={{ mt: 0, mb: 1, mr: 1 }}>
-               <Link
-                  style={{ fontSize: '0.75rem', color: 'black' }}
-                  // Need to define navigation to retreive password
-                  href='/'
-                  sx={{
-                     textDecoration: 'none',
-                     '&:hover': {
-                        textDecoration: 'underline',
-                     },
-                  }}
-               >
-                  <b>Forgot Password?</b>
-               </Link>
-            </Typography>
             <Typography
-               style={{ fontSize: 'small' }}
-               sx={isSmallScreen ? { mb: 1 } : { mt: 2, mb: 4 }}
+               sx={{
+                  fontSize: 'small',
+                  ...(isSmallScreen ? { mb: 1 } : { mt: 2, mb: 4 }),
+               }}
             >
-               <b>Don't Have An Account?</b>{' '}
+               <b>Don't Have An Account? </b>
                <Link
                   to='/register'
                   sx={{
@@ -232,83 +237,15 @@ const Login = (props) => {
             </Typography>
             <Divider title='Sign In With' />
             <div className={styles.flexbox}>
-               {/* <a href='#'>
-                  <div className={styles.facebook_icon}></div>
-               </a> */}
-               <div className='container'>
-                  <a href='#'>
-                     <div className={styles.facebook_icon}></div>
-                  </a>
-                  {/* {!logged && (
-                     <FacebookLogin
-                        appId={process.env.REACT_APP_FACEBOOK_CLIENT_ID}
-                        autoLoad={false}
-                        //  fields="name,email,picture"
-                        //  scope="public_profile,email,user_friends"
-                        callback={responseFacebook}
-                        buttonStyle={{
-                           backgroundColor: '#3b5998',
-                           border: 'none',
-                           borderRadius: '3px',
-                           marginRight: '30px',
-                           marginTop: '0',
-                           fontSize: '35px',
-                           color: '#fff',
-                           fontWeight: 'bold',
-                           cursor: 'pointer',
-                           display: 'flex',
-                           alignItems: 'center',
-                           justifyContent: 'center',
-                           width: '38px',
-                           height: '45px',
-                        }}
-                        textButton=''
-                        icon={<FontAwesomeIcon icon={faFacebookF} />}
-                     />
-                  )}
-
-                  {logged && (
-                     <div className='card'>
-                        <div className='card-body'>
-                           <img
-                              className='rounded'
-                              src={picture}
-                              alt='Profile'
-                           />
-                           <h5 className='card-title'>{data.name}</h5>
-                           <p className='card-text'>Email ID: {data.email}</p>
-                           <a
-                              href='#'
-                              className='btn btn-danger btn-sm'
-                              onClick={fLogout}
-                           >
-                              Logout
-                           </a>
-                        </div>
-                     </div>
-                  )}*/}
-               </div>
-               <div>
-                  {profile ? (
-                     {
-                        /* <button onClick={logOut}>Log out</button> */
-                     }
-                  ) : (
-                     //  <div>
-                     //      <img src={profile.picture} alt="user image" />
-                     //      <h3>User Logged in</h3>
-                     //      <p>Name: {profile.name}</p>
-                     //      <p>Email Address: {profile.email}</p>
-                     //      <br />
-                     //      <br />
-                     //      <button onClick={logOut}>Log out</button>
-                     //  </div> */}
-
-                     <div
-                        className={styles.google_icon}
-                        onClick={() => login()}
-                     ></div>
-                  )}
+               <div id='signInButton'>
+                  <GoogleLogin
+                     client_id={clientId}
+                     shape='circle'
+                     button_text='Login'
+                     onSuccess={onSuccess}
+                     onFailure={onFailure}
+                     cookie_policy={'single_host_origin'}
+                  />
                </div>
             </div>
          </PageContainer>

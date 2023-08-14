@@ -37,6 +37,21 @@
    cursor: pointer;
 }
 
+.star {
+   max-width: max-content;
+   margin-left: 90px;
+}
+
+.edit {
+   max-width: max-content;
+   margin-left: 25px;
+   cursor: pointer;
+}
+
+.img_icons {
+   display: flex;
+}
+
 .form {
    display: flex;
    max-width: 80%;
@@ -53,17 +68,25 @@
    display: flex;
    flex-direction: row;
    flex-wrap: wrap;
-   justify-content: center;
+   justify-content: flex-start;
+   width: 80%;
+   margin-left: 13%;
+   margin-bottom: 3%;
 }
 
 .routes_imgs > div {
    padding: 1%;
+   text-align: center;
 }
 
-.routes_imgs > div > img {
+.route_img {
+   cursor: pointer;
+}
+
+div > .route_img > img {
    border: 1px solid gray;
    border-radius: 30px;
-   margin-left: 14%;
+   width: 180px;
    height: 230px;
 }
 
@@ -111,9 +134,14 @@
       margin-top: 7%;
    }
 
+   .routes_imgs {
+      justify-content: center;
+      margin: 0 auto;
+      width: 90%;
+   }
+
    .routes_imgs > div {
-      margin-left: 2.5px;
-      margin-top: 2%;
+      flex-direction: column;
    }
 
    .routes_imgs > div:last-child {
@@ -123,6 +151,10 @@
    .routes_imgs > div > img {
       max-width: max-content;
       margin-left: 3px;
+   }
+
+   .star {
+      margin-left: 75px;
    }
 
    .arlevel_name {

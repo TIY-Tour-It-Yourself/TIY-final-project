@@ -5,25 +5,12 @@
    max-width: 80%;
    justify-content: center;
    margin: 1rem 0 0 7rem;
+   padding-bottom: 10px;
 }
 
 form {
    max-width: 80%;
    margin: -11px auto;
-}
-
-.google_icon {
-   background: url('../../images/icon_google.png') no-repeat;
-   width: 45px;
-   height: 45px;
-   margin-left: 0;
-}
-
-.facebook_icon {
-   background: url('../../images/icon_facebook.png') no-repeat;
-   width: 45px;
-   height: 45px;
-   margin-right: 1.8rem;
 }
 
 @media (max-width: 600px) {

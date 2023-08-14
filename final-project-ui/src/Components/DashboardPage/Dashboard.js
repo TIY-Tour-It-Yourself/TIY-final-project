@@ -1,35 +1,62 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Dashboard.module.css';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import NavBar from '../Additionals/NavBar/NavBar';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import Container from '@mui/material/Container';
-import bursa from './card_images/bursa.jpg';
-import map from '../Additionals/Assets/map_cropped.jpg';
+import consumer from './card_images/consumer.jpg';
+import producer from './card_images/producer.jpg';
 import { useTheme } from '@mui/material/styles';
+import axios from 'axios';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import Button from '@mui/material/Button';
 import { useNavigate, useLocation } from 'react-router-dom';
+import LoadingBar from '../Additionals/LoadingBar/LoadingBar';
+
+const cards = [
+   { id: 1, title: 'Choose Your Tour', src: consumer, url: '/form_consumer' },
+   { id: 2, title: 'Build Your Tour', src: producer, url: '/form_producer' },
+];
 
 const Dashboard = () => {
-
+   const [activeImage, setActiveImage] = useState(null);
    const theme = useTheme();
    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
    const navigate = useNavigate();
    const location = useLocation();
 
    useEffect(() => {
-      const searchParams = new URLSearchParams(location.search);
-      const isAccessible = searchParams.get('is_accessible');
-   });
+      if (!location.state) {
+         navigate('/');
+      } else {
+         setActiveImage(1);
+         axios
+            .get(`https://tiys.herokuapp.com/api/auth`, {
+               headers: {
+                  'x-auth-token': location.state.token,
+                  'Content-Type': 'application/json',
+               },
+            })
+            .then((response) => {
+               // console.log(response.data);
+            })
+            .catch((error) => {
+               console.error('Error fetching user: ', error);
+            });
+      }
+   }, [location.state]);
+
+   const handleNavigation = (title) => {
+      if (title === 'Choose Your Tour')
+         navigate('/form_consumer', { state: { token: location.state.token } });
+      if (title === 'Build Your Tour')
+         navigate('/form_producer', { state: { token: location.state.token } });
+      if (title === 'Tours History')
+         navigate('/tours_history', { state: { token: location.state.token } });
+   };
 
    return (
       <>
-         <NavBar />
+         <NavBar activeImage={activeImage} />
          <Typography
             component='div'
             className={styles.title}
@@ -42,79 +69,51 @@ const Dashboard = () => {
                        mt: '5%',
                        textAlign: 'center',
                     }
-                  : { fontSize: '50px', textAlign: 'center' }
+                  : { fontSize: '12px', mt: '2%', textAlign: 'center' }
             }
          >
             <h1>What Would You Like To Do?</h1>
          </Typography>
+         <Typography
+            component='div'
+            sx={{
+               textAlign: 'center',
+            }}
+         >
+            <h3
+               style={
+                  ({ marginTop: '-10px', fontSize: '1.05rem' },
+                  isSmallScreen
+                     ? { fontSize: '0.95rem', marginTop: '-1px' }
+                     : { marginTop: '0' })
+               }
+            >
+               Choose a Pre-built Tour or Build One Yourself!
+            </h3>
+         </Typography>
          <Container
             sx={{
+               marginTop: '80px',
                display: 'flex',
                flexWrap: 'wrap',
-               mt: 2,
+               mt: 0,
+               mb: 8,
                justifyContent: 'space-evenly',
             }}
          >
-            <Card className={styles.card} sx={{ width: 240 }}>
-               <CardMedia
-                  component='img'
-                  height='100'
-                  image={bursa}
-                  alt='National Park'
-               />
-               <CardContent>
-                  <div style={{ display: 'flex', justifyContent: 'center' }}>
-                     <Typography variant='h6' component='div'>
-                        Tour Suggestions
-                     </Typography>
+            {cards.map((card) => (
+               <div key={card.id}>
+                  <p className={styles.box_title}>{card.title}</p>
+                  <div className={styles.card}>
+                     <a onClick={() => handleNavigation(card.title)}>
+                        <img
+                           style={{ cursor: 'pointer', borderRadius: '25px' }}
+                           src={card.src}
+                        />
+                     </a>
                   </div>
-               </CardContent>
-               <CardActions>
-                  <Box sx={{ m: '0 auto' }}>
-                     <Button
-                        onClick={() => navigate('/form_consumer')}
-                        size='small'
-                        style={
-                           isSmallScreen
-                              ? { fontWeight: 'bold' }
-                              : { fontWeight: 'bold', fontSize: '1rem' }
-                        }
-                     >
-                        Enter
-                     </Button>
-                  </Box>
-               </CardActions>
-            </Card>
-            <Card className={styles.card} sx={{ width: 240 }}>
-               <CardMedia
-                  component='img'
-                  height='100'
-                  image={map}
-                  alt='National Park'
-               />
-               <CardContent>
-                  <div style={{ display: 'flex', justifyContent: 'center' }}>
-                     <Typography variant='h6' component='div'>
-                        Build Your Own Tour
-                     </Typography>
-                  </div>
-               </CardContent>
-               <CardActions>
-                  <Box sx={{ m: '0 auto' }}>
-                     <Button
-                        onClick={() => navigate('/form_producer')}
-                        size='small'
-                        style={
-                           isSmallScreen
-                              ? { fontWeight: 'bold' }
-                              : { fontWeight: 'bold', fontSize: '1rem' }
-                        }
-                     >
-                        Enter
-                     </Button>
-                  </Box>
-               </CardActions>
-            </Card>
+               </div>
+            ))}
          </Container>
       </>
    );

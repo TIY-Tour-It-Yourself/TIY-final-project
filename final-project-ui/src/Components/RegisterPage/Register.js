@@ -53,23 +53,22 @@ const Register = (props) => {
                is_accessible,
             })
             .then((response) => {
-               console.log(response.data);
+               const token = response.data.token;
                setIsFormValid(true);
                if (response.status === 200) {
-                  navigate(`/dashboard?isAccessible=${is_accessible}`);
+                  navigate(`/dashboard`, { state: { token } });
                } else {
                   console.log('Status is not 200');
                }
             })
             .catch((err) => {
-               console.log(err.response.data.errors[0])
+               console.log(err.response.data.errors[0]);
                if (err.response.data.errors[0].msg === 'User already exists') {
                   alert('Email already exists.');
                } else {
                   alert('Invalid Credentials.');
                }
             });
-
       } else {
          alert('All fields are required.');
          setIsFormValid(false);
@@ -185,8 +184,8 @@ const Register = (props) => {
                      color='primary'
                      sx={
                         isSmallScreen
-                           ? { mt: 2, ml: 2, width: '80%' }
-                           : { mt: 1, ml: 14, width: '50%' }
+                           ? { mt: 2, ml: 3, mb: 1, width: '80%' }
+                           : { mt: 2, ml: 13, width: '50%' }
                      }
                      style={{
                         borderRadius: 20,
@@ -197,8 +196,16 @@ const Register = (props) => {
                   </Button>
                </FormControl>
             </form>
-            <Typography style={{ fontSize: 'small' }} sx={{ mt: 2, mb: 1 }}>
-               <b>Already Have An Account?</b>{' '}
+            <Typography
+               sx={{
+                  fontSize: 'small',
+                  mt: 2,
+                  mb: 1,
+                  paddingTop: 1,
+                  paddingBottom: 2,
+               }}
+            >
+               <b>Already Have An Account? </b>
                <Link
                   href='/login'
                   sx={{
@@ -211,15 +218,6 @@ const Register = (props) => {
                   Sign In
                </Link>
             </Typography>
-            <Divider title='Sign Up With' />
-            <div className={styles.flexbox}>
-               <a href='#'>
-                  <div className={styles.facebook_icon}></div>
-               </a>
-               <a href='#'>
-                  <div className={styles.google_icon}></div>
-               </a>
-            </div>
          </PageContainer>
       </>
    );

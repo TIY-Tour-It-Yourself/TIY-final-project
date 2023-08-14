@@ -1,0 +1,47 @@
+.container {
+   margin-bottom: 40px;
+}
+
+.record {
+   margin-left: 100px;
+   width: 1200px;
+   height: 50px;
+   border-radius: 200px / 200px;
+   margin-bottom: 10px;
+   border: 1px solid rgb(65, 63, 63);
+   box-shadow: 1px 1px 1px rgb(192, 192, 192);
+   display: flex;
+   justify-content: space-evenly;
+   flex-direction: row;
+   align-items: center;
+}
+
+.record > div {
+   height: fit-content;
+   text-align: center;
+   width: 190px;
+}
+
+@media (max-width: 600px) {
+   .modal {
+      text-align: center;
+   }
+
+   .align_right {
+      display: flex !important;
+      justify-content: right !important;
+   }
+
+   .record {
+      display: none;
+   }
+
+   .record_mobile {
+      text-align: left;
+   }
+
+   .record_mobile > div {
+      margin-top: 3px;
+      margin-bottom: 5px;
+   }
+}

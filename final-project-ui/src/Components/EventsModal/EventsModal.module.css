@@ -1,0 +1,122 @@
+.modal > div {
+   margin-top: 3%;
+   text-align: center;
+}
+
+ol > li::marker {
+   font-weight: bold;
+   color: rgb(15, 77, 139);
+}
+
+ol > li {
+   font-size: 1.2rem;
+}
+
+.third {
+   color: #0081c9;
+}
+
+.inner_card {
+   width: 180px;
+   height: 240px;
+   border-radius: 15px;
+   position: relative;
+   left: 235px;
+   top: 20px;
+   background-color: white;
+}
+
+.event_board {
+   text-align: center;
+   margin: 0 auto;
+   max-width: 400px;
+}
+
+.event_board p {
+   text-align: center;
+   width: 200px;
+   margin-left: 100px;
+   border-radius: 5px;
+   text-decoration: none;
+   color: #000;
+   display: block;
+   height: 10em;
+   width: 15em;
+   padding: 1em;
+   font-size: 0.8rem;
+   font-weight: bold;
+   position: relative;
+   z-index: 5;
+   margin-bottom: 40px;
+   border: 1px solid #ccc;
+   margin-top: 30px;
+}
+
+.event_board :nth-child(even) p {
+   position: relative;
+}
+
+.event_board :nth-child(odd) p {
+   position: relative;
+}
+
+.event_div {
+   border: 1px solid rgb(207, 207, 207);
+   border-radius: 10%;
+   padding: 10px;
+   margin: 10px;
+   cursor: pointer;
+}
+
+.event_div .selected {
+   border: 1px solid rgb(0, 0, 0);
+}
+
+.event_div:hover p {
+   background-color: #ddd;
+}
+
+.selectedEvent,
+.deselect_events {
+   border: 1px solid black;
+   padding: 7px;
+   margin-bottom: 3px;
+   list-style-type: none;
+}
+
+.event_list_item {
+   border-bottom: 1px solid rgb(180, 180, 180);
+   list-style-type: none;
+   margin: 0 auto;
+   padding: 5px;
+}
+
+.event_list_item:hover {
+   background-color: rgb(223, 223, 223);
+   cursor: pointer;
+   text-decoration: underline;
+}
+
+.selected_events {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   height: 100%;
+}
+
+.deselect_events {
+   margin-top: 20px;
+   margin-right: 40px;
+   cursor: pointer;
+}
+
+@media (max-width: 600px) {
+   .inner_card {
+      width: 220px;
+      height: 200px;
+      border-radius: 15px;
+      position: relative;
+      left: 15px;
+      top: 70px;
+   }
+}

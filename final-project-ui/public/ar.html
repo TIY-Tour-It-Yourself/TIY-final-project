@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AR Experience</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <script>
+        AFRAME.registerComponent('clicker', {
+            init: function () {
+                this.el.addEventListener('click', e => {
+                    if (arLevel) {
+                        alert('You have unlocked a Theme Customization Feature!');
+                    } else {
+                        alert(description);
+                    }
+                });
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <a-scene vr-mode-ui="enabled: false" cursor="rayOrigin: mouse" raycaster="near: 0; far: 50000"
+        arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;" renderer="antialias: true; alpha: true">
+        <a-camera gps-camera rotation-reader></a-camera>
+        <a-image id="imageUrlValue" src="" look-at="[gps-camera]" scale="20 20 20" gps-entity-place="" clicker
+            crossorigin="anonymous"></a-image>
+    </a-scene>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const imageUrl = urlParams.get('img');
+        const latitude = urlParams.get('lat');
+        const longitude = urlParams.get('lng');
+        const description = urlParams.get('desc');
+        const arLevel = urlParams.get('arLevel');
+
+        if (imageUrl) {
+            const imageElement = document.getElementById("imageUrlValue");
+            imageElement.setAttribute('src', imageUrl);
+            imageElement.setAttribute('gps-entity-place', `latitude:${latitude}; longitude:${longitude}`);
+        }
+    </script>
+</body>
+
+</html>

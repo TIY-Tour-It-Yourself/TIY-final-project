@@ -1,0 +1,132 @@
+.title {
+   text-align: center;
+   padding-top: 100px;
+   font-weight: bold;
+   border: 2px solid transparent;
+}
+
+.AR_exp_div {
+   margin-left: 15%;
+   margin-bottom: 0;
+}
+
+.ar_imgs {
+   display: flex;
+   max-width: 50%;
+   margin-top: 1%;
+   flex-wrap: wrap;
+   flex-direction: row;
+}
+
+.ar_imgs > div {
+   margin-right: 7%;
+}
+
+.ar_imgs > div > img {
+   border-radius: 50%;
+   cursor: pointer;
+}
+
+.arlevel_name {
+   text-align: center;
+}
+
+.arlevel_name > span {
+   max-width: max-content;
+}
+
+.pois_title {
+   margin-left: 15%;
+   margin-top: 3%;
+}
+
+.poi_imgs {
+   display: flex;
+   flex-wrap: wrap;
+   justify-content: flex-start;
+   width: 80%;
+   margin-left: 13%;
+   margin-bottom: 5%;
+}
+
+.poi_imgs > div {
+   padding: 1%;
+   text-align: center;
+}
+
+.poi_imgs > div > img {
+   margin-left: 14%;
+   width: 50px;
+   height: 50px;
+}
+
+.star {
+   max-width: max-content;
+   margin-left: 90px;
+}
+
+.border {
+   border: 1px #cfcfcf solid;
+}
+
+@media (max-width: 600px) {
+   .title {
+      padding-top: 5px;
+      font-size: 2rem;
+   }
+
+   .AR_exp_div {
+      margin-left: 0;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+   }
+
+   .ar_imgs {
+      margin: 0 auto;
+      flex-direction: column;
+      margin-bottom: -15px;
+      max-width: max-content;
+   }
+
+   .ar_imgs > div > img {
+      margin-bottom: 8%;
+      width: 120px;
+      height: 120px;
+   }
+
+   .arlevel_name {
+      margin-top: -7px;
+      margin-bottom: 7px;
+   }
+
+   .pois_title {
+      margin-left: 7%;
+      margin-top: 6%;
+   }
+
+   .poi_imgs {
+      flex-direction: column;
+      justify-content: center;
+      margin: 0 auto;
+   }
+   .poi_imgs > div {
+      margin-left: 2.5px;
+      margin-top: 2%;
+   }
+
+   .poi_imgs > div:last-child {
+      margin-bottom: 30%;
+   }
+
+   .poi_imgs > div > img {
+      width: 45px;
+      height: 45px;
+      margin-left: 0;
+      margin: 0 auto;
+   }
+
+   .star {
+      margin-left: 60%;
+   }
+}

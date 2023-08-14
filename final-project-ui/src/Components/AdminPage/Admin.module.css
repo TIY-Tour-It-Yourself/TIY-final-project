@@ -1,0 +1,7 @@
+@media (max-width: 600px) {
+   .card {
+      margin-bottom: 5%;
+      max-width: 220px;
+      max-height: 200px;
+   }
+}

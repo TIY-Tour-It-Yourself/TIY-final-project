@@ -7,20 +7,12 @@
    margin: 1rem 0 0 7rem;
 }
 
-.google_icon {
-   background: url('../../images/icon_google.png') no-repeat;
-   width: 45px;
-   height: 45px;
-   margin-left: 0;
-   cursor: pointer;
+#signInButton {
+   width: 100px !important;
 }
 
-.facebook_icon {
-   background: url('../../images/icon_facebook.png') no-repeat;
-   width: 45px;
-   height: 45px;
-   margin-right: 2rem;
-   cursor: pointer;
+.checkbox {
+   padding: 5px;
 }
 
 form {
