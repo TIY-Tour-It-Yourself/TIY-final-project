@@ -59,7 +59,7 @@ const EventsModal = ({ handleCloseModal, handleEventSelection }) => {
    }, []);
 
    const geocodeEvents = async (events) => {
-      const apiKey = 'AIzaSyBTcp_fIBVNuxgqiuv4wqyTLfFC6iGm0iE';
+      const apiKey = 'AIzaSyDTDJ58Mo7LFA3vStk4Ze3qBPu_yIvXqRQ';
 
       const geocodeAddress = async (address) => {
          const fullAddress = `${address}, Ramat Gan, Israel`;
