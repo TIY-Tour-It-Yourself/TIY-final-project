@@ -2,4 +2,5 @@
 ## TIY: Tour-It-Yourself 
 Shenkar College for Engineering & Design
 
-![logo](https://github.com/TIY-Tour-It-Yourself/TIY-final-project/assets/60816491/ec1514f4-5bc3-443c-8385-ab0afa8735e1)
+![logo-tiy](https://github.com/TIY-Tour-It-Yourself/TIY-final-project/assets/60816491/ee66ec4e-946f-426c-9e4e-829b8876ea94)
+
